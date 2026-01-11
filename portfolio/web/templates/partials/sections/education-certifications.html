@@ -51,7 +51,7 @@
                     </div>
 
                     <!-- Education Item 1 -->
-                    {% for edu in expertise.education %}
+                    {% for edu in educations %}
                     <div class="relative pl-16">
                         <div
                                 class="absolute left-4 top-4 w-4 h-4 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 shadow-lg">
@@ -60,11 +60,11 @@
                                 class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                             <div class="flex justify-between items-start mb-3">
                                 <div>
-                                    <h4 class="text-xl font-bold text-gray-900">{{ edu.name }}</h4>
+                                    <h4 class="text-xl font-bold text-gray-900">{{ edu.title }}</h4>
                                     <p class="text-blue-600 font-medium">{{ edu.school }}</p>
                                 </div>
                                 <span class="px-3 py-1 bg-blue-50 text-blue-700 text-sm font-medium rounded-full">
-                                        {{ edu.startYear }} - {{ edu.endYear }}
+                                        {{ edu.start_year }} - {{ edu.end_year }}
                                     </span>
                             </div>
                             <p class="text-gray-600 mb-4">
@@ -75,25 +75,12 @@
                                         GPA: {{ edu.gpa }}./4.0
                                     </span>
                                 <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-full">
-                                    {% if edu.grade == 1 %}
-                                        First Class Honors
-                                    {% elif education.grade == 22 %}
-                                    Second Upper Class Honors
-                                    {% elif education.grade == 21 %}
-                                    Second Lower Class Honors
-                                    {% elif education.grade == 3 %}
-                                    Third Class Honors
-                                    {% else %}
-                                    Pass
-                                    {% endif %}
+                                    {{ edu.grade }}
                                     </span>
-
                             </div>
                         </div>
                     </div>
-
                     {% endfor %}
-
                 </div>
             </div>
 
@@ -114,7 +101,7 @@
                 <div class="grid grid-cols-1 gap-6">
                     <!-- Certification 1 -->
 
-                    {% for cert in expertise.certifications %}
+                    {% for cert in certifications %}
 
                     <div
                             class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
