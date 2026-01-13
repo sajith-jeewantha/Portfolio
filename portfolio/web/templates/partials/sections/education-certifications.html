@@ -1,6 +1,7 @@
 {% load static %}
 
 <!-- Education & Certifications -->
+{% if educations or certifications %}
 <section class="py-20 bg-gradient-to-b from-gray-50 to-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Section Header -->
@@ -27,6 +28,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
             <!-- Education Column -->
+            {% if educations %}
             <div>
                 <div class="flex items-center mb-8">
                     <div
@@ -46,16 +48,10 @@
 
                 <!-- Education Timeline -->
                 <div class="space-y-8 relative">
-                    <!-- Timeline line -->
-                    <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-200 to-blue-100">
-                    </div>
 
                     <!-- Education Item 1 -->
                     {% for edu in educations %}
-                    <div class="relative pl-16">
-                        <div
-                                class="absolute left-4 top-4 w-4 h-4 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 shadow-lg">
-                        </div>
+                    <div class="relative">
                         <div
                                 class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                             <div class="flex justify-between items-start mb-3">
@@ -63,7 +59,7 @@
                                     <h4 class="text-xl font-bold text-gray-900">{{ edu.title }}</h4>
                                     <p class="text-blue-600 font-medium">{{ edu.school }}</p>
                                 </div>
-                                <span class="px-3 py-1 bg-blue-50 text-blue-700 text-sm font-medium rounded-full">
+                                <span class="px-3 py-1 w-2/6 bg-blue-50 text-blue-700 text-sm font-medium text-center rounded-full">
                                         {{ edu.start_year }} - {{ edu.end_year }}
                                     </span>
                             </div>
@@ -71,20 +67,28 @@
                                 {{ edu.description }}.
                             </p>
                             <div class="flex flex-wrap gap-2">
-                                    <span class="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">
+                                {% if edu.gpa %}
+                                <span class="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">
                                         GPA: {{ edu.gpa }}./4.0
                                     </span>
+                                {% endif %}
+
+                                {% if edu.grade %}
                                 <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-full">
                                     {{ edu.grade }}
                                     </span>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
                     {% endfor %}
                 </div>
             </div>
+            {% endif %}
+
 
             <!-- Certifications Column -->
+            {% if certifications %}
             <div>
                 <div class="flex items-center mb-8">
                     <div
@@ -118,7 +122,7 @@
                                 {% endif %}
                             </div>
                             <div class="flex-1">
-                                <h4 class="text-xl font-bold text-gray-900 mb-1">{{ cert.name }}
+                                <h4 class="text-xl font-bold text-gray-900 mb-1">{{ cert.title }}
                                 </h4>
                                 <p class="text-gray-500 text-sm">{{ cert.issued_by }}</p>
                             </div>
@@ -137,9 +141,11 @@
                                     </path>
                                 </svg>
                             </a>
+                            {% if cert.exp %}
                             <span class="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">
                                     Valid until {{ cert.exp }}
                                 </span>
+                            {% endif %}
                         </div>
                     </div>
                     {% endfor %}
@@ -159,33 +165,11 @@
                     </a>
                 </div> -->
             </div>
+            {% endif %}
+
+
         </div>
 
-        <!-- Additional Skills Section -->
-        <div
-                class="mt-20 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 lg:p-10 border border-blue-100">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="text-center lg:text-left">
-                    <h4 class="text-xl font-bold text-gray-900 mb-3">Continuous Learning</h4>
-                    <p class="text-gray-600">
-                        Committed to staying updated with the latest technologies through online courses, workshops,
-                        and industry conferences.
-                    </p>
-                </div>
-                <div class="text-center">
-                    <h4 class="text-xl font-bold text-gray-900 mb-3">Professional Development</h4>
-                    <p class="text-gray-600">
-                        Regular participation in developer communities, code reviews, and mentorship programs to
-                        enhance technical expertise.
-                    </p>
-                </div>
-                <div class="text-center lg:text-right">
-                    <h4 class="text-xl font-bold text-gray-900 mb-3">Industry Recognition</h4>
-                    <p class="text-gray-600">
-                        Achievements recognized by leading technology organizations and educational institutions.
-                    </p>
-                </div>
-            </div>
-        </div>
     </div>
 </section>
+{% endif %}

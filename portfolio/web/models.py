@@ -12,9 +12,19 @@ def validate_image_url(value):
         raise ValidationError("URL must point to an image")
 
 
-class Stack(models.Model):
+class TechnologyCategory(models.TextChoices):
+    PROGRAMMING_LANGUAGES = "Programming Languages", "Programming Languages"
+    TECHNOLOGIES_AND_FRAMEWORKS = "Technologies and Frameworks", "Technologies and Frameworks"
+    DATABASES = "Databases", "Databases"
+    CLOUD_PLATFORMS = "Cloud Platforms", "Cloud Platforms"
+    VERSION_CONTROL = "Version Control", "Version Control"
+
+
+class Technology(models.Model):
     name = models.CharField(max_length=20)
+    category = models.CharField(choices=TechnologyCategory.choices,)
     url = models.URLField(max_length=500, validators=[validate_image_url])
+    visible = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -33,8 +43,9 @@ class Education(models.Model):
     description = models.TextField()
     start_year = models.IntegerField(validators=[MinValueValidator(2000)])
     end_year = models.IntegerField(validators=[MinValueValidator(2000)], blank=True, null=True)
-    gpa = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(10.0)])
+    gpa = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(10.0)], blank=True, null=True)
     grade = models.CharField(max_length=30, choices=GradeChoices.choices, default=GradeChoices.FIRST_CLASS_HONORS)
+    visible = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title
@@ -47,6 +58,7 @@ class Certification(models.Model):
     year = models.IntegerField()
     exp = models.IntegerField()
     url = models.URLField(max_length=500)
+    visible = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title
@@ -57,6 +69,7 @@ class ProjectStatus(models.TextChoices):
     IN_PROGRESS = "In Progress", "In Progress"
     PUBLISHED = "Published", "Published"
 
+
 class Project(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
@@ -65,10 +78,10 @@ class Project(models.Model):
     website = models.URLField(max_length=500, blank=True, null=True)
     tech = models.JSONField(default=list)
     status = models.CharField(max_length=20, choices=ProjectStatus.choices, default=ProjectStatus.IN_PROGRESS)
-    visible = models.BooleanField(default=True)
     gradient_from = ColorField(default="#3b82f6")
     gradient_to = ColorField(default="#2563eb")
     icon_class = models.CharField(max_length=50, default="fa-laptop")
+    visible = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title
