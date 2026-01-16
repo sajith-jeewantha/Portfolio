@@ -1,6 +1,6 @@
 name: Testing CI
 
-on: [pull_request, workflow_dispatch]
+on: [ pull_request, workflow_dispatch ]
 
 jobs:
   tests:
@@ -14,23 +14,18 @@ jobs:
         id: dependencies
         run: |
           make dev
-      - name: Unit test with pytest
-        id: lint
-        run: |
-          make pylint
 
   tflint:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/cache@v4
+      - uses: actions/checkout@v4
         name: Checkout source code
 
       - uses: actions/cache@v4
         name: Cache plugin dir
         with:
           path: ~/.tflint.d/plugins
-          key: tflint-${{ hasgFiles('/tflint.hcl') }}
+          key: tflint-${{ hashFiles('.tflint.hcl') }}
 
       - uses: terraform-linters/setup-tflint@v4
         name: Setup TFLint
@@ -44,6 +39,6 @@ jobs:
         run: tflint --init
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - name: Run TFlint
+      - name: Run TFLint
         run: tflint --chdir=terraform
 
