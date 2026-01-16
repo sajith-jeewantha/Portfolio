@@ -11,6 +11,6 @@ resource "google_storage_bucket" "portfolio-bucket" {
 resource "google_storage_bucket_object" "demo-object" {
   bucket     = google_storage_bucket.portfolio-bucket.name
   name       = "portfolio-object"
-  content    = module.app1.url
-  depends_on = [module.app1]
+  content    = module.portfolio.url
+  depends_on = [module.portfolio]
 }
