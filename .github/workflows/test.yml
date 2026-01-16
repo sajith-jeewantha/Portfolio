@@ -1,6 +1,6 @@
 name: Testing CI
 
-on: [pull_request, workflow_dispatch]
+on: [ pull_request, workflow_dispatch ]
 
 jobs:
   tests:
@@ -30,7 +30,7 @@ jobs:
         name: Cache plugin dir
         with:
           path: ~/.tflint.d/plugins
-          key: tflint-${{ hasgFiles('/tflint.hcl') }}
+          key: tflint-${{ hashFiles('/tflint.hcl') }}
 
       - uses: terraform-linters/setup-tflint@v4
         name: Setup TFLint
