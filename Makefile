@@ -5,8 +5,5 @@ dev:
 	pip install -r portfolio/requirements.txt
 	pip install -r requirements-development.txt
 
-pylint:
-	flake8 portfolio/
-
 tflint:
 	tflint terraform/
