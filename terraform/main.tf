@@ -44,8 +44,8 @@ resource "google_artifact_registry_repository" "registry" {
   format        = "DOCKER"
 }
 
-module "app1" {
-  source         = "./modules"
+module "portfolio" {
+  source         = "./modules/portfolio"
   region         = var.region
   google_project = var.google_project
   service_name   = "portfolioservice"
