@@ -14,7 +14,7 @@ jobs:
         id: dependencies
         run: |
           make dev
-      - name: Unit test with pytest
+      - name: Linting
         id: lint
         run: |
           make pylint
