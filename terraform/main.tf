@@ -1,15 +1,15 @@
 terraform {
   required_version = "1.14.3"
   backend "gcs" {
-    bucket = "sj-portfolio-tf-state2"
+    bucket = "sj-portfolio-tf-state"
     prefix = "terraform/state"
   }
+
   required_providers {
     google = {
       source  = "hashicorp/google"
       version = "7.16.0"
     }
-
     docker = {
       source  = "kreuzwerker/docker"
       version = "3.6.2"
@@ -21,7 +21,6 @@ provider "google" {
   project = var.google_project
   region  = var.region
 }
-
 
 data "google_project" "project" {}
 
