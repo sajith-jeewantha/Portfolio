@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      TF_VAR_bucket_tf_state: ${{ secrets.BUCKET_TF_STATE }}
       TF_VAR_region: ${{ secrets.REGION }}
       TF_VAR_google_project: ${{ secrets.GCP_PROJECT_ID }}
 
@@ -34,9 +33,7 @@ jobs:
       - name: Terraform Init
         working-directory: terraform
         run: |
-          cd terraform
-          terraform init \
-            -backend-config="bucket=${{ secrets.BUCKET_TF_STATE }}"
+          terraform init -backend-config="bucket=${{secrets.BUCKET_TF_STATE}}"
 
       # Terraform Validate
       - name: Terraform Validate
