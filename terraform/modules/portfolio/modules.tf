@@ -5,11 +5,6 @@ terraform {
       version = "7.16.0"
     }
 
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = "7.16.0"
-    }
-
     docker = {
       source  = "kreuzwerker/docker"
       version = "3.6.2"
