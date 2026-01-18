@@ -36,8 +36,8 @@ jobs:
       - name: Verify Bucket Access
         run: |
           echo "Checking if Service Account can see the bucket..."
-          # Replace 'your-bucket-name' with your actual bucket name from backend.tf
-          gsutil ls gs://your-bucket-name || (echo "ERROR: Service Account CANNOT see the bucket. Check permissions!" && exit 1)
+          # Replace 'sj-portfolio-tf-state' with your actual bucket name from backend.tf
+          gsutil ls gs://sj-portfolio-tf-state || (echo "ERROR: Service Account CANNOT see the bucket. Check permissions!" && exit 1)
 
       - name: Terraform Init & Apply
         run: |
