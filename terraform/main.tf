@@ -56,3 +56,23 @@ module "portfolio" {
   registry_name  = google_artifact_registry_repository.registry.name
   depends_on     = [google_artifact_registry_repository.registry]
 }
+
+
+resource "google_project_service" "enable_api" {
+  for_each = toset([
+    "logging.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "run.googleapis.com",
+    "iamcredentials.googleapis.com",
+  ])
+
+  service = each.key
+
+  timeouts {
+    create = "30m"
+    update = "40m"
+  }
+
+  disable_on_destroy = false
+  depends_on         = [data.google_client_config.default]
+}
