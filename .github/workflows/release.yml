@@ -1,9 +1,9 @@
 name: Release to Production
 
 on:
-  release:
-    types:
-      - published
+   push:
+     branches:
+       - master
 
 permissions:
   contents: read
@@ -13,10 +13,6 @@ jobs:
   terraform:
     name: terraform
     runs-on: ubuntu-latest
-    # Double-check if you actually need this environment.
-    # If the secret is NOT inside the 'production' environment settings,
-    # remove this line to use Repository Secrets.
-    environment: production
 
     defaults:
       run:
