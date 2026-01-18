@@ -33,8 +33,7 @@ jobs:
       - name: Terraform Init
         working-directory: terraform
         run: |
-          echo "bucket is ${{secrets.BUCKET_TF_STATE}}"
-          terraform init -backend-config="bucket=${{secrets.BUCKET_TF_STATE}}"
+          terraform init 
 
       # Terraform Validate
       - name: Terraform Validate
