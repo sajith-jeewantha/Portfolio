@@ -6,7 +6,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write # Required for secure GCP authentication
+  id-token: write
 
 jobs:
   terraform:
@@ -14,7 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
 
-    # This ensures all 'run' commands happen inside your terraform folder
     defaults:
       run:
         working-directory: ./terraform
@@ -23,25 +22,25 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Decode GCP Service Account Key
-        # We decode the base64 secret into a temporary file on the runner
-        run: echo "${{ secrets.SERVICE_ACCOUNT }}" | base64 -d > ${HOME}/gcp-key.json
-
-      - name: Authenticate to Google Cloud
+      - name: Authenticate to GCP
         uses: 'google-github-actions/auth@v2'
         with:
-          # Point the auth action to the file we just created
+          # This action automatically detects if the secret is base64 or raw JSON
           credentials_json: '${{ secrets.SERVICE_ACCOUNT }}'
-          # Note: The Google Auth action is smart enough to detect
-          # if the string is base64 or raw JSON.
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      # --- DEBUG STEP: THIS WILL TELL US IF THE BUCKET IS ACCESSIBLE ---
+      - name: Verify Bucket Access
+        run: |
+          echo "Checking if Service Account can see the bucket..."
+          # Replace 'your-bucket-name' with your actual bucket name from backend.tf
+          gsutil ls gs://your-bucket-name || (echo "ERROR: Service Account CANNOT see the bucket. Check permissions!" && exit 1)
+
       - name: Terraform Init & Apply
         run: |
-          # 1. Initialize (This connects to your GCS bucket)
-          terraform init
+          terraform init -reconfigure
           terraform validate
           terraform workspace select production || terraform workspace new production
           terraform apply -auto-approve
