@@ -64,6 +64,7 @@ resource "google_project_service" "enable_api" {
     "artifactregistry.googleapis.com",
     "run.googleapis.com",
     "iamcredentials.googleapis.com",
+    "cloudbuild.googleapis.com"
   ])
 
   service = each.key
