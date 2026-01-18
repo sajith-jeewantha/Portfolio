@@ -22,3 +22,6 @@ jobs:
         terraform init -reconfigure
         terraform workspace select production || terraform workspace new production
         terraform apply -auto-approve
+      env:
+        KEY: ${{secrets.SERVICE_ACCOUNT}}
+        GOOGLE_APPLICATION_CREDENTIALS: ~/key.json
