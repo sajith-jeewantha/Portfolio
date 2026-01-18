@@ -5,21 +5,42 @@ on:
      branches:
        - master
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   terraform:
     name: terraform
     runs-on: ubuntu-latest
+    environment: production
+
+    defaults:
+      run:
+        working-directory: ./terraform
+
     steps:
-    - uses: actions/checkout@v4
-    - uses: hashicorp/setup-terraform@v3
-    - name: Terraform
-      id: credentials
-      run: |
-        # Get GCP credentials
-        echo "${KEY}" | base64 -d > ~/key.json
-        export GOOGLE_APPLICATION_CREDENTIALS=~/key.json
-        cd terraform
-        terraform init && terraform validate && terraform apply -auto-approve
-      env:
-        KEY: ${{secrets.SERVICE_ACCOUNT}}
-        GOOGLE_APPLICATION_CREDENTIALS: ~/key.json
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        uses: 'google-github-actions/auth@v2'
+        with:
+          # This action automatically detects if the secret is base64 or raw JSON
+          credentials_json: '${{ secrets.SERVICE_ACCOUNT }}'
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # --- DEBUG STEP: THIS WILL TELL US IF THE BUCKET IS ACCESSIBLE ---
+      - name: Verify Bucket Access
+        run: |
+          echo "Checking if Service Account can see the bucket..."
+          # Replace 'your-bucket-name' with your actual bucket name from backend.tf
+          gsutil ls gs://your-bucket-name || (echo "ERROR: Service Account CANNOT see the bucket. Check permissions!" && exit 1)
+
+      - name: Terraform Init & Apply
+        run: |
+          terraform init -reconfigure
+          terraform validate
+          terraform apply -auto-approve
