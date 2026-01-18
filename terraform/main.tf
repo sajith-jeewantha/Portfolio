@@ -16,7 +16,6 @@ terraform {
 
 terraform {
   backend "gcs" {
-    bucket = var.bucket_tf_state
     prefix = "terraform/state"
   }
 }
