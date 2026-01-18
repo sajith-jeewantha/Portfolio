@@ -6,6 +6,6 @@ variable "region" {
 
 variable "google_project" {
   type        = string
-  default     = "terraform-demo-478113"
+  default     = "sajith-jeewantha"
   description = "Google Cloud Project"
 }
