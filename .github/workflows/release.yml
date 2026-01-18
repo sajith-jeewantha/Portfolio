@@ -9,6 +9,11 @@ jobs:
   terraform:
     name: terraform
     runs-on: ubuntu-latest
+
+    env:
+      TF_VAR_region: ${{ secrets.REGION }}
+      TF_VAR_google_project: ${{ secrets.GCP_PROJECT_ID }}
+
     steps:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
