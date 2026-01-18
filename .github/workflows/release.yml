@@ -20,21 +20,13 @@ jobs:
 
       # Setup Terraform CLI
       - uses: hashicorp/setup-terraform@v3
-
-      # Authenticate with GCP
-      - name: Authenticate with GCP
+      - name: Terraform
         id: credentials
         run: |
           # Get GCP credentials
           echo "${KEY}" | base64 -d > ~/key.json
           export GOOGLE_APPLICATION_CREDENTIALS=~/key.json
-
-      # Terraform Init (with GCS backend)
-      - name: Terraform Init
-        working-directory: terraform
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ~/key.json
-        run: |
+          cd terraform
           terraform init -backend-config="bucket=${{ secrets.BUCKET_TF_STATE }}"
 
       # Terraform Validate

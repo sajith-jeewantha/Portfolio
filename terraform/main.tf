@@ -9,11 +9,6 @@ terraform {
       version = "7.16.0"
     }
 
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = "7.16.0"
-    }
-
     docker = {
       source  = "kreuzwerker/docker"
       version = "3.6.2"
@@ -25,6 +20,7 @@ provider "google" {
   project = var.google_project
   region  = var.region
 }
+
 
 data "google_project" "project" {}
 
