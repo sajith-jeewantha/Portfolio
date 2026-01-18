@@ -23,24 +23,42 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Decode and Setup GCP Credentials
+        # This step decodes the secret and tells the runner where to find it
+        run: |
+          echo "${{ secrets.SERVICE_ACCOUNT }}" | base64 -d > ${HOME}/gcp-key.json
+          
+          # Crucial: This makes the variable available to ALL following steps
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${HOME}/gcp-key.json" >> $GITHUB_ENV
+          
+          # Check if the file is actually a valid JSON (for debugging)
+          if jq empty ${HOME}/gcp-key.json; then
+            echo "Credential file is valid JSON."
+          else
+            echo "ERROR: Decoded secret is NOT a valid JSON. Check your base64 string!"
+            exit 1
+          fi
+
       - name: Authenticate to GCP
         uses: 'google-github-actions/auth@v2'
         with:
-          # This action automatically detects if the secret is base64 or raw JSON
+          # We point the auth action to the file we just created
           credentials_json: '${{ secrets.SERVICE_ACCOUNT }}'
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      # --- DEBUG STEP: THIS WILL TELL US IF THE BUCKET IS ACCESSIBLE ---
-      - name: Verify Bucket Access
+      - name: Verify Identity and Bucket Access
         run: |
-          echo "Checking if Service Account can see the bucket..."
-          # Replace 'sj-portfolio-tf-state' with your actual bucket name from backend.tf
-          gsutil ls gs://sj-portfolio-tf-state || (echo "ERROR: Service Account CANNOT see the bucket. Check permissions!" && exit 1)
+          echo "Current Identity:"
+          gcloud auth list
+          
+          echo "Checking bucket access..."
+          # Replace 'your-bucket-name' with your actual bucket name
+          gsutil ls gs://sj-portfolio-tf-state || (echo "ERROR: Still cannot see bucket!" && exit 1)
 
       - name: Terraform Init & Apply
         run: |
           terraform init -reconfigure
-          terraform validate
+          terraform workspace select production || terraform workspace new production
           terraform apply -auto-approve
