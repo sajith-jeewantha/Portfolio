@@ -1,7 +1,7 @@
 terraform {
   required_version = "1.14.3"
   backend "gcs" {
-    bucket = "sj-portfolio-tf-state"
+    bucket = "sj-portfolio-tf-state2"
     prefix = "terraform/state"
   }
   required_providers {
