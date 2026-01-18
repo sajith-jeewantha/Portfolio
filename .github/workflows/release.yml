@@ -32,8 +32,10 @@ jobs:
       # Terraform Init (with GCS backend)
       - name: Terraform Init
         working-directory: terraform
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ~/key.json
         run: |
-          terraform init -backend-config="bucket=${{secrets.BUCKET_TF_STATE}}"
+          terraform init -backend-config="bucket=${{ secrets.BUCKET_TF_STATE }}"
 
       # Terraform Validate
       - name: Terraform Validate
