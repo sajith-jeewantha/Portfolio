@@ -1,9 +1,9 @@
 name: Release to Production
 
 on:
-  release:
-    types:
-      - published
+   push:
+     branches:
+       - master
 
 jobs:
   terraform:
