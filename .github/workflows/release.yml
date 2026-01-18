@@ -43,5 +43,4 @@ jobs:
         run: |
           terraform init -reconfigure
           terraform validate
-          terraform workspace select production || terraform workspace new production
           terraform apply -auto-approve
