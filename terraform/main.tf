@@ -3,7 +3,6 @@ terraform {
   backend "gcs" {
     bucket = "sj-portfolio-tf-state"
     prefix = "terraform/state"
-    project = "sajith-jeewantha"
   }
 
   required_providers {
