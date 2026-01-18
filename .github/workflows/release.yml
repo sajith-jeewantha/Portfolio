@@ -5,45 +5,20 @@ on:
      branches:
        - master
 
-permissions:
-  contents: read
-  id-token: write
-
 jobs:
   terraform:
     name: terraform
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ./terraform
-
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Check Secret Presence
-        shell: bash
-        run: |
-          if [ -z "${{ secrets.SERVICE_ACCOUNT }}" ]; then
-            echo "::error::SECRET 'SERVICE_ACCOUNT' IS EMPTY! Check your Environment or Repository secrets."
-            exit 1
-          else
-            echo "Secret is found and populated."
-          fi
-
-      - name: Authenticate to GCP
-        uses: 'google-github-actions/auth@v2'
-        with:
-          # This action handles Base64 or Raw JSON automatically
-          credentials_json: '${{ secrets.SERVICE_ACCOUNT }}'
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-
-      - name: Terraform Init
-        run: |
-          # The auth action exports GOOGLE_APPLICATION_CREDENTIALS automatically
-          terraform init -reconfigure
-          terraform workspace select production || terraform workspace new production
-          terraform apply -auto-approve
+    - uses: actions/checkout@v4
+    - uses: hashicorp/setup-terraform@v3
+    - name: Terraform
+      id: credentials
+      run: |
+        # Get GCP credentials
+        echo "${KEY}" | base64 -d > ~/key.json
+        export GOOGLE_APPLICATION_CREDENTIALS=~/key.json
+        cd terraform
+        terraform init -reconfigure
+        terraform workspace select production || terraform workspace new production
+        terraform apply -auto-approve
