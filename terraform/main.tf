@@ -1,6 +1,8 @@
 terraform {
   required_version = ">= 1.0.0" # Ensure that the Terraform version is 1.0.0 or higher
-
+   backend "gcs" {
+    prefix = "terraform/state"
+  }
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -14,20 +16,17 @@ terraform {
   }
 }
 
-terraform {
-  backend "gcs" {
-    prefix = "terraform/state"
-  }
-}
-
 provider "google" {
   project = var.google_project
   region  = var.region
 }
 
-data "google_client_config" "default" {
+data "google_project" "project" {}
 
+data "google_client_config" "default" {
+  depends_on = [data.google_project.project]
 }
+
 
 provider "docker" {
   registry_auth {
