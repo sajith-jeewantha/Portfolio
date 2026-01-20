@@ -19,8 +19,7 @@ jobs:
         echo "${KEY}" | base64 -d > ~/key.json
         export GOOGLE_APPLICATION_CREDENTIALS=~/key.json
         cd terraform
-        terraform init -reconfigure
-        terraform workspace select production || terraform workspace new production
+        terraform init
         terraform apply -auto-approve
       env:
         KEY: ${{secrets.SERVICE_ACCOUNT}}
