@@ -1,4 +1,5 @@
 terraform {
+  required_version = "1.14.3"
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -35,7 +36,7 @@ resource "google_cloud_run_service" "docker_service" {
   template {
     spec {
       containers {
-        image = docker_registry_image.docker_image_portfolio.name
+        image = "${docker_registry_image.docker_image_portfolio.name}:${var.image_version}"
         ports {
           container_port = var.port
         }

@@ -29,3 +29,8 @@ variable "google_project" {
   description = "Project in Google Cloud"
 }
 
+variable "image_version" {
+  type        = string
+  description = "Version of Docker Image"
+}
+

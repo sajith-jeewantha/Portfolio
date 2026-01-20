@@ -9,3 +9,8 @@ variable "google_project" {
   default     = "sajith-jeewantha"
   description = "Google Cloud Project"
 }
+
+variable "image_tag" {
+  type        = string
+  description = "Version of Docker Image"
+}
