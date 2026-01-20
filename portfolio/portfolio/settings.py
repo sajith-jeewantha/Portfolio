@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 
+from django.conf.global_settings import CSRF_TRUSTED_ORIGINS, SECURE_PROXY_SSL_HEADER
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,9 +24,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-eny%p8dins4x3oldz3ps_-@q7t(k%yp&@!!&!=npv#u=28cj(j"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.run.app",
+]
+ALLOWED_HOSTS = [
+    ".run.app"
+]
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
 
 # Application definition
 
