@@ -22,7 +22,7 @@ class TechnologyCategory(models.TextChoices):
 
 class Technology(models.Model):
     name = models.CharField(max_length=20)
-    category = models.CharField(choices=TechnologyCategory.choices,)
+    category = models.CharField(choices=TechnologyCategory.choices, )
     url = models.URLField(max_length=500, validators=[validate_image_url])
     visible = models.BooleanField(default=True)
 
@@ -44,7 +44,7 @@ class Education(models.Model):
     start_year = models.IntegerField(validators=[MinValueValidator(2000)])
     end_year = models.IntegerField(validators=[MinValueValidator(2000)], blank=True, null=True)
     gpa = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(10.0)], blank=True, null=True)
-    grade = models.CharField(max_length=30, choices=GradeChoices.choices, default=GradeChoices.FIRST_CLASS_HONORS)
+    grade = models.CharField(max_length=30, choices=GradeChoices.choices, blank=True, null=True)
     visible = models.BooleanField(default=True)
 
     def __str__(self):
