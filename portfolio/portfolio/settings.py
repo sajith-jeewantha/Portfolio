@@ -27,10 +27,10 @@ SECRET_KEY = "django-insecure-eny%p8dins4x3oldz3ps_-@q7t(k%yp&@!!&!=npv#u=28cj(j
 DEBUG = True
 
 # CSRF_TRUSTED_ORIGINS = [
-#     "https://*.run.app",
+#     "https://portfolioservice-519369439517.asia-south1.run.app",
 # ]
 # ALLOWED_HOSTS = [
-#     ".run.app"
+#     "https://portfolioservice-519369439517.asia-south1.run.app"
 # ]
 # SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # CSRF_COOKIE_SECURE = True
