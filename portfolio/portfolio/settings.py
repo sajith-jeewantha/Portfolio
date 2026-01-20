@@ -24,21 +24,26 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-eny%p8dins4x3oldz3ps_-@q7t(k%yp&@!!&!=npv#u=28cj(j"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://*.run.app",
-]
+# CSRF_TRUSTED_ORIGINS = [
+#     "https://*.run.app",
+# ]
+# ALLOWED_HOSTS = [
+#     ".run.app"
+# ]
+# SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
+# SECURE_SSL_REDIRECT = True
+
 ALLOWED_HOSTS = [
-    ".run.app"
+    "*",
+    "localhost",
+    "127.0.0.1",
 ]
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
 
 # Application definition
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
