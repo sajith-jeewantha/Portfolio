@@ -5,7 +5,6 @@ terraform {
       source  = "hashicorp/google"
       version = "7.16.0"
     }
-
     docker = {
       source  = "kreuzwerker/docker"
       version = "3.6.2"
@@ -36,7 +35,7 @@ resource "google_cloud_run_service" "docker_service" {
   template {
     spec {
       containers {
-        image = "${docker_registry_image.docker_image_portfolio.name}:${var.image_version}"
+        image = docker_registry_image.docker_image_portfolio.name
         ports {
           container_port = var.port
         }
