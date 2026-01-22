@@ -14,14 +14,16 @@ jobs:
       - uses: hashicorp/setup-terraform@v3
       - name: Terraform
         id: credentials
+        working-directory: terraform
+        env:
+          KEY: ${{secrets.SERVICE_ACCOUNT}}
+
         run: |
           # Get GCP credentials
           echo "${KEY}" | base64 -d > ~/key.json
           export GOOGLE_APPLICATION_CREDENTIALS=~/key.json
-          cd terraform
+          
           terraform init
           terraform apply -auto-approve \
             -var="image_tag=${{ github.sha }}"
-        env:
-          KEY: ${{secrets.SERVICE_ACCOUNT}}
-          GOOGLE_APPLICATION_CREDENTIALS: ~/key.json
+
