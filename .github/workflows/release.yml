@@ -19,13 +19,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
-
-      - name: Setup GCP credentials
-        run: |
-          echo "${KEY}" | base64 -d > ~/key.json
-          gcloud auth activate-service-account --key-file=~/key.json
-          gcloud config set project $PROJECT_ID
-
       - name: Terraform
         id: credentials
         working-directory: terraform
