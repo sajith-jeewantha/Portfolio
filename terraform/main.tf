@@ -49,7 +49,7 @@ module "portfolio" {
   service_name   = "portfolioservice"
   image_name     = "docker-portfolio-image"
   image_version  = var.image_tag
-  port           = 8000
+  port           = 8080
   registry_name  = google_artifact_registry_repository.registry.name
   depends_on     = [google_artifact_registry_repository.registry]
 }
