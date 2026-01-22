@@ -20,7 +20,6 @@ variable "image_name" {
 
 variable "port" {
   type        = number
-  default     = 8080
   description = "Port to expose"
 }
 
