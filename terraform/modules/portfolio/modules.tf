@@ -9,10 +9,6 @@ terraform {
       source  = "kreuzwerker/docker"
       version = "3.6.2"
     }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = "6.38.0"
-    }
   }
 }
 
@@ -43,11 +39,6 @@ resource "google_cloud_run_service" "docker_service" {
         ports {
           container_port = var.port
         }
-      }
-    }
-    metadata {
-      annotations = {
-        "run.googleapis.com/cloudsql-instances" = var.instance_connection_name
       }
     }
   }

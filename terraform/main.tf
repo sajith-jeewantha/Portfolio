@@ -14,10 +14,6 @@ terraform {
       source  = "kreuzwerker/docker"
       version = "3.6.2"
     }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = "6.38.0"
-    }
   }
 }
 
@@ -54,7 +50,6 @@ module "portfolio" {
   image_name               = "docker-portfolio-image"
   image_version            = var.image_tag
   port                     = 8080
-  instance_connection_name = var.instance_connection_name
   registry_name            = google_artifact_registry_repository.registry.name
   depends_on               = [google_artifact_registry_repository.registry]
 }
@@ -66,7 +61,7 @@ resource "google_project_service" "enable_api" {
     "artifactregistry.googleapis.com",
     "run.googleapis.com",
     "iamcredentials.googleapis.com",
-    "cloudbuild.googleapis.com"
+    "cloudbuild.googleapis.com",
   ])
 
   service = each.key
