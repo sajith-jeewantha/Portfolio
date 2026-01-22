@@ -113,7 +113,7 @@ DATABASES = {
 #         "ENGINE": "django.db.backends.mysql",
 #         "NAME": "portfolio_db",
 #         "USER": "root",
-#         "PASSWORD": "",
+#         "PASSWORD": "sajith@2002SJ",
 #         "HOST": "host.docker.internal",
 #         "PORT": "3306",
 #         "OPTIONS": {
