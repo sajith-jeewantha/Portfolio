@@ -14,3 +14,7 @@ variable "image_tag" {
   type        = string
   description = "Version of Docker Image"
 }
+
+variable "instance_connection_name" {
+  type = string
+}

@@ -40,8 +40,13 @@ resource "google_cloud_run_service" "docker_service" {
           container_port = var.port
         }
       }
-      timeout_seconds = 300
+    }
+    metadata {
+      annotations = {
+        "run.googleapis.com/cloudsql-instances" = var.instance_connection_name
+      }
     }
   }
   depends_on = [docker_registry_image.docker_image_portfolio]
 }
+

@@ -9,7 +9,7 @@ WORKDIR /app
 # Install system dependencies for mysqlclient and Pillow
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    default-libmysqlclient-dev \
+    default-libmysqlclient-dev gcc \
     pkg-config \
     libssl-dev \
     libffi-dev \
@@ -32,6 +32,6 @@ COPY . .
 #CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]
 
 #Run migrations and start Gunicorn
-CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn portfolio.wsgi:application --bind 0.0.0.0:$PORT --workers 2"]
+#CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn portfolio.wsgi:application --bind 0.0.0.0:$PORT --workers 2"]
 
-#CMD ["gunicorn", "portfolio.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "portfolio.wsgi:application", "--bind", "0.0.0.0:$PORT", "--workers", "2"]
