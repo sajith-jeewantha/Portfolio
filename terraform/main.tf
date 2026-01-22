@@ -14,6 +14,10 @@ terraform {
       source  = "kreuzwerker/docker"
       version = "3.6.2"
     }
+    google-beta = {
+      source  = "hashicorp/google-beta"
+      version = "6.38.0"
+    }
   }
 }
 
@@ -43,16 +47,16 @@ resource "google_artifact_registry_repository" "registry" {
 }
 
 module "portfolio" {
-  source         = "./modules/portfolio"
-  region         = var.region
-  google_project = var.google_project
-  service_name   = "portfolioservice"
-  image_name     = "docker-portfolio-image"
-  image_version  = var.image_tag
-  port           = 8080
+  source                   = "./modules/portfolio"
+  region                   = var.region
+  google_project           = var.google_project
+  service_name             = "portfolioservice"
+  image_name               = "docker-portfolio-image"
+  image_version            = var.image_tag
+  port                     = 8080
   instance_connection_name = var.instance_connection_name
-  registry_name  = google_artifact_registry_repository.registry.name
-  depends_on     = [google_artifact_registry_repository.registry]
+  registry_name            = google_artifact_registry_repository.registry.name
+  depends_on               = [google_artifact_registry_repository.registry]
 }
 
 

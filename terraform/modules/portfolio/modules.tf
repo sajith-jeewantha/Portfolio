@@ -9,6 +9,10 @@ terraform {
       source  = "kreuzwerker/docker"
       version = "3.6.2"
     }
+    google-beta = {
+      source  = "hashicorp/google-beta"
+      version = "6.38.0"
+    }
   }
 }
 
