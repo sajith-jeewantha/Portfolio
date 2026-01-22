@@ -37,6 +37,7 @@ provider "docker" {
 }
 
 resource "google_artifact_registry_repository" "registry" {
+  provider = google
   location      = var.region
   repository_id = "docker-portfolio-repository"
   format        = "DOCKER"
