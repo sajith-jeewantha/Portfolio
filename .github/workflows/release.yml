@@ -9,6 +9,13 @@ jobs:
   terraform:
     name: terraform
     runs-on: ubuntu-latest
+
+    env:
+      PROJECT_ID: ${{ secrets.PROJECT }}       # GCP project ID
+      IMAGE_NAME: ${{ secrets.IMAGE_NAME }}   # Docker image name
+      REGION: asia-south1                      # Cloud Run region
+      CLOUDSQL_INSTANCE: ${{ secrets.INSTANCE_CONNECTION_NAME }}  # Cloud SQL instance
+
     steps:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3

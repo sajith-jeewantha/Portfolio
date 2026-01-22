@@ -34,6 +34,7 @@ resource "google_cloud_run_service" "docker_service" {
 
   template {
     spec {
+      timeout_seconds = 900
       containers {
         image = docker_registry_image.docker_image_portfolio.name
         ports {
