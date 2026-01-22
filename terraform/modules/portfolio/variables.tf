@@ -33,3 +33,19 @@ variable "image_version" {
   description = "Version of Docker Image"
 }
 
+# DB
+variable "db_name" {
+  type = string
+}
+
+variable "db_user" {
+  type = string
+}
+
+variable "db_password" {
+  type = string
+}
+
+variable "instance_connection_name" {
+  type = string
+}
