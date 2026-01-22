@@ -40,30 +40,37 @@ resource "google_cloud_run_service" "docker_service" {
         ports {
           container_port = var.port
         }
-
         env {
           name  = "DB_NAME"
           value = var.db_name
         }
-
         env {
           name  = "DB_USER"
           value = var.db_user
         }
-
         env {
           name  = "DB_PASSWORD"
           value = var.db_password
         }
-
         env {
           name  = "INSTANCE_CONNECTION_NAME"
           value = var.instance_connection_name
         }
-
         env {
           name  = "DB_PORT"
           value = "3306"
+        }
+        env {
+          name  = "DJANGO_SECRET_KEY"
+          value = var.secret_key
+        }
+        env {
+          name  = "ALLOWED_HOSTS"
+          value = "*.asia-south1.run.app"
+        }
+        env {
+          name  = "CSRF_TRUSTED_ORIGINS"
+          value = "https://*.asia-south1.run.app"
         }
       }
     }
