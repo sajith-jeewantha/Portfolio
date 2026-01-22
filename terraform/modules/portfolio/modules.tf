@@ -74,7 +74,6 @@ resource "google_cloud_run_service" "docker_service" {
         }
       }
     }
-    revision_retention_limit = 3
     metadata {
       annotations = {
         "run.googleapis.com/cloudsql-instances" = var.instance_connection_name
