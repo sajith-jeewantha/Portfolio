@@ -40,6 +40,7 @@ resource "google_cloud_run_service" "docker_service" {
           container_port = var.port
         }
       }
+      timeout_seconds = 300
     }
   }
   depends_on = [docker_registry_image.docker_image_portfolio]
