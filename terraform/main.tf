@@ -54,6 +54,7 @@ module "portfolio" {
   db_user                  = var.db_user
   db_password              = var.db_password
   instance_connection_name = var.instance_connection_name
+  secret_key               = var.secret_key
   registry_name            = google_artifact_registry_repository.registry.name
   depends_on               = [google_artifact_registry_repository.registry]
 }

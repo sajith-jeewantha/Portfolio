@@ -23,25 +23,25 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-eny%p8dins4x3oldz3ps_-@q7t(k%yp&@!!&!=npv#u=28cj(j"
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "unsafe-secret")
+if not SECRET_KEY:
+    raise ValueError("No DJANGO_SECRET_KEY set in environment variables!")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://portfolioservice-519369439517.asia-south1.run.app",
-]
-ALLOWED_HOSTS = [
-    "*.run.app",
-    "https://portfolioservice-519369439517.asia-south1.run.app",
-]
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "https://*.asia-south1.run.app").split(", ")
+
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*.asia-south1.run.app").split(", ")
+
+USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 SECURE_SSL_REDIRECT = True
 
-SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_SECONDS = 31536000 # 1 year
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
@@ -117,6 +117,7 @@ DATABASES = {
 #         "USER": "root",
 #         "PASSWORD": "sajith@2002SJ",
 #         "HOST": "host.docker.internal",
+#         # "HOST": "127.0.0.1",
 #         "PORT": "3306",
 #         "OPTIONS": {
 #             "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
@@ -158,6 +159,30 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
+# STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+# MEDIA_URL = "/media/"
+# MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# LOGGING = {
+#     "version": 1,
+#     "disable_existing_loggers": False,
+#     "formatters": {
+#         "json": {
+#             "format": '{"time": "%(asctime)s", "level": "%(levelname)s", "name": "%(name)s", "message": "%(message)s"}'
+#         }
+#     },
+#     "handlers": {
+#         "console": {
+#             "class": "logging.StreamHandler",
+#             "formatter": "json",
+#         }
+#     },
+#     "root": {
+#         "handlers": ["console"],
+#         "level": "INFO",
+#     },
+# }

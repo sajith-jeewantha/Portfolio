@@ -50,3 +50,8 @@ variable "db_password" {
 variable "instance_connection_name" {
   type = string
 }
+
+variable "secret_key" {
+  type      = string
+  sensitive = true
+}
