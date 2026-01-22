@@ -22,8 +22,10 @@ jobs:
       - name: Terraform
         id: credentials
         working-directory: terraform
-
         run: |
+          # Get GCP credentials
+          echo "${KEY}" | base64 -d > ~/key.json
+          export GOOGLE_APPLICATION_CREDENTIALS=~/key.json
           terraform init
           terraform apply -auto-approve \
             -var="image_tag=${{ github.sha }}"
@@ -54,4 +56,3 @@ jobs:
 
         env:
           KEY: ${{secrets.SERVICE_ACCOUNT}}
-          GOOGLE_APPLICATION_CREDENTIALS: ~/key.json
