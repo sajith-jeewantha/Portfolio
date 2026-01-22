@@ -22,7 +22,7 @@ class TechnologyCategory(models.TextChoices):
 
 class Technology(models.Model):
     name = models.CharField(max_length=20)
-    category = models.CharField(choices=TechnologyCategory.choices, )
+    category = models.CharField(max_length=45, choices=TechnologyCategory.choices, )
     url = models.URLField(max_length=500, validators=[validate_image_url])
     visible = models.BooleanField(default=True)
 

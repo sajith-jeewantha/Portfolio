@@ -30,7 +30,7 @@ icons = {
     ],
     "databases": [
         {"name": "MongoDB", "src": "Mongodb-Logo.png"},
-        {"name": "MySQL", "src": "MYSQL-Logo.png"},
+        {"name": "MySQL", "src": "MySQL-Logo.png"},
         {"name": "SQLite", "src": "SQLite-Logo.png"},
     ],
     "css_frameworks": [
