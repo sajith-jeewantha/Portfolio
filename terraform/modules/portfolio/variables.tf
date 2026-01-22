@@ -33,3 +33,7 @@ variable "image_version" {
   description = "Version of Docker Image"
 }
 
+variable "instance_connection_name" {
+  type = string
+}
+

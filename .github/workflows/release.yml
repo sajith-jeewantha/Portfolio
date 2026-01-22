@@ -9,21 +9,54 @@ jobs:
   terraform:
     name: terraform
     runs-on: ubuntu-latest
+
+    env:
+      PROJECT_ID: ${{ secrets.PROJECT }}       # GCP project ID
+      IMAGE_NAME: ${{ secrets.IMAGE_NAME }}   # Docker image name
+      REGION: asia-south1                      # Cloud Run region
+      CLOUDSQL_INSTANCE: ${{ secrets.INSTANCE_CONNECTION_NAME }}  # Cloud SQL instance
+
     steps:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
+
+      - name: Setup GCP credentials
+        run: |
+          echo "${{ secrets.SERVICE_ACCOUNT }}" | base64 -d > ~/gcp-key.json
+          gcloud auth activate-service-account --key-file=~/gcp-key.json
+          gcloud config set project $PROJECT_ID
+
       - name: Terraform
         id: credentials
         working-directory: terraform
         env:
-          KEY: ${{secrets.SERVICE_ACCOUNT}}
+          GOOGLE_APPLICATION_CREDENTIALS: ~/gcp-key.json
 
         run: |
-          # Get GCP credentials
-          echo "${KEY}" | base64 -d > ~/key.json
-          export GOOGLE_APPLICATION_CREDENTIALS=~/key.json
-          
           terraform init
           terraform apply -auto-approve \
             -var="image_tag=${{ github.sha }}"
+            -var="instance_connection_name=$CLOUDSQL_INSTANCE"
 
+      - name: Run Django migrations
+        run: |
+          # Update the job image to latest commit
+          gcloud run jobs update django-migrate \
+            --image gcr.io/$PROJECT_ID/$IMAGE_NAME:${{ github.sha }} \
+            --add-cloudsql-instances $CLOUDSQL_INSTANCE \
+            --region $REGION || true
+            
+          # Execute migrations
+          gcloud run jobs execute django-migrate \
+            --region $REGION \
+            --wait
+
+      - name: Run collectstatic
+        run: |
+          gcloud run jobs update django-collectstatic \
+            --image gcr.io/$PROJECT_ID/$IMAGE_NAME:${{ github.sha }} \
+            --region $REGION || true
+          
+          gcloud run jobs execute django-collectstatic \
+            --region $REGION \
+            --wait

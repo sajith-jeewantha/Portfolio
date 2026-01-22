@@ -50,6 +50,7 @@ module "portfolio" {
   image_name     = "docker-portfolio-image"
   image_version  = var.image_tag
   port           = 8080
+  instance_connection_name = var.instance_connection_name
   registry_name  = google_artifact_registry_repository.registry.name
   depends_on     = [google_artifact_registry_repository.registry]
 }
