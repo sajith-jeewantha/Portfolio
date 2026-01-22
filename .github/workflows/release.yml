@@ -22,15 +22,13 @@ jobs:
 
       - name: Setup GCP credentials
         run: |
-          echo "${{ secrets.SERVICE_ACCOUNT }}" | base64 -d > ~/gcp-key.json
-          gcloud auth activate-service-account --key-file=~/gcp-key.json
+          echo "${KEY}" | base64 -d > ~/key.json
+          gcloud auth activate-service-account --key-file=~/key.json
           gcloud config set project $PROJECT_ID
 
       - name: Terraform
         id: credentials
         working-directory: terraform
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ~/gcp-key.json
 
         run: |
           terraform init
@@ -60,3 +58,7 @@ jobs:
           gcloud run jobs execute django-collectstatic \
             --region $REGION \
             --wait
+
+        env:
+          KEY: ${{secrets.SERVICE_ACCOUNT}}
+          GOOGLE_APPLICATION_CREDENTIALS: ~/key.json
