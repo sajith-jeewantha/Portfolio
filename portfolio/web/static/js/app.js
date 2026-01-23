@@ -499,3 +499,95 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }, 500);
 });
+
+
+//  Show "Coming Soon" modal dialog
+function showComingSoon() {
+  // Create overlay
+  const overlay = document.createElement("div");
+  overlay.className = `
+    fixed inset-0 z-50
+    flex items-center justify-center
+    bg-black/50 backdrop-blur-sm
+    transition-opacity duration-300 ease-out
+    opacity-0
+  `;
+
+  // Create the main modal
+  const modal = document.createElement("div");
+  modal.className = `
+    relative
+    bg-white
+    rounded-xl shadow-xl
+    border border-gray-200
+    w-full max-w-sm mx-4
+    transform transition-all duration-300 ease-out
+    scale-95 opacity-0
+  `;
+
+  // Create content
+  modal.innerHTML = `
+    <div class="p-6 text-center">
+      <!-- Icon -->
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-50 to-purple-50 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      </div>
+
+      <!-- Title -->
+      <h3 class="text-xl font-bold text-gray-900 mb-2">Coming Soon</h3>
+
+      <!-- Message -->
+      <p class="text-gray-600 mb-6 text-sm">
+        This feature is currently in development and will be available soon.
+      </p>
+
+      <!-- Button -->
+      <button id="closeSoonBtn" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200">
+        Understood
+      </button>
+
+      <!-- Footer -->
+      <p class="text-xs text-gray-400 mt-4 pt-4 border-t border-gray-100">
+        Thank you for your patience!
+      </p>
+    </div>
+  `;
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+  document.body.style.overflow = "hidden";
+
+  // Trigger animations
+  setTimeout(() => {
+    overlay.style.opacity = "1";
+    modal.style.opacity = "1";
+    modal.style.transform = "scale(1)";
+  }, 10);
+
+  // Close functionality
+  const closeBtn = modal.querySelector('#closeSoonBtn');
+  const closeModal = () => {
+    overlay.style.opacity = "0";
+    modal.style.opacity = "0";
+    modal.style.transform = "scale(0.95)";
+
+    setTimeout(() => {
+      overlay.remove();
+      document.body.style.overflow = "";
+    }, 300);
+  };
+
+  closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeModal();
+  });
+
+  // Auto close
+  setTimeout(closeModal, 4000);
+}
+
+// Optional: Add to window object for easy access
+window.showComingSoon = showComingSoonFeature;

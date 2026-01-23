@@ -70,18 +70,35 @@ class ProjectStatus(models.TextChoices):
     PUBLISHED = "Published", "Published"
 
 
+class Category(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    icon = models.CharField(max_length=50)
+    visible = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
 class Project(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     year = models.IntegerField(validators=[MinValueValidator(2000)])
     github = models.URLField(max_length=500, blank=True, null=True)
     website = models.URLField(max_length=500, blank=True, null=True)
-    tech = models.JSONField(default=list)
     status = models.CharField(max_length=20, choices=ProjectStatus.choices, default=ProjectStatus.IN_PROGRESS)
     gradient_from = ColorField(default="#3b82f6")
     gradient_to = ColorField(default="#2563eb")
     icon_class = models.CharField(max_length=50, default="fa-laptop")
     visible = models.BooleanField(default=True)
+    categories = models.ManyToManyField(Category, blank=True)
+    tag = models.ManyToManyField(Tag, blank=True)
 
     def __str__(self):
         return self.title

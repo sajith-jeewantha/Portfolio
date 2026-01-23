@@ -31,8 +31,9 @@ if not SECRET_KEY:
 DEBUG = False
 
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "https://*.asia-south1.run.app").split(", ")
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "portfolioservice-519369439517.asia-south1.run.app").split(", ")
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*.asia-south1.run.app").split(", ")
+# ALLOWED_HOSTS = ["*","localhost","127.0.0.1"]
 
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
