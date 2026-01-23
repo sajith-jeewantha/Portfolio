@@ -30,8 +30,8 @@ if not SECRET_KEY:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "https://*.asia-south1.run.app").split(", ")
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "portfolioservice-519369439517.asia-south1.run.app").split(", ")
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS").split(", ")
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(", ")
 
 # ALLOWED_HOSTS = ["*","localhost","127.0.0.1"]
 
