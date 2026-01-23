@@ -66,11 +66,11 @@ resource "google_cloud_run_service" "docker_service" {
         }
         env {
           name  = "ALLOWED_HOSTS"
-          value = "*.asia-south1.run.app"
+          value = "portfolioservice-519369439517.asia-south1.run.app"
         }
         env {
           name  = "CSRF_TRUSTED_ORIGINS"
-          value = "https://*.asia-south1.run.app"
+          value = "https://portfolioservice-519369439517.asia-south1.run.app"
         }
       }
     }
