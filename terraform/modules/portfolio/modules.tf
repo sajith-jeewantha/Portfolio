@@ -58,7 +58,7 @@ resource "google_cloud_run_service" "docker_service" {
         }
         env {
           name  = "DB_PORT"
-          value = "3306"
+          value = "6543"
         }
         env {
           name  = "DJANGO_SECRET_KEY"
