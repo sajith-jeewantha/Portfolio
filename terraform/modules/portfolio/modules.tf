@@ -53,8 +53,8 @@ resource "google_cloud_run_service" "docker_service" {
           value = var.db_password
         }
         env {
-          name  = "INSTANCE_CONNECTION_NAME"
-          value = var.instance_connection_name
+          name  = "DB_HOST"
+          value = var.db_host
         }
         env {
           name  = "DB_PORT"
@@ -72,11 +72,6 @@ resource "google_cloud_run_service" "docker_service" {
           name  = "CSRF_TRUSTED_ORIGINS"
           value = "https://portfolioservice-519369439517.asia-south1.run.app"
         }
-      }
-    }
-    metadata {
-      annotations = {
-        "run.googleapis.com/cloudsql-instances" = var.instance_connection_name
       }
     }
   }
