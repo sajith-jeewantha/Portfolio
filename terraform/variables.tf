@@ -16,7 +16,6 @@ variable "image_tag" {
 }
 
 # DB
-
 variable "db_name" {
   type = string
 }
@@ -30,10 +29,11 @@ variable "db_password" {
   sensitive = true
 }
 
-variable "instance_connection_name" {
+variable "db_host" {
   type = string
 }
 
+# SECRET KEY
 variable "secret_key" {
   type      = string
   sensitive = true

@@ -26,12 +26,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Cloud Run port
-#ENV PORT=8080
-
-#CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]
-
 #Run migrations and start Gunicorn
 CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn portfolio.wsgi:application --bind 0.0.0.0:$PORT --workers 2"]
-
-#CMD ["gunicorn", "portfolio.wsgi:application", "--bind", "0.0.0.0:$PORT", "--workers", "2"]

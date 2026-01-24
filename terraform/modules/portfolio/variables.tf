@@ -47,7 +47,7 @@ variable "db_password" {
   sensitive = true
 }
 
-variable "instance_connection_name" {
+variable "db_host" {
   type = string
 }
 

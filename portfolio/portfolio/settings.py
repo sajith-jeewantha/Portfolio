@@ -33,7 +33,7 @@ DEBUG = False
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS").split(", ")
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(", ")
 
-# ALLOWED_HOSTS = ["*","localhost","127.0.0.1"]
+# ALLOWED_HOSTS = ["*", "localhost", "127.0.0.1"]
 
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -96,36 +96,33 @@ WSGI_APPLICATION = "portfolio.wsgi.application"
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.mysql",
+        "ENGINE": "django.db.backends.postgresql",
         "NAME": os.environ.get("DB_NAME"),
         "USER": os.environ.get("DB_USER"),
         "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": f"/cloudsql/{os.environ.get('INSTANCE_CONNECTION_NAME')}",
-        "PORT": os.environ.get("DB_PORT", "3306"),
-        "CONN_MAX_AGE": 60,
+        "HOST": os.environ.get("DB_HOST"),
+        "PORT": os.environ.get("DB_PORT", "6543"),
+        "POOL_MODE": "transaction",
         "OPTIONS": {
-            "unix_socket": f"/cloudsql/{os.environ.get('INSTANCE_CONNECTION_NAME')}",
-            "charset": "utf8mb4",
-            "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+            "sslmode": "require"
+        }
     }
 }
 
 # DATABASES = {
 #     "default": {
-#         "ENGINE": "django.db.backends.mysql",
-#         "NAME": "portfolio_db",
-#         "USER": "root",
-#         "PASSWORD": "sajith@2002SJ",
-#         "HOST": "host.docker.internal",
-#         # "HOST": "127.0.0.1",
-#         "PORT": "3306",
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": "",
+#         "USER": "",
+#         "PASSWORD": "",
+#         "HOST": "",
+#         "PORT": "6543",
+#         "POOL_MODE": "transaction",
 #         "OPTIONS": {
-#             "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
-#         },
+#             "sslmode": "require"
+#         }
 #     }
 # }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
