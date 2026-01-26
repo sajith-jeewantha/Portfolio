@@ -30,8 +30,8 @@ if not SECRET_KEY:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS")
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS")
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(", ")
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(", ")
 
 # ALLOWED_HOSTS = ["*", "localhost", "127.0.0.1"]
 
@@ -142,6 +142,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
+# STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # MEDIA_URL = "/media/"

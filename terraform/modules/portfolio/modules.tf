@@ -70,11 +70,11 @@ resource "google_cloud_run_service" "docker_service" {
         }
         env {
           name  = "ALLOWED_HOSTS"
-          value = var.allowed_hosts
+          value = join(",", var.allowed_hosts)
         }
         env {
           name  = "CSRF_TRUSTED_ORIGINS"
-          value = var.csrf_trusted_origins
+          value = join(",", var.csrf_trusted_origins)
         }
       }
     }
