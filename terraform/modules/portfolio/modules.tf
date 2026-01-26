@@ -70,28 +70,15 @@ resource "google_cloud_run_service" "docker_service" {
         }
         env {
           name  = "ALLOWED_HOSTS"
-          value = "sajithjeewantha.com"
+          value = var.allowed_hosts
         }
         env {
           name  = "CSRF_TRUSTED_ORIGINS"
-          value = "https://www.sajithjeewantha.com"
+          value = var.csrf_trusted_origins
         }
       }
     }
   }
   depends_on = [docker_registry_image.docker_image_portfolio]
 }
-
-# resource "google_cloud_run_domain_mapping" "domain_mapping" {
-#   name     = "sajithjeewantha.com"
-#   location = google_cloud_run_service.docker_service.location
-#
-#   metadata {
-#     namespace = var.google_project
-#   }
-#
-#   spec {
-#     route_name = google_cloud_run_service.docker_service.name
-#   }
-# }
 
