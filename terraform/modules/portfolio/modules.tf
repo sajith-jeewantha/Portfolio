@@ -32,6 +32,10 @@ resource "google_cloud_run_service" "docker_service" {
   name     = var.service_name
   location = var.region
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   template {
     spec {
       timeout_seconds = 900
