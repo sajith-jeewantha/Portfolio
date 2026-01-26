@@ -78,7 +78,7 @@ ROOT_URLCONF = "portfolio.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": ["web/templates"],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -112,10 +112,10 @@ DATABASES = {
 # DATABASES = {
 #     "default": {
 #         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "",
-#         "USER": "",
-#         "PASSWORD": "",
-#         "HOST": "",
+#         "NAME": "postgres",
+#         "USER": "postgres.tcnoqepowzaidbdagpey",
+#         "PASSWORD": "fa31PGf8qcNOBYCg",
+#         "HOST": "aws-1-ap-southeast-1.pooler.supabase.com",
 #         "PORT": "6543",
 #         "POOL_MODE": "transaction",
 #         "OPTIONS": {

@@ -66,11 +66,11 @@ resource "google_cloud_run_service" "docker_service" {
         }
         env {
           name  = "ALLOWED_HOSTS"
-          value = "portfolioservice-519369439517.asia-south1.run.app"
+          value = "sajithjeewantha.com,*,portfolioservice-519369439517.asia-southeast1.run.app"
         }
         env {
           name  = "CSRF_TRUSTED_ORIGINS"
-          value = "https://portfolioservice-519369439517.asia-south1.run.app"
+          value = "https://www.sajithjeewantha.com,https://portfolioservice-519369439517.asia-southeast1.run.app"
         }
       }
     }

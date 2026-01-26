@@ -8,6 +8,7 @@ admin.site.index_title = "Dashboard"
 admin.site.site_url = "/"
 
 
+
 # Register your models here.
 
 @admin.register(Project)

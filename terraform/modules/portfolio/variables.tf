@@ -1,6 +1,6 @@
 variable "region" {
   type        = string
-  description = "Google asia-south1"
+  description = "Google asia-southeast1"
 }
 
 variable "registry_name" {
