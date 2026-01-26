@@ -30,8 +30,11 @@ if not SECRET_KEY:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(", ")
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(", ")
+# CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(", ")
+# ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(", ")
+
+CSRF_TRUSTED_ORIGINS = ["https://sajithjeewantha.com", "https://www.sajithjeewantha.com"]
+ALLOWED_HOSTS = ["sajithjeewantha.com", "www.sajithjeewantha.com"]
 
 # ALLOWED_HOSTS = ["*", "localhost", "127.0.0.1"]
 
@@ -42,7 +45,7 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 SECURE_SSL_REDIRECT = True
 
-SECURE_HSTS_SECONDS = 31536000 # 1 year
+SECURE_HSTS_SECONDS = 31536000  # 1 year
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
