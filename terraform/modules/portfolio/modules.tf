@@ -82,16 +82,16 @@ resource "google_cloud_run_service" "docker_service" {
   depends_on = [docker_registry_image.docker_image_portfolio]
 }
 
-resource "google_cloud_run_domain_mapping" "domain_mapping" {
-  name     = "sajithjeewantha.com"
-  location = google_cloud_run_service.docker_service.location
-
-  metadata {
-    namespace = var.google_project
-  }
-
-  spec {
-    route_name = google_cloud_run_service.docker_service.name
-  }
-}
+# resource "google_cloud_run_domain_mapping" "domain_mapping" {
+#   name     = "sajithjeewantha.com"
+#   location = google_cloud_run_service.docker_service.location
+#
+#   metadata {
+#     namespace = var.google_project
+#   }
+#
+#   spec {
+#     route_name = google_cloud_run_service.docker_service.name
+#   }
+# }
 
