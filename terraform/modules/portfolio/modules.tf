@@ -68,14 +68,14 @@ resource "google_cloud_run_service" "docker_service" {
           name  = "DJANGO_SECRET_KEY"
           value = var.secret_key
         }
-        env {
-          name  = "ALLOWED_HOSTS"
-          value = join(",", var.allowed_hosts)
-        }
-        env {
-          name  = "CSRF_TRUSTED_ORIGINS"
-          value = join(",", var.csrf_trusted_origins)
-        }
+        # env {
+        #   name  = "ALLOWED_HOSTS"
+        #   value = join(",", var.allowed_hosts)
+        # }
+        # env {
+        #   name  = "CSRF_TRUSTED_ORIGINS"
+        #   value = join(",", var.csrf_trusted_origins)
+        # }
       }
     }
   }
