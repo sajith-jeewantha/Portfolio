@@ -1,6 +1,6 @@
 variable "region" {
   type        = string
-  default     = "asia-south1"
+  default     = "asia-southeast1"
   description = "Set Region"
 }
 
