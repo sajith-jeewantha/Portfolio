@@ -55,11 +55,3 @@ variable "secret_key" {
   type      = string
   sensitive = true
 }
-
-variable "allowed_hosts" {
-  type = list(string)
-}
-
-variable "csrf_trusted_origins" {
-  type = list(string)
-}
