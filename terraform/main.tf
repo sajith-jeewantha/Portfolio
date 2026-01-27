@@ -56,8 +56,6 @@ module "portfolio" {
   db_password          = var.db_password
   db_host              = var.db_host
   secret_key           = var.secret_key
-  allowed_hosts        = var.allowed_hosts
-  csrf_trusted_origins = var.csrf_trusted_origins
   registry_name        = google_artifact_registry_repository.registry.name
   depends_on           = [google_artifact_registry_repository.registry]
 }
