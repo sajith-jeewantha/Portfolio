@@ -4,7 +4,8 @@
 <section class="py-20 bg-gray-50">
     <!-- Header Section -->
     <header class="text-center mb-16">
-        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Technology <span class="gradient-text text-4xl md:text-5xl font-bold">Stack</span></h1>
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Technology <span
+                class="gradient-text text-4xl md:text-5xl font-bold">Stack</span></h1>
         <p class="text-lg text-gray-600 max-w-3xl mx-auto">A comprehensive overview of programming languages,
             frameworks, tools, and technologies I work with</p>
     </header>
@@ -30,17 +31,15 @@
             <div
                     class="w-full lg:w-4/5 bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg shadow-primary-200/30 border border-gray-100">
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8">
-                    {% for icon in icons.programming_languages %}
+                    {% for tech in technology.programming_languages %}
                     <div
                             class="group flex flex-col items-center p-5 rounded-xl hover:bg-primary-50/50 transition-all duration-300 hover:shadow-md">
                         <div
                                 class="p-4 bg-white rounded-full shadow-sm mb-4 group-hover:shadow-md transition-shadow duration-300">
-                            {% with 'icon/'|add:icon.src as icon_path %}
-                            <img src="{% static icon_path %}" alt="{{ icon.name }}"
+                            <img src="{{ tech.url }}" alt="{{ tech.name }}"
                                  class="h-16 w-16 object-contain transition-transform duration-300 group-hover:scale-110"/>
-                            {% endwith %}
                         </div>
-                        <span class="text-sm font-medium text-gray-700 mt-2">{{ icon.name }}</span>
+                        <span class="text-sm font-medium text-gray-700 mt-2">{{ tech.name }}</span>
                     </div>
                     {% endfor %}
                 </div>
@@ -70,17 +69,15 @@
                     class="w-full lg:w-4/5 bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg shadow-secondary-200/30 border border-gray-100">
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
 
-                    {% for icon in icons.technologies_frameworks %}
+                    {% for tech in technology.technologies_and_frameworks %}
                     <div
                             class="group flex flex-col items-center p-4 rounded-xl hover:bg-secondary-50/50 transition-all duration-300 hover:shadow-md">
                         <div
                                 class="p-3 bg-white rounded-lg shadow-sm mb-3 group-hover:shadow-md transition-shadow duration-300">
-                            {% with 'icon/'|add:icon.src as icon_path %}
-                            <img src="{% static icon_path %}" alt="{{ icon.name }}"
+                            <img src="{{ tech.url }}" alt="{{ tech.name }}"
                                  class="h-14 w-14 object-contain transition-transform duration-300 group-hover:scale-110"/>
-                            {% endwith %}
                         </div>
-                        <span class="text-xs font-medium text-gray-700 text-center">{{ icon.name }}</span>
+                        <span class="text-xs font-medium text-gray-700 text-center">{{ tech.name }}</span>
                     </div>
                     {% endfor %}
                 </div>
@@ -109,17 +106,15 @@
             <div
                     class="w-full lg:w-3/5 bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg shadow-green-200/30 border border-gray-100">
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-8">
-                    {% for icon in icons.databases %}
+                    {% for tech in technology.databases %}
                     <div
                             class="group flex flex-col items-center p-5 rounded-xl hover:bg-green-50/50 transition-all duration-300 hover:shadow-md">
                         <div
                                 class="p-4 bg-white rounded-full shadow-sm mb-4 group-hover:shadow-md transition-shadow duration-300">
-                            {% with 'icon/'|add:icon.src as icon_path %}
-                            <img src="{% static icon_path %}" alt="{{ icon.name }}"
+                             <img src="{{ tech.url }}" alt="{{ tech.name }}"
                                  class="h-16 w-16 object-contain transition-transform duration-300 group-hover:scale-110"/>
-                            {% endwith %}
                         </div>
-                        <span class="text-sm font-medium text-gray-700 mt-2">{{ icon.name }}</span>
+                        <span class="text-sm font-medium text-gray-700 mt-2">{{ tech.name }}</span>
                     </div>
                     {% endfor %}
                 </div>
@@ -151,17 +146,15 @@
                     class="w-full lg:w-4/5 bg-white/90 backdrop-blur-sm rounded-2xl p-8 lg:p-10 shadow-xl shadow-cyan-100/30 border border-gray-100 hover:shadow-cyan-100/50 transition-shadow duration-300">
                 <div id="cloud_platforms" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 lg:gap-8">
 
-                    {% for icon in icons.cloud_platforms %}
+                    {% for tech in technology.cloud_platforms %}
                     <div
                             class="group flex flex-col items-center p-6 rounded-2xl hover:bg-gradient-to-br hover:from-cyan-50 hover:to-blue-50 transition-all duration-300 hover:shadow-md border border-transparent hover:border-cyan-100">
                         <div
                                 class="p-4 bg-white rounded-xl shadow-sm mb-4 group-hover:shadow-md group-hover:scale-105 transition-all duration-300">
-                            {% with 'icon/'|add:icon.src as icon_path %}
-                            <img src="{% static icon_path %}" alt="{{ icon.name }}"
+                            <img src="{{ tech.url }}" alt="{{ tech.name }}"
                                  class="h-16 w-16 object-contain transition-transform duration-300 group-hover:scale-110"/>
-                            {% endwith %}
                         </div>
-                        <span class="text-sm font-semibold text-gray-800 group-hover:text-cyan-700">{{ icon.name }}</span>
+                        <span class="text-sm font-semibold text-gray-800 group-hover:text-cyan-700">{{ tech.name }}</span>
                         <!-- <span class="text-xs text-gray-500 mt-1">Cloud Services</span> -->
                     </div>
                     {% endfor %}
@@ -192,17 +185,15 @@
             <div
                     class="w-full lg:w-3/5 bg-white/90 backdrop-blur-sm rounded-2xl p-8 lg:p-10 shadow-xl shadow-purple-100/30 border border-gray-100 hover:shadow-purple-100/50 transition-shadow duration-300">
                 <div id="version_control" class="grid grid-cols-2 md:grid-cols-3 gap-6 lg:gap-8">
-                    {% for icon in icons.version_control %}
+                    {% for tech in technology.version_control %}
                     <div
                             class="group flex flex-col items-center p-6 rounded-2xl hover:bg-gradient-to-br hover:from-purple-50 hover:to-indigo-50 transition-all duration-300 hover:shadow-md border border-transparent hover:border-purple-100">
                         <div
                                 class="p-4 bg-white rounded-xl shadow-sm mb-4 group-hover:shadow-md group-hover:scale-105 transition-all duration-300">
-                            {% with 'icon/'|add:icon.src as icon_path %}
-                            <img src="{% static icon_path %}" alt="{{ icon.name }}"
+                            <img src="{{ tech.url }}" alt="{{ tech.name }}"
                                  class="h-16 w-16 object-contain transition-transform duration-300 group-hover:scale-110"/>
-                            {% endwith %}
                         </div>
-                        <span class="text-sm font-semibold text-gray-800 group-hover:text-purple-700">{{ icon.name }}</span>
+                        <span class="text-sm font-semibold text-gray-800 group-hover:text-purple-700">{{ tech.name }}</span>
                         <!-- <span class="text-xs text-gray-500 mt-1">Version Control</span>-->
                     </div>
                     {% endfor %}
@@ -232,17 +223,15 @@
             <div
                     class="w-full lg:w-2/5 bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg shadow-purple-200/30 border border-gray-100">
                 <div class="grid grid-cols-2 gap-8">
-                    {% for icon in icons.css_frameworks %}
+                    {% for tech in technology.css_frameworks %}
                     <div
                             class="group flex flex-col items-center p-5 rounded-xl hover:bg-purple-50/50 transition-all duration-300 hover:shadow-md">
                         <div
                                 class="p-4 bg-white rounded-full shadow-sm mb-4 group-hover:shadow-md transition-shadow duration-300">
-                            {% with 'icon/'|add:icon.src as icon_path %}
-                            <img src="{% static icon_path %}" alt="{{ icon.name }}"
+                             <img src="{{ tech.url }}" alt="{{ tech.name }}"
                                  class="h-16 w-16 object-contain transition-transform duration-300 group-hover:scale-110"/>
-                            {% endwith %}
                         </div>
-                        <span class="text-sm font-medium text-gray-700 mt-2">{{ icon.name }}</span>
+                        <span class="text-sm font-medium text-gray-700 mt-2">{{ tech.name }}</span>
                     </div>
                     {% endfor %}
                 </div>

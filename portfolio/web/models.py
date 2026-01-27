@@ -2,29 +2,35 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.timezone import now
+from urllib.parse import urlparse
 from colorfield.fields import ColorField
 
 
 # Create your models here.
 
 def validate_image_url(value):
-    if not value.lower().endswith((".png", ".jpg", ".jpeg", ".webp", ".svg")):
-        raise ValidationError("URL must point to an image")
-
+    path = urlparse(value).path.lower()
+    if not path.endswith((".png", ".jpg", ".jpeg", ".webp", ".svg")):
+        raise ValidationError("URL must point to an image (.png, .jpg, .jpeg, .webp, .svg)")
 
 class TechnologyCategory(models.TextChoices):
-    PROGRAMMING_LANGUAGES = "Programming Languages", "Programming Languages"
-    TECHNOLOGIES_AND_FRAMEWORKS = "Technologies and Frameworks", "Technologies and Frameworks"
-    DATABASES = "Databases", "Databases"
-    CLOUD_PLATFORMS = "Cloud Platforms", "Cloud Platforms"
-    VERSION_CONTROL = "Version Control", "Version Control"
-
+    PROGRAMMING_LANGUAGES = "programming_languages", "Programming Languages"
+    TECHNOLOGIES_AND_FRAMEWORKS = "technologies_and_frameworks", "Technologies and Frameworks"
+    DATABASES = "databases", "Databases"
+    CLOUD_PLATFORMS = "cloud_platforms", "Cloud Platforms"
+    VERSION_CONTROL = "version_control", "Version Control"
+    CSS_FRAMEWORKS = "css_frameworks", "CSS Frameworks"
 
 class Technology(models.Model):
-    name = models.CharField(max_length=20)
-    category = models.CharField(max_length=45, choices=TechnologyCategory.choices, )
+    name = models.CharField(max_length=80)
+    category = models.CharField(max_length=45, choices=TechnologyCategory.choices)
     url = models.URLField(max_length=500, validators=[validate_image_url])
     visible = models.BooleanField(default=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["name", "category"], name="unique_tech_per_category")
+        ]
 
     def __str__(self):
         return self.name
@@ -41,7 +47,7 @@ class Education(models.Model):
     title = models.CharField(max_length=200)
     school = models.CharField(max_length=200)
     description = models.TextField()
-    start_year = models.IntegerField(validators=[MinValueValidator(2000)])
+    start_year = models.IntegerField(validators=[MinValueValidator(2000)], blank=True, null=True)
     end_year = models.IntegerField(validators=[MinValueValidator(2000)], blank=True, null=True)
     gpa = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(10.0)], blank=True, null=True)
     grade = models.CharField(max_length=30, choices=GradeChoices.choices, blank=True, null=True)
@@ -51,18 +57,25 @@ class Education(models.Model):
         return self.title
 
 
+class Company(models.Model):
+    name = models.CharField(max_length=200, unique=True)
+    logo_url = models.URLField(max_length=1000, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
 class Certification(models.Model):
     title = models.CharField(max_length=200)
-    issued_by = models.CharField(max_length=100)
+    company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, blank=True,
+                                related_name="certifications", )
     description = models.TextField()
-    year = models.IntegerField()
-    exp = models.IntegerField()
+    year = models.IntegerField(blank=True, null=True)
+    exp = models.IntegerField(blank=True, null=True)
     url = models.URLField(max_length=500)
     visible = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title
-
 
 class ProjectStatus(models.TextChoices):
     COMPLETED = "Completed", "Completed"

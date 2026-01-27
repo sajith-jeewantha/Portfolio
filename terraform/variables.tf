@@ -38,13 +38,3 @@ variable "secret_key" {
   type      = string
   sensitive = true
 }
-
-variable "allowed_hosts" {
-  type    = list(string)
-  default = ["sajithjeewantha.com", "www.sajithjeewantha.com"]
-}
-
-variable "csrf_trusted_origins" {
-  type    = list(string)
-  default = ["https://sajithjeewantha.com", "https://www.sajithjeewantha.com"]
-}

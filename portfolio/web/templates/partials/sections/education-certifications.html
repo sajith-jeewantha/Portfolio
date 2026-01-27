@@ -113,22 +113,23 @@
                             <div
                                     class="w-14 h-14 p-1 rounded-xl flex items-center justify-center shadow-md mr-4 group-hover:scale-105 transition-transform duration-300">
 
-                                {% if cert.issued_by == "Google Cloud Platform" %}
-                                <img src="{% static 'icon/Google-Cloud-Logo.png' %}" alt="Google Cloud">
-                                {% elif cert.issued_by == "Oracle Cloud Infrastructure" %}
-                                <img src="{% static 'icon/Oracle-Logo.png' %}" alt="Oracle">
+                                {% if cert.company.logo_url %}
+                                <img src="{{ cert.company.logo_url }}" alt="{{ cert.company.name }}">
                                 {% else %}
                                 <span class=" font-bold text-lg">LOGO</span>-->
                                 {% endif %}
+
                             </div>
                             <div class="flex-1">
                                 <h4 class="text-xl font-bold text-gray-900 mb-1">{{ cert.title }}
                                 </h4>
-                                <p class="text-gray-500 text-sm">{{ cert.issued_by }}</p>
+                                <p class="text-gray-500 text-sm">{{ cert.company.name }}</p>
                             </div>
+                            {% if cert.year %}
                             <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-full">
                                     {{ cert.year }}
                                 </span>
+                            {% endif %}
                         </div>
                         <p class="text-gray-600 mb-4 text-sm">{{ cert.description }}.</p>
                         <div class="flex items-center justify-between">
