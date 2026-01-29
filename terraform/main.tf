@@ -44,20 +44,20 @@ resource "google_artifact_registry_repository" "registry" {
 }
 
 module "portfolio" {
-  source               = "./modules/portfolio"
-  region               = var.region
-  google_project       = var.google_project
-  service_name         = "portfolioservice"
-  image_name           = "docker-portfolio-image"
-  image_version        = var.image_tag
-  port                 = 8080
-  db_name              = var.db_name
-  db_user              = var.db_user
-  db_password          = var.db_password
-  db_host              = var.db_host
-  secret_key           = var.secret_key
-  registry_name        = google_artifact_registry_repository.registry.name
-  depends_on           = [google_artifact_registry_repository.registry]
+  source         = "./modules/portfolio"
+  region         = var.region
+  google_project = var.google_project
+  service_name   = "portfolioservice"
+  image_name     = "docker-portfolio-image"
+  image_version  = var.image_tag
+  port           = 8080
+  db_name        = var.db_name
+  db_user        = var.db_user
+  db_password    = var.db_password
+  db_host        = var.db_host
+  secret_key     = var.secret_key
+  registry_name  = google_artifact_registry_repository.registry.name
+  depends_on     = [google_artifact_registry_repository.registry]
 }
 
 
