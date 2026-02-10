@@ -26,7 +26,7 @@
             </p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div class="grid grid-cols-1 gap-10">
             <!-- Education Column -->
             {% if educations %}
             <div>
@@ -46,8 +46,8 @@
                     <h3 class="text-2xl font-bold text-gray-900">Education</h3>
                 </div>
 
-                <!-- Education Timeline -->
-                <div class="space-y-8 relative">
+                <!-- Education Grid-->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                     <!-- Education Item 1 -->
                     {% for edu in educations %}
@@ -64,12 +64,14 @@
                                     </span>
                             </div>
                             <p class="text-gray-600 mb-4">
-                                {{ edu.description }}.
+                                {{ edu.description }}
                             </p>
                             <div class="flex flex-wrap gap-2">
+
+                                {% if not edu.progress %}
                                 {% if edu.gpa %}
                                 <span class="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">
-                                        GPA: {{ edu.gpa }}./4.0
+                                        GPA: {{ edu.gpa }}/4.0
                                     </span>
                                 {% endif %}
 
@@ -78,6 +80,13 @@
                                     {{ edu.grade }}
                                     </span>
                                 {% endif %}
+
+                                {% else %}
+                                <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-full">
+                                        In Progress
+                                    </span>
+                                {% endif %}
+
                             </div>
                         </div>
                     </div>
@@ -102,7 +111,7 @@
                 </div>
 
                 <!-- Certifications Grid -->
-                <div class="grid grid-cols-1 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <!-- Certification 1 -->
 
                     {% for cert in certifications %}
@@ -110,16 +119,17 @@
                     <div
                             class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
                         <div class="flex items-start mb-4">
-                            <div
-                                    class="w-14 h-14 p-1 rounded-xl flex items-center justify-center shadow-md mr-4 group-hover:scale-105 transition-transform duration-300">
+                            <div class="w-14 h-14 p-1 rounded-xl overflow-hidden flex items-center justify-center shadow-md mr-4 group-hover:scale-105 transition-transform duration-300">
 
                                 {% if cert.company.logo_url %}
-                                <img src="{{ cert.company.logo_url }}" alt="{{ cert.company.name }}">
+                                <img src="{{ cert.company.logo_url }}"
+                                     alt="{{ cert.company.name }}"
+                                     class="w-full h-full object-contain">
                                 {% else %}
-                                <span class=" font-bold text-lg">LOGO</span>
+                                <span class="font-bold text-lg">LOGO</span>
                                 {% endif %}
-
                             </div>
+
                             <div class="flex-1">
                                 <h4 class="text-xl font-bold text-gray-900 mb-1">{{ cert.title }}
                                 </h4>
@@ -133,6 +143,13 @@
                         </div>
                         <p class="text-gray-600 mb-4 text-sm">{{ cert.description }}.</p>
                         <div class="flex items-center justify-between">
+
+                            {% if cert.progress %}
+                            <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-full">
+                                        In Progress
+                                    </span>
+
+                            {% else %}
                             <a href="{{ cert.url }}" target="_blank"
                                rel="noopener noreferrer"
                                class="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center group-hover:underline">
@@ -145,8 +162,10 @@
                             </a>
                             {% if cert.exp %}
                             <span class="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">
-                                    Valid until {{ cert.exp }}
-                                </span>
+                                        Valid until {{ cert.exp }}
+                                    </span>
+                            {% endif %}
+
                             {% endif %}
                         </div>
                     </div>
