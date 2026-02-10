@@ -1,9 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.utils.timezone import now
 from urllib.parse import urlparse
-from colorfield.fields import ColorField
 
 
 # Create your models here.
@@ -13,6 +11,7 @@ def validate_image_url(value):
     if not path.endswith((".png", ".jpg", ".jpeg", ".webp", ".svg")):
         raise ValidationError("URL must point to an image (.png, .jpg, .jpeg, .webp, .svg)")
 
+
 class TechnologyCategory(models.TextChoices):
     PROGRAMMING_LANGUAGES = "programming_languages", "Programming Languages"
     TECHNOLOGIES_AND_FRAMEWORKS = "technologies_and_frameworks", "Technologies and Frameworks"
@@ -20,6 +19,7 @@ class TechnologyCategory(models.TextChoices):
     CLOUD_PLATFORMS = "cloud_platforms", "Cloud Platforms"
     VERSION_CONTROL = "version_control", "Version Control"
     CSS_FRAMEWORKS = "css_frameworks", "CSS Frameworks"
+
 
 class Technology(models.Model):
     name = models.CharField(max_length=80)
@@ -51,6 +51,7 @@ class Education(models.Model):
     end_year = models.IntegerField(validators=[MinValueValidator(2000)], blank=True, null=True)
     gpa = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(10.0)], blank=True, null=True)
     grade = models.CharField(max_length=30, choices=GradeChoices.choices, blank=True, null=True)
+    progress = models.BooleanField(default=False)
     visible = models.BooleanField(default=True)
 
     def __str__(self):
@@ -64,6 +65,7 @@ class Company(models.Model):
     def __str__(self):
         return self.name
 
+
 class Certification(models.Model):
     title = models.CharField(max_length=200)
     company = models.ForeignKey(Company, on_delete=models.SET_NULL, null=True, blank=True,
@@ -72,10 +74,12 @@ class Certification(models.Model):
     year = models.IntegerField(blank=True, null=True)
     exp = models.IntegerField(blank=True, null=True)
     url = models.URLField(max_length=500)
+    progress = models.BooleanField(default=False)
     visible = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title
+
 
 class ProjectStatus(models.TextChoices):
     COMPLETED = "Completed", "Completed"
@@ -92,13 +96,6 @@ class Category(models.Model):
         return self.name
 
 
-class Tag(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-
-
 class Project(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
@@ -106,12 +103,11 @@ class Project(models.Model):
     github = models.URLField(max_length=500, blank=True, null=True)
     website = models.URLField(max_length=500, blank=True, null=True)
     status = models.CharField(max_length=20, choices=ProjectStatus.choices, default=ProjectStatus.IN_PROGRESS)
-    gradient_from = ColorField(default="#3b82f6")
-    gradient_to = ColorField(default="#2563eb")
     icon_class = models.CharField(max_length=50, default="fa-laptop")
+    features = models.TextField(blank=True, default="")
+    tags = models.TextField(blank=True, default="")
     visible = models.BooleanField(default=True)
     categories = models.ManyToManyField(Category, blank=True)
-    tag = models.ManyToManyField(Tag, blank=True)
 
     def __str__(self):
         return self.title
