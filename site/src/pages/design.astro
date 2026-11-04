@@ -1,0 +1,52 @@
+---
+/** Design preview — compare all hero art versions. Not indexed, not in the sitemap. */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { heroArts } from '../components/hero-art';
+import { site } from '../lib/content';
+---
+
+<BaseLayout title="Design preview" description="Compare hero art versions." noindex>
+  <section class="container-x pt-16 pb-6">
+    <p class="eyebrow">Design preview</p>
+    <h1 class="mt-4 font-display text-5xl font-semibold tracking-tight">Choose your <em class="glass-text">window.</em></h1>
+    <p class="mt-4 max-w-2xl text-muted">
+      Switch the theme in the header to compare light and dark. To choose, set
+      <code class="rounded bg-ruby-soft px-1.5 py-0.5 font-mono text-sm text-ruby">"heroArt"</code> in
+      <code class="rounded bg-ruby-soft px-1.5 py-0.5 font-mono text-sm text-ruby">src/data/site.json</code> to one of{' '}
+      {heroArts.map((a, i) => <><code class="font-mono text-sm text-ink">"{a.key}"</code>{i < heroArts.length - 1 ? ', ' : '.'}</>)}
+    </p>
+    <nav aria-label="Versions" class="mt-6 flex flex-wrap gap-2">
+      {
+        heroArts.map((a) => (
+          <a href={`#${a.key}`} class:list={['chip px-3 py-1.5 hover:border-gold', site.heroArt === a.key && 'border-gold bg-gold-soft text-gold']}>
+            <span class="font-mono">{a.key}</span> {a.name}
+          </a>
+        ))
+      }
+    </nav>
+  </section>
+
+  <section class="container-x grid gap-8 py-8 lg:grid-cols-2">
+    {
+      heroArts.map(({ key, name, theme, file, text, Art }) => (
+        <article id={key} class:list={['pane flex scroll-mt-24 flex-col p-6 sm:p-8', site.heroArt === key && 'ring-2 ring-gold']}>
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <h2 class="font-display text-3xl font-semibold">
+              <span class="font-mono text-base text-gold">{key}</span> {name}
+            </h2>
+            {site.heroArt === key ? (
+              <span class="chip border-gold/40 bg-gold-soft text-gold">Currently live</span>
+            ) : (
+              <span class="chip font-mono text-[11px]">{theme}</span>
+            )}
+          </div>
+          <p class="mt-3 text-sm leading-relaxed text-muted">{text}</p>
+          <p class="mt-2 font-mono text-xs text-muted">{file}</p>
+          <div class="mt-8 flex flex-1 items-center justify-center">
+            <Art />
+          </div>
+        </article>
+      ))
+    }
+  </section>
+</BaseLayout>

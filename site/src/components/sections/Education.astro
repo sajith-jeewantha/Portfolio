@@ -1,0 +1,124 @@
+---
+import Icon from '../Icon.astro';
+import Medallion from '../Medallion.astro';
+import SectionHeading from '../SectionHeading.astro';
+import { formatIssued, getCertifications, getEducation } from '../../lib/content';
+
+const education = await getEducation();
+const certifications = await getCertifications();
+---
+
+<section id="education" class="container-x py-20" aria-labelledby="education-title">
+  <SectionHeading
+    id="education-title"
+    index="03"
+    eyebrow="Education & Certifications"
+    title="A lifetime of"
+    accent="learning."
+    description="My academic journey and professional certifications — a commitment to continuous learning across software engineering, cloud and artificial intelligence."
+  />
+
+  {
+    education.length > 0 && (
+      <div class="mb-20">
+        <h3 class="mb-8 flex items-center gap-3 text-xl font-semibold" data-reveal>
+          <Icon name="graduation-cap" class="text-gold" size="22" /> Education
+        </h3>
+        <ol class="relative grid gap-6 border-l border-line-strong pl-8 md:pl-10">
+          {education.map((e, i) => (
+            <li class="relative" data-reveal style={`--delay:${i * 100}ms`}>
+              <span
+                class:list={[
+                  'absolute top-6 -left-[calc(2rem+7px)] size-3.5 rotate-45 border-2 md:-left-[calc(2.5rem+7px)]',
+                  e.data.status === 'in-progress' ? 'border-emerald bg-emerald-soft' : 'border-gold bg-gold',
+                ]}
+                aria-hidden="true"
+              />
+              <article class="pane pane-hover p-6 md:p-8">
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p class="font-mono text-xs text-muted">
+                      {e.data.start} — {e.data.end ?? 'Present'}
+                    </p>
+                    <h4 class="mt-1 font-display text-2xl font-semibold sm:text-3xl">{e.data.degree}</h4>
+                    <p class="mt-1 text-sm font-medium text-lapis">{e.data.school}</p>
+                  </div>
+                  {e.data.status === 'in-progress' ? (
+                    <span class="chip border-emerald/40 bg-emerald-soft text-emerald">
+                      <Icon name="hourglass" /> In progress
+                    </span>
+                  ) : (
+                    <span class="chip border-gold/40 bg-gold-soft text-gold">
+                      <Icon name="badge-check" /> Completed
+                    </span>
+                  )}
+                </div>
+                <p class="mt-4 leading-relaxed">{e.data.description}</p>
+                {(e.data.gpa || e.data.grade) && (
+                  <p class="mt-3 flex flex-wrap gap-2 text-sm">
+                    {e.data.gpa && <span class="chip">GPA {e.data.gpa}/4.0</span>}
+                    {e.data.grade && <span class="chip">{e.data.grade}</span>}
+                  </p>
+                )}
+                {e.data.highlights.length > 0 && (
+                  <ul class="mt-5 flex flex-wrap gap-2" aria-label="Key modules">
+                    {e.data.highlights.map((h) => (
+                      <li class="chip">{h}</li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+            </li>
+          ))}
+        </ol>
+      </div>
+    )
+  }
+
+  {
+    certifications.length > 0 && (
+      <div>
+        <h3 class="mb-8 flex items-center gap-3 text-xl font-semibold" data-reveal>
+          <Icon name="award" class="text-gold" size="22" /> Certifications
+        </h3>
+        <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {certifications.map((c, i) => (
+            <li data-reveal style={`--delay:${(i % 3) * 80}ms`}>
+              <article class="pane pane-hover flex h-full flex-col p-6">
+                <div class="flex items-start justify-between gap-3">
+                  <Medallion name={c.issuer.logo} alt={c.issuer.name} class="h-12 w-20 rounded-xl p-2" px={64} />
+                  {c.data.status === 'in-progress' ? (
+                    <span class="chip border-emerald/40 bg-emerald-soft text-emerald">
+                      <Icon name="hourglass" /> In progress
+                    </span>
+                  ) : (
+                    <span class="chip font-mono">{formatIssued(c.data.year, c.data.month)}</span>
+                  )}
+                </div>
+                <h4 class="mt-5 text-base leading-snug font-semibold">{c.data.title}</h4>
+                <p class="mt-1 text-sm text-lapis">{c.issuer.name}</p>
+                <p class="mt-3 flex-1 text-sm leading-relaxed text-muted">{c.data.description}</p>
+                <div class="mt-5 flex items-center justify-between gap-3 border-t border-line pt-4 text-sm">
+                  <span class="font-mono text-xs text-muted">
+                    {c.data.expires ? `Valid until ${c.data.expires}` : c.data.status === 'earned' ? 'No expiry' : 'Preparing'}
+                  </span>
+                  {c.data.url && (
+                    <a
+                      href={c.data.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center gap-1 font-medium text-lapis hover:underline"
+                    >
+                      Verify <Icon name="arrow-up-right" />
+                      <span class="sr-only">{c.data.title}</span>
+                    </a>
+                  )}
+                </div>
+              </article>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+</section>

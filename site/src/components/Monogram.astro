@@ -1,0 +1,19 @@
+---
+/** "SJ" set inside a gothic arch — the site mark. */
+import { profile } from '../lib/content';
+interface Props {
+  class?: string;
+}
+const { class: className = 'size-9' } = Astro.props;
+---
+
+<span
+  class:list={[
+    'arch relative grid shrink-0 place-items-center pt-1.5 font-display text-lg font-bold',
+    className,
+  ]}
+  style="background: linear-gradient(135deg, #3b3db3, #6a3cbc); color: #f2cd6b;"
+  aria-hidden="true"
+>
+  {profile.initials}
+</span>

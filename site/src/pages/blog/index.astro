@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import Icon from '../../components/Icon.astro';
+import { getPosts } from '../../lib/content';
+
+const posts = await getPosts();
+const tags = [...new Set(posts.flatMap((p) => p.data.tags))].sort();
+---
+
+<BaseLayout title="Blog" description="Notes and articles by Sajith Jeewantha on software engineering, cloud, AI and machine learning.">
+  <section class="container-x pt-16 pb-10">
+    <p class="eyebrow">Blog</p>
+    <h1 class="mt-4 font-display text-5xl font-semibold tracking-tight sm:text-6xl">
+      Notes &amp; <em class="glass-text">writing.</em>
+    </h1>
+    <p class="mt-4 max-w-2xl text-lg text-muted">
+      Thoughts on software engineering, cloud and AI — written as I learn and build.
+    </p>
+    <div class="mt-6 flex flex-wrap items-center gap-2">
+      <a href="/rss.xml" class="chip hover:border-gold"><Icon name="rss" class="text-gold" /> RSS</a>
+      {tags.map((t) => <span class="chip font-mono text-gold">#{t}</span>)}
+    </div>
+  </section>
+
+  <section class="container-x" aria-label="Posts">
+    {
+      posts.length === 0 ? (
+        <p class="pane p-10 text-center text-muted">No posts yet — check back soon.</p>
+      ) : (
+        <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {posts.map((post) => (
+            <li>
+              <PostCard post={post} headingLevel="h2" />
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+</BaseLayout>

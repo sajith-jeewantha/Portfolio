@@ -1,0 +1,48 @@
+---
+/**
+ * Hero art v8 — "Mosaic of Bits" (static).
+ * A Byzantine mosaic of tesserae in concentric rings. The tiles encode a
+ * message in 8-bit ASCII, read ring by ring from the centre outward:
+ * gold tile = 1, stained-glass tile = 0.
+ */
+import RoseFrame from './RoseFrame.astro';
+import { glassFills, sector } from '../lib/geometry';
+
+const ID = 'rw8';
+const MESSAGE = 'AD MAIOREM DEI GLORIAM · LOVE · STRENGTH · RELATIONSHIP · ';
+
+// Message → bit stream (non-ASCII "·" becomes a space)
+const bits = [...MESSAGE.replace(/·/g, ' ')].flatMap((ch) => ch.charCodeAt(0).toString(2).padStart(8, '0').split('').map(Number));
+
+const RING = 13; // ring thickness
+const GAP = 1.4; // grout (in px)
+const rings = Array.from({ length: 10 }, (_, k) => 96 + k * RING); // inner radii 96 … 213
+const bands = ['fill-lapis', 'fill-ruby', 'fill-emerald', 'fill-amethyst'];
+
+let b = 0;
+const tiles = rings.flatMap((r1, ring) => {
+  const r2 = r1 + RING;
+  const mid = (r1 + r2) / 2;
+  const n = Math.round((2 * Math.PI * mid) / 13); // ~square tiles
+  const step = 360 / n;
+  const gapDeg = ((GAP / mid) * 180) / Math.PI;
+  const off = ring % 2 ? step / 2 : 0; // running bond, like real mosaic
+  return Array.from({ length: n }, (_, i) => {
+    const bit = bits[b++ % bits.length];
+    return {
+      d: sector(r1 + GAP / 2, r2 - GAP / 2, off + i * step + gapDeg / 2, off + (i + 1) * step - gapDeg / 2),
+      cls: bit ? 'fill-gold' : bands[Math.floor(ring / 3) % bands.length] ?? glassFills[0],
+      k: bit ? 0.85 : 0.55 + ((i * 7 + ring * 3) % 5) * 0.12,
+    };
+  });
+});
+const total = tiles.length;
+---
+
+<RoseFrame id={ID} caption={`${total} tesserae · 8-bit ASCII <span class="mx-1.5 text-line-strong">|</span> <span class="text-gold">1</span> gold · <span class="text-lapis">0</span> glass`}>
+  <circle r="226" class="fill-line" opacity="0.35"></circle>
+  {tiles.map((t) => <path d={t.d} class={t.cls} style={`fill-opacity: ${t.cls === 'fill-gold' ? t.k : `calc(var(--glass-opacity) * ${t.k.toFixed(2)} * 2)`}`} />)}
+  <!-- lead bands every third ring -->
+  {[96, 135, 174, 226].map((r) => <circle r={r} class="fill-none stroke-gold/70" stroke-width="1.6" />)}
+  <circle r="232" class="fill-none stroke-line-strong" stroke-width="1"></circle>
+</RoseFrame>

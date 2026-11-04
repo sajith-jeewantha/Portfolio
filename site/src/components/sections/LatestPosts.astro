@@ -1,0 +1,31 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Icon from '../Icon.astro';
+import PostCard from '../PostCard.astro';
+import SectionHeading from '../SectionHeading.astro';
+
+interface Props {
+  posts: CollectionEntry<'blog'>[];
+}
+const { posts } = Astro.props;
+---
+
+{
+  posts.length > 0 && (
+    <section id="writing" class="container-x py-20" aria-labelledby="writing-title">
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <SectionHeading id="writing-title" index="06" eyebrow="Blog" title="Notes &" accent="writing." description="Thoughts on software engineering, cloud and AI — written as I learn and build." />
+        <a href="/blog/" class="btn-ghost mb-12">
+          All posts <Icon name="arrow-right" />
+        </a>
+      </div>
+      <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {posts.map((post, i) => (
+          <li data-reveal style={`--delay:${i * 90}ms`}>
+            <PostCard post={post} />
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}

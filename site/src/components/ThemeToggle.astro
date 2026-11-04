@@ -1,0 +1,47 @@
+---
+/** Three-way theme switch: Light / Dark / System. State lives in localStorage. */
+import Icon from './Icon.astro';
+
+const options = [
+  { value: 'light', label: 'Light theme', icon: 'sun' },
+  { value: 'dark', label: 'Dark theme', icon: 'moon' },
+  { value: 'system', label: 'System theme', icon: 'monitor' },
+];
+---
+
+<div
+  class="theme-toggle inline-flex items-center gap-0.5 rounded-full border border-line bg-surface p-1 backdrop-blur"
+  role="group"
+  aria-label="Colour theme"
+>
+  {
+    options.map((o) => (
+      <button
+        type="button"
+        data-theme-value={o.value}
+        aria-label={o.label}
+        title={o.label}
+        aria-pressed="false"
+        class="grid size-8 cursor-pointer place-items-center rounded-full text-muted transition-colors hover:text-ink aria-pressed:bg-lapis aria-pressed:text-on-lapis"
+      >
+        <Icon name={o.icon} size="16" />
+      </button>
+    ))
+  }
+</div>
+
+<script>
+  const sync = () => {
+    const pref = document.documentElement.dataset.themePref ?? 'system';
+    document.querySelectorAll<HTMLButtonElement>('[data-theme-value]').forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.dataset.themeValue === pref));
+    });
+  };
+  document.querySelectorAll<HTMLButtonElement>('[data-theme-value]').forEach((b) => {
+    b.addEventListener('click', () => {
+      window.__setTheme?.(b.dataset.themeValue as 'light' | 'dark' | 'system');
+      sync();
+    });
+  });
+  sync();
+</script>

@@ -1,0 +1,48 @@
+[
+  {
+    "id": "mphil-software-engineering",
+    "degree": "Master of Philosophy in Software Engineering",
+    "school": "IIC University of Technology (Cambodia) / Java Institute for Advanced Technology",
+    "start": 2026,
+    "end": 2028,
+    "status": "in-progress",
+    "description": "Pursuing an MPhil in Software Engineering focused on advanced research and intelligent computing. My research interests centre on developing intelligent systems and exploring the intersection of AI, human cognition and secure computing.",
+    "highlights": [
+      "Artificial Intelligence",
+      "Neural Network Programming",
+      "Genetic Algorithms",
+      "Swarm Intelligence",
+      "Image Processing",
+      "Brain–Computer Interfaces",
+      "Cognitive Science",
+      "Neuroscience",
+      "Network Security",
+      "Research Methodology",
+      "R"
+    ],
+    "gpa": null,
+    "grade": null,
+    "order": 1,
+    "visible": true
+  },
+  {
+    "id": "beng-software-engineering",
+    "degree": "BEng (Hons) in Software Engineering",
+    "school": "IIC University of Technology (Cambodia) / Java Institute for Advanced Technology",
+    "start": 2022,
+    "end": 2026,
+    "status": "completed",
+    "description": "Completed at Java Institute for Advanced Technology, Sri Lanka (UGC recognized). Covered 25 comprehensive modules, graduating with a strong foundation in backend engineering, system design and enterprise software architecture.",
+    "highlights": [
+      "Object-Oriented Design Patterns",
+      "Data Structures & Algorithms",
+      "Software Engineering I & II",
+      "Web & Mobile Development",
+      "Project Management"
+    ],
+    "gpa": null,
+    "grade": null,
+    "order": 2,
+    "visible": true
+  }
+]

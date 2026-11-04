@@ -1,0 +1,50 @@
+[
+  {
+    "id": "languages",
+    "label": "Languages",
+    "icon": "code-xml",
+    "order": 1
+  },
+  {
+    "id": "ai-ml",
+    "label": "AI, ML & Data",
+    "icon": "brain",
+    "order": 2
+  },
+  {
+    "id": "frameworks",
+    "label": "Frameworks & Libraries",
+    "icon": "layers",
+    "order": 3
+  },
+  {
+    "id": "cloud",
+    "label": "Cloud Platforms",
+    "icon": "cloud",
+    "order": 4
+  },
+  {
+    "id": "databases",
+    "label": "Databases",
+    "icon": "database",
+    "order": 5
+  },
+  {
+    "id": "devops",
+    "label": "DevOps, Servers & Messaging",
+    "icon": "git-branch",
+    "order": 6
+  },
+  {
+    "id": "mobile-iot",
+    "label": "Mobile & IoT",
+    "icon": "smartphone",
+    "order": 7
+  },
+  {
+    "id": "tools",
+    "label": "Tools & IDEs",
+    "icon": "wrench",
+    "order": 8
+  }
+]

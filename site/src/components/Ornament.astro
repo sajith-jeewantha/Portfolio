@@ -1,0 +1,18 @@
+---
+/** Gilded divider: hairlines meeting a tiny rose-window medallion. */
+interface Props {
+  class?: string;
+}
+const { class: className = '' } = Astro.props;
+---
+
+<div class:list={['flex items-center gap-4 text-gold', className]} aria-hidden="true">
+  <span class="h-px flex-1 bg-linear-to-r from-transparent via-gold/50 to-gold/70"></span>
+  <svg viewBox="0 0 40 40" class="size-7" fill="none" stroke="currentColor" stroke-width="1.4">
+    <circle cx="20" cy="20" r="17"></circle>
+    <circle cx="20" cy="20" r="9"></circle>
+    <path d="M20 3v34M3 20h34M8 8l24 24M32 8 8 32"></path>
+    <circle cx="20" cy="20" r="2.6" fill="currentColor"></circle>
+  </svg>
+  <span class="h-px flex-1 bg-linear-to-l from-transparent via-gold/50 to-gold/70"></span>
+</div>

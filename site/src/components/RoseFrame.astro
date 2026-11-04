@@ -1,0 +1,48 @@
+---
+/**
+ * Shared shell for the circular rose windows (v3–v5): square SVG canvas
+ * (viewBox -250…250), gold halo, stone frame and the centred portrait.
+ * The window's tracery is passed in as the default slot (SVG content).
+ */
+import Avatar from './Avatar.astro';
+
+interface Props {
+  id: string; // unique prefix for SVG ids
+  /** portrait radius in SVG units (canvas is 500 wide) */
+  portrait?: number;
+  caption?: string;
+  cross?: boolean;
+}
+const { id, portrait = 82, caption, cross = false } = Astro.props;
+---
+
+<figure class="mx-auto w-full max-w-[19rem] sm:max-w-[26rem] lg:max-w-[30rem]">
+  <div class="relative aspect-square w-full">
+    <svg viewBox="-250 -250 500 500" class="absolute inset-0 size-full overflow-visible" aria-hidden="true">
+      <defs>
+        <radialGradient id={`${id}-halo`}>
+          <stop offset="0.3" stop-color="var(--gold)" stop-opacity="0.22"></stop>
+          <stop offset="1" stop-color="var(--gold)" stop-opacity="0"></stop>
+        </radialGradient>
+      </defs>
+      <circle r="250" fill={`url(#${id}-halo)`}></circle>
+      {
+        cross && (
+          <g class="stroke-gold" stroke-width="3" stroke-linecap="round">
+            <path d="M0 -268 V-244 M-9 -259 H9" />
+          </g>
+        )
+      }
+      <circle r="240" class="fill-none stroke-line-strong" stroke-width="1"></circle>
+      <circle r="234" class="fill-surface stroke-gold/50" stroke-width="1.2"></circle>
+      <slot />
+      <circle r={portrait + 6} class="fill-elev stroke-gold" stroke-width="2.2"></circle>
+    </svg>
+
+    <Avatar
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+      style={`width:${((portrait * 2) / 500) * 100}%; aspect-ratio:1;`}
+    />
+  </div>
+  {caption && <figcaption class="mt-4 text-center font-mono text-[11px] tracking-wide text-muted" set:html={caption} />}
+</figure>

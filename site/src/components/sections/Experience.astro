@@ -1,0 +1,110 @@
+---
+import Icon from '../Icon.astro';
+import Medallion from '../Medallion.astro';
+import Pipeline from '../Pipeline.astro';
+import SectionHeading from '../SectionHeading.astro';
+import { duration, formatMonth, getExperience } from '../../lib/content';
+
+const experience = await getExperience();
+---
+
+{
+  experience.length > 0 && (
+    <section id="experience" class="container-x py-20" aria-labelledby="experience-title">
+      <SectionHeading
+        id="experience-title"
+        index="02"
+        eyebrow="Experience"
+        title="Where I"
+        accent="work."
+        description="Building at the intersection of AI, integration and software engineering."
+      />
+
+      <ol class="grid gap-6">
+        {experience.map((job, i) => {
+          const current = job.data.end === null;
+          return (
+            <li data-reveal style={`--delay:${i * 100}ms`}>
+              <article class="pane pane-hover relative overflow-hidden p-6 md:p-8">
+                {current && (
+                  <div
+                    class="pointer-events-none absolute inset-y-0 left-0 w-1"
+                    style="background: linear-gradient(to bottom, var(--lapis), var(--amethyst), var(--ruby), var(--gold));"
+                    aria-hidden="true"
+                  />
+                )}
+                <div class="flex flex-col gap-6 md:flex-row md:items-start">
+                  <Medallion name={job.data.logo} alt={job.data.company} class="size-16 shrink-0 p-2" px={56} />
+
+                  <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <h3 class="font-display text-3xl leading-tight font-semibold">{job.data.role}</h3>
+                        <p class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+                          {job.data.companyUrl ? (
+                            <a href={job.data.companyUrl} target="_blank" rel="noopener noreferrer" class="font-semibold text-lapis hover:underline">
+                              {job.data.company}
+                            </a>
+                          ) : (
+                            <span class="font-semibold text-lapis">{job.data.company}</span>
+                          )}
+                          <span class="text-muted" aria-hidden="true">·</span>
+                          <span class="text-muted">{job.data.type}</span>
+                          {job.data.location && (
+                            <>
+                              <span class="text-muted" aria-hidden="true">·</span>
+                              <span class="inline-flex items-center gap-1 text-muted">
+                                <Icon name="map-pin" /> {job.data.location}
+                              </span>
+                            </>
+                          )}
+                        </p>
+                      </div>
+                      <div class="flex flex-col items-start gap-1.5 sm:items-end">
+                        {current && (
+                          <span class="chip border-emerald/40 bg-emerald-soft text-emerald">
+                            <span class="relative flex size-2">
+                              <span class="absolute inline-flex size-full animate-ping rounded-full bg-emerald opacity-60 motion-reduce:hidden" />
+                              <span class="relative inline-flex size-2 rounded-full bg-emerald" />
+                            </span>
+                            Current role
+                          </span>
+                        )}
+                        <p class="font-mono text-xs text-muted">
+                          {formatMonth(job.data.start)} — {job.data.end ? formatMonth(job.data.end) : 'Present'}
+                          <span class="text-gold"> · {duration(job.data.start, job.data.end)}</span>
+                        </p>
+                      </div>
+                    </div>
+
+                    <p class="mt-5 leading-relaxed">{job.data.description}</p>
+
+                    {job.data.highlights.length > 0 && (
+                      <ul class="mt-4 grid gap-2 text-sm">
+                        {job.data.highlights.map((h) => (
+                          <li class="flex items-start gap-2">
+                            <Icon name="sparkle" class="mt-1 text-gold" />
+                            <span>{h}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    {job.data.skills.length > 0 && (
+                      <ul class="mt-6 flex flex-wrap gap-2" aria-label="Focus areas">
+                        {job.data.skills.map((s) => (
+                          <li class="chip">{s}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              </article>
+            </li>
+          );
+        })}
+      </ol>
+      <div class="mt-6"><Pipeline /></div>
+    </section>
+  )
+}

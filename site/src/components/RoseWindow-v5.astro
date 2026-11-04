@@ -1,0 +1,135 @@
+---
+/**
+ * Hero art v5 — "Cathedral of Code & Mind" (all looks combined).
+ *   • cathedral  — stained-glass lancets, roundels and a gold cross finial
+ *   • software   — rotating code/motto ring, git history with branches & merges
+ *   • AI / ML    — neural-network tracery with forward-pass signals,
+ *                  attention arcs between commits, activation-shaded glass
+ */
+import RoseFrame from './RoseFrame.astro';
+import { arc, circlePath, glassFills, lancet, polar, rand } from '../lib/geometry';
+
+const ID = 'rw5';
+
+// --- Text ring: faith · code · intelligence ---
+const TXT_R = 224;
+const txt =
+  'ad maiorem Dei gloriam  ·  while (alive) { learn(); build(); serve(); }  ·  softmax(QKᵀ/√dₖ)V  ·  θ ← θ − η∇L  ·  ';
+const txtLength = +(2 * Math.PI * TXT_R * 0.985).toFixed(1);
+
+// --- Git ring ---
+const MAIN = 205;
+const BR = 192;
+const commits = Array.from({ length: 24 }, (_, i) => i * 15);
+const branches = [
+  { from: 30, to: 75, cls: 'stroke-emerald' },
+  { from: 150, to: 195, cls: 'stroke-ruby' },
+  { from: 270, to: 315, cls: 'stroke-lapis' },
+].map((b) => {
+  const [x0, y0] = polar(MAIN, b.from);
+  const [cx0, cy0] = polar(MAIN, b.from + 5);
+  const [x1, y1] = polar(BR, b.from + 8);
+  const [cx1, cy1] = polar(MAIN, b.to - 5);
+  const [x3, y3] = polar(MAIN, b.to);
+  return {
+    ...b,
+    d: `M ${x0} ${y0} Q ${cx0} ${cy0} ${x1} ${y1} ${arc(BR, b.from + 8, b.to - 8).replace(/^M [^A]+/, '')} Q ${cx1} ${cy1} ${x3} ${y3}`,
+  };
+});
+
+// Attention arcs between commits (bowing inward over the glass)
+const attention = [
+  [0, 9], [3, 14], [6, 17], [10, 21], [13, 2], [18, 5], [20, 11], [8, 16],
+].map(([i, j], k) => {
+  const a1 = commits[i];
+  const a2 = commits[j];
+  const [x1, y1] = polar(MAIN, a1);
+  const [x2, y2] = polar(MAIN, a2);
+  let mid = (a1 + a2) / 2;
+  if (Math.abs(a2 - a1) > 180) mid += 180;
+  const [cx, cy] = polar(60, mid);
+  return { d: `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`, cls: ['stroke-lapis', 'stroke-ruby', 'stroke-amethyst', 'stroke-emerald'][k % 4] };
+});
+
+// --- Stained-glass lancets (activation-shaded) ---
+const lancets = Array.from({ length: 12 }, (_, i) => ({
+  d: lancet(98, 184, i * 30, 12.5),
+  cls: glassFills[(i * 3) % glassFills.length],
+  k: (0.45 + rand(i * 13) * 0.75).toFixed(2),
+  oculus: polar(98 + 86 * 0.6, i * 30),
+}));
+
+// Roundels between lancets with code / ML glyphs
+const glyphs = ['{ }', '</>', 'λ', '∇', 'Σ', '=>', '∂', '[ ]', 'σ', '#', '∫', ';'];
+const roundels = Array.from({ length: 12 }, (_, i) => ({ p: polar(178, i * 30 + 15), g: glyphs[i] }));
+
+// --- Neural tracery ---
+const ringA = Array.from({ length: 12 }, (_, i) => polar(98, i * 30));
+const ringB = Array.from({ length: 12 }, (_, i) => polar(142, i * 30 + 15));
+const edges: [number[], number[]][] = [];
+for (let i = 0; i < 12; i++) {
+  edges.push([ringA[i], ringB[i]], [ringA[i], ringB[(i + 11) % 12]]);
+  edges.push([ringB[i], roundels[i].p]);
+}
+const signalCls = ['stroke-lapis', 'stroke-ruby', 'stroke-gold', 'stroke-emerald'];
+const signals = [0, 5, 10, 15, 20, 25, 30, 35].map((n, k) => ({ e: edges[n % edges.length], cls: signalCls[k % 4], delay: `${(k * 0.7).toFixed(1)}s` }));
+---
+
+<RoseFrame id={ID} cross caption={'<span class="text-gold">faith</span> · <span class="text-lapis">code</span> · <span class="text-ruby">intelligence</span>'}>
+  <!-- Rotating text ring -->
+  <defs><path id={`${ID}-txt`} d={circlePath(TXT_R)}></path></defs>
+  <g class="rose-spin">
+    <text class="fill-gold font-mono" font-size="11.5">
+      <textPath href={`#${ID}-txt`} textLength={txtLength} lengthAdjust="spacing">{txt}{txt}</textPath>
+    </text>
+  </g>
+  <circle r="214" class="fill-none stroke-line-strong" stroke-width="1"></circle>
+
+  <g class="rose-spin-rev">
+    <!-- Glass -->
+    {
+      lancets.map((l) => (
+        <g>
+          <path d={l.d} class:list={[l.cls, 'stroke-line-strong']} style={`fill-opacity: calc(var(--glass-opacity) * ${l.k})`} stroke-width="1.6" />
+          <circle cx={l.oculus[0]} cy={l.oculus[1]} r="7" class="fill-none stroke-gold/60" stroke-width="1" />
+        </g>
+      ))
+    }
+
+    <!-- Attention arcs between commits -->
+    <g fill="none" stroke-width="1.1" stroke-opacity="0.45">
+      {attention.map((a) => <path d={a.d} class={a.cls} />)}
+    </g>
+
+    <!-- Neural synapses + signals -->
+    <g class="stroke-gold" stroke-opacity="0.45" stroke-width="0.8">
+      {edges.map(([a, b]) => <line x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} />)}
+    </g>
+    <g stroke-width="2.4" stroke-linecap="round" fill="none">
+      {signals.map((s) => <path d={`M ${s.e[0][0]} ${s.e[0][1]} L ${s.e[1][0]} ${s.e[1][1]}`} class:list={['signal', s.cls]} style={`animation-delay:${s.delay}`} />)}
+    </g>
+    {ringB.map(([x, y]) => <circle cx={x} cy={y} r="4.2" class="fill-elev stroke-gold" stroke-width="1.4" />)}
+    {ringA.map(([x, y]) => <circle cx={x} cy={y} r="4.4" class="fill-lapis stroke-elev" stroke-width="1.4" />)}
+
+    <!-- Code / ML roundels -->
+    {
+      roundels.map((r) => (
+        <g transform={`translate(${r.p[0]} ${r.p[1]})`}>
+          <circle r="13" class="fill-elev stroke-gold/80" stroke-width="1.2" />
+          <text text-anchor="middle" dy="4" class="fill-ink font-mono" font-size="10" font-weight="600">{r.g}</text>
+        </g>
+      ))
+    }
+
+    <!-- Git ring -->
+    <circle r={MAIN} class="fill-none stroke-gold/70" stroke-width="1.8"></circle>
+    {branches.map((b) => <path d={b.d} class:list={['fill-none', b.cls]} stroke-width="2" stroke-linecap="round" />)}
+    {
+      commits.map((a) => {
+        const [x, y] = polar(MAIN, a);
+        const merge = branches.some((b) => b.to === a || b.from === a);
+        return <circle cx={x} cy={y} r={merge ? 5 : 3.2} class={merge ? 'fill-elev stroke-gold' : 'fill-gold'} stroke-width="2" />;
+      })
+    }
+  </g>
+</RoseFrame>

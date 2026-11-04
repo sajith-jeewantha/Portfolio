@@ -1,0 +1,100 @@
+---
+/**
+ * Hero art v7 — "Quatrefoil of Tensors" (static).
+ * A gothic quatrefoil whose four lobes are weight matrices (Q, K, V, W)
+ * rendered as heatmap glass. Between the lobes, roundels hold 3×3
+ * convolution kernels. Lead lines are the matrix grid.
+ */
+import RoseFrame from './RoseFrame.astro';
+import { glassFills, polar, rand } from '../lib/geometry';
+
+const ID = 'rw7';
+const FOIL_D = 112; // lobe centre distance
+const FOIL_R = 96; // lobe radius
+const CELL = 15;
+
+const lobes = ['Q', 'K', 'V', 'W'].map((name, li) => {
+  const a = li * 90;
+  const [cx, cy] = polar(FOIL_D, a);
+  const cells: { x: number; y: number; cls: string; k: string }[] = [];
+  const n = Math.ceil((FOIL_R * 2) / CELL);
+  for (let r = 0; r < n; r++)
+    for (let c = 0; c < n; c++) {
+      const x = cx - FOIL_R + c * CELL;
+      const y = cy - FOIL_R + r * CELL;
+      // smooth weight field + noise → heat value
+      const v = 0.5 + 0.3 * Math.sin(c * 0.7 + li) * Math.cos(r * 0.6 - li) + 0.25 * (rand(li * 1000 + r * 31 + c) - 0.5);
+      const h = Math.min(0.999, Math.max(0, v));
+      cells.push({ x, y, cls: glassFills[(Math.floor(h * 5) + li) % 5], k: (0.25 + h * 0.95).toFixed(2) });
+    }
+  return { name, cx, cy, cells, label: polar(FOIL_D + 62, a) };
+});
+
+// Convolution kernels in the diagonal roundels
+const kernels = [
+  { name: 'sobel', m: [[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]] },
+  { name: 'sharpen', m: [[0, -1, 0], [-1, 5, -1], [0, -1, 0]] },
+  { name: 'laplace', m: [[0, 1, 0], [1, -4, 1], [0, 1, 0]] },
+  { name: 'blur', m: [[1, 2, 1], [2, 4, 2], [1, 2, 1]] },
+].map((k, i) => ({ ...k, c: polar(176, i * 90 + 45) }));
+
+// Outer border: tensor-shape ticks
+const ticks = Array.from({ length: 64 }, (_, i) => ({ a: i * 5.625, long: i % 4 === 0 }));
+---
+
+<RoseFrame id={ID} caption={'softmax(<span class="text-lapis">Q</span><span class="text-ruby">K</span>ᵀ/√d)<span class="text-emerald">V</span> · <span class="text-gold">W</span> ∈ ℝ<sup>m×n</sup>'}>
+  <defs>
+    {lobes.map((l, i) => <clipPath id={`${ID}-lobe-${i}`}><circle cx={l.cx} cy={l.cy} r={FOIL_R} /></clipPath>)}
+  </defs>
+
+  <!-- Border ticks -->
+  {
+    ticks.map((t) => {
+      const [x1, y1] = polar(t.long ? 214 : 220, t.a);
+      const [x2, y2] = polar(228, t.a);
+      return <line x1={x1} y1={y1} x2={x2} y2={y2} class={t.long ? 'stroke-gold' : 'stroke-gold/50'} stroke-width={t.long ? 2 : 1} />;
+    })
+  }
+  <circle r="210" class="fill-none stroke-line-strong" stroke-width="1.2"></circle>
+
+  <!-- Matrix lobes -->
+  {
+    lobes.map((l, i) => (
+      <g clip-path={`url(#${ID}-lobe-${i})`}>
+        {l.cells.map((c) => (
+          <rect x={c.x} y={c.y} width={CELL} height={CELL} class:list={[c.cls, 'stroke-line-strong']} style={`fill-opacity: calc(var(--glass-opacity) * ${c.k} * 1.7)`} stroke-width="0.9" />
+        ))}
+      </g>
+    ))
+  }
+  {lobes.map((l) => <circle cx={l.cx} cy={l.cy} r={FOIL_R} class="fill-none stroke-gold" stroke-width="3" />)}
+  {lobes.map((l) => <circle cx={l.cx} cy={l.cy} r={FOIL_R - 6} class="fill-none stroke-gold/40" stroke-width="1" />)}
+
+  <!-- Tensor names -->
+  {
+    lobes.map((l) => (
+      <g transform={`translate(${l.label[0]} ${l.label[1]})`}>
+        <circle r="17" class="fill-elev stroke-gold" stroke-width="1.6" />
+        <text text-anchor="middle" dy="7" class="fill-ink font-display" font-size="22" font-style="italic" font-weight="600">{l.name}</text>
+      </g>
+    ))
+  }
+
+  <!-- Kernel roundels -->
+  {
+    kernels.map((k) => (
+      <g transform={`translate(${k.c[0]} ${k.c[1]})`}>
+        <circle r="30" class="fill-elev stroke-gold" stroke-width="2" />
+        {k.m.map((row, r) =>
+          row.map((v, c) => (
+            <>
+              <rect x={-18 + c * 12} y={-21 + r * 12} width="12" height="12" class={v > 0 ? 'fill-gold/25 stroke-line-strong' : v < 0 ? 'fill-lapis/20 stroke-line-strong' : 'fill-none stroke-line-strong'} stroke-width="0.8" />
+              <text x={-12 + c * 12} y={-12.5 + r * 12} text-anchor="middle" class="fill-ink font-mono" font-size="7" font-weight="600">{v}</text>
+            </>
+          )),
+        )}
+        <text y="24" text-anchor="middle" class="fill-gold font-mono" font-size="6.5">{k.name}</text>
+      </g>
+    ))
+  }
+</RoseFrame>

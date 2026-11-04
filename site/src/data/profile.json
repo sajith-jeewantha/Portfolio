@@ -1,0 +1,50 @@
+{
+  "name": "Sajith Jeewantha",
+  "initials": "SJ",
+  "role": "Software Engineer",
+  "headline": "Full Stack Software Engineer",
+  "location": "Colombo, Sri Lanka",
+  "current": {
+    "role": "Software Engineer Intern",
+    "company": "WSO2",
+    "url": "https://wso2.com"
+  },
+  "avatar": "sajith-jeewantha",
+  "avatarPosition": "18% 50%",
+  "intro": "Hi, I'm Sajith Jeewantha — a passionate and innovative Software Engineer dedicated to creating impactful digital solutions.",
+  "mission": "I strive to make this world a better place for people by moving forward with new technology and taking those around me with me.",
+  "about": [
+    "Passionate about creating innovative digital solutions that make a difference. I specialize in full-stack development, system architecture, and delivering exceptional user experiences.",
+    "I'm currently a Software Engineer Intern at WSO2, working across deep learning, machine learning, AI agents, the Model Context Protocol (MCP), data collection and integration.",
+    "Alongside engineering, I am pursuing an MPhil in Software Engineering with a research focus on intelligent systems — exploring the intersection of AI, human cognition and secure computing."
+  ],
+  "focus": [
+    { "label": "AI Agents & MCP", "icon": "bot", "text": "Building AI agents and tools with the Model Context Protocol (MCP)." },
+    { "label": "Deep Learning & ML", "icon": "brain", "text": "Deep learning and machine learning — from data collection to trained models." },
+    { "label": "Integration & Backend", "icon": "network", "text": "WSO2 Integration, Ballerina, enterprise Java, microservices and APIs." },
+    { "label": "Cloud & DevOps", "icon": "cloud", "text": "Docker, Terraform and CI/CD on Google Cloud, AWS and Oracle Cloud." }
+  ],
+  "pipeline": [
+    { "label": "Data collection", "fn": "collect()", "icon": "database", "text": "Gather, clean and label datasets" },
+    { "label": "Deep learning", "fn": "train()", "icon": "brain", "text": "Train and tune ML / DL models" },
+    { "label": "Evaluation", "fn": "evaluate()", "icon": "chart-line", "text": "Measure, compare and iterate" },
+    { "label": "AI agents", "fn": "agent.run()", "icon": "bot", "text": "Agents that reason and use tools via MCP" },
+    { "label": "Integration", "fn": "integrate()", "icon": "network", "text": "Connect to real systems and APIs" }
+  ],
+  "contact": {
+    "label": "Get in touch",
+    "url": "https://www.linkedin.com/in/sajith-jeewantha/"
+  },
+  "socials": [
+    { "name": "LinkedIn", "url": "https://www.linkedin.com/in/sajith-jeewantha/", "icon": "ri:linkedin-fill" },
+    { "name": "GitHub", "url": "https://github.com/sajith-jeewantha", "icon": "ri:github-fill" },
+    { "name": "Facebook", "url": "https://www.facebook.com/sajith.jeewantha.165", "icon": "ri:facebook-fill" },
+    { "name": "Instagram", "url": "https://www.instagram.com/sajith.jeewantha_", "icon": "ri:instagram-line" },
+    { "name": "YouTube", "url": "https://www.youtube.com/@sajith_jeewantha", "icon": "ri:youtube-fill" }
+  ],
+  "skillProfiles": [
+    { "name": "Google Skills", "url": "https://www.skills.google/public_profiles/2dc19f93-6ef8-4b79-a351-bdaa03152d54", "logo": "google-cloud" },
+    { "name": "AWS Skill Builder", "url": "https://skillsprofile.skillbuilder.aws/user/sajith-jeewantha", "logo": "aws" },
+    { "name": "Credly", "url": "https://www.credly.com/users/sajith-jeewantha/", "logo": "credly" }
+  ]
+}

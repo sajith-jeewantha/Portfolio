@@ -1,0 +1,74 @@
+[
+  {
+    "id": "api-shield-platform",
+    "title": "API Shield Platform",
+    "year": 2026,
+    "status": "completed",
+    "icon": "network",
+    "categories": ["web", "backend", "full-stack", "api"],
+    "description": "A real-world API management system built with Spring Boot and WSO2 API Manager, showing how an API gateway secures, publishes and manages backend REST APIs in a microservices-style architecture.",
+    "features": [
+      "RESTful API built with Spring Boot",
+      "API exposure via WSO2 API Gateway",
+      "API subscription and key generation",
+      "Throttling and security policies",
+      "Dockerized environment",
+      "Clean separation of backend and gateway"
+    ],
+    "tech": ["Spring Boot", "WSO2 API Manager", "REST APIs", "JSON", "Docker", "Java 17", "Postman"],
+    "links": [
+      { "type": "github", "label": "Source", "url": "https://github.com/sajith-jeewantha/api-shield-platform" },
+      { "type": "post", "label": "Write-up", "url": "https://www.linkedin.com/posts/sajith-jeewantha_wso2-apigateway-springboot-ugcPost-7461151865762746369-CrNB" }
+    ],
+    "featured": true,
+    "order": 1,
+    "visible": true
+  },
+  {
+    "id": "ai-chat-bot",
+    "title": "AI Chat Bot",
+    "year": 2026,
+    "status": "completed",
+    "icon": "bot",
+    "categories": ["ai", "ml"],
+    "description": "Dockerized TF-IDF chatbot that delivers fast, deterministic responses using cosine similarity over a custom knowledge dataset — designed for lightweight support-automation use cases.",
+    "features": [
+      "TF-IDF vector search",
+      "Cosine-similarity response matching",
+      "Retrieval-based deterministic answers",
+      "Lightweight, fast CPU runtime",
+      "One-command Docker deployment",
+      "JSONL dataset support"
+    ],
+    "tech": ["Python", "Scikit-learn", "NLP", "TF-IDF", "Docker"],
+    "links": [
+      { "type": "github", "label": "Source", "url": "https://github.com/sajith-jeewantha/Chat-Bot" },
+      { "type": "docker", "label": "Docker Hub", "url": "https://hub.docker.com/r/sajithjeewantha/chat-bot" }
+    ],
+    "featured": true,
+    "order": 2,
+    "visible": true
+  },
+  {
+    "id": "online-auction-system",
+    "title": "Online Auction System",
+    "year": 2025,
+    "status": "completed",
+    "icon": "gavel",
+    "categories": ["web", "backend"],
+    "description": "Built with modern enterprise Java on a microservices architecture, featuring secure user authentication, real-time bidding and asynchronous service communication.",
+    "features": [
+      "User accounts & authentication",
+      "Secure login & authorization",
+      "Real-time bidding"
+    ],
+    "tech": ["Java", "Jakarta EE", "Microservices", "Apache ActiveMQ", "Maven"],
+    "links": [
+      { "type": "github", "label": "Source", "url": "https://github.com/sajith-jeewantha/Online-Auction-System" },
+      { "type": "post", "label": "Write-up", "url": "https://www.linkedin.com/posts/sajith-jeewantha_java-jakartaee-microservices-activity-7412144535457157120-_FwJ" }
+    ],
+    "featured": false,
+    "order": 3,
+    "visible": true
+  }
+]

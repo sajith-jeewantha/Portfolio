@@ -1,0 +1,9 @@
+[
+  { "id": "web", "label": "Web Applications", "icon": "globe" },
+  { "id": "mobile", "label": "Mobile Apps", "icon": "smartphone" },
+  { "id": "backend", "label": "Backend Systems", "icon": "server" },
+  { "id": "full-stack", "label": "Full Stack", "icon": "layers" },
+  { "id": "ai", "label": "Artificial Intelligence", "icon": "bot" },
+  { "id": "ml", "label": "Machine Learning", "icon": "brain" },
+  { "id": "api", "label": "API", "icon": "network" }
+]

@@ -1,0 +1,113 @@
+---
+/**
+ * Hero art: a cathedral rose window whose tracery is a neural network.
+ * Stained-glass lancets + network nodes/edges, with "signals" travelling
+ * along a few synapses. Everything is generated here at build time.
+ */
+import Avatar from './Avatar.astro';
+
+const rad = (d: number) => (d * Math.PI) / 180;
+const P = (r: number, deg: number) => [+(r * Math.sin(rad(deg))).toFixed(2), +(-r * Math.cos(rad(deg))).toFixed(2)];
+const pt = (r: number, deg: number) => P(r, deg).join(' ');
+
+// --- Stained-glass lancets (pointed-arch petals) ---
+const glass = ['fill-lapis', 'fill-ruby', 'fill-gold', 'fill-emerald', 'fill-amethyst', 'fill-ruby'];
+const r1 = 94;
+const r2 = 198;
+const w = 12.5;
+const lancets = Array.from({ length: 12 }, (_, i) => {
+  const a = i * 30;
+  const mid = r1 + (r2 - r1) * 0.55;
+  const d = [
+    `M ${pt(r1, a - w)}`,
+    `Q ${pt(mid, a - w * 1.18)} ${pt(r2, a)}`,
+    `Q ${pt(mid, a + w * 1.18)} ${pt(r1, a + w)}`,
+    `A ${r1} ${r1} 0 0 0 ${pt(r1, a - w)} Z`,
+  ].join(' ');
+  const [ox, oy] = P(r1 + (r2 - r1) * 0.6, a);
+  return { d, cls: glass[i % glass.length], ox, oy };
+});
+
+// Trefoil roundels between the lancets
+const roundels = Array.from({ length: 12 }, (_, i) => P(204, i * 30 + 15));
+
+// --- Neural network tracery ---
+const ringA = Array.from({ length: 12 }, (_, i) => P(r1, i * 30));
+const ringB = Array.from({ length: 12 }, (_, i) => P(150, i * 30 + 15));
+const ringC = Array.from({ length: 24 }, (_, i) => P(228, i * 15 + 7.5));
+type Edge = [number[], number[]];
+const edges: Edge[] = [];
+for (let i = 0; i < 12; i++) {
+  edges.push([ringA[i], ringB[i]], [ringA[i], ringB[(i + 11) % 12]]);
+  edges.push([ringB[i], ringC[2 * i + 1]], [ringB[i], ringC[(2 * i + 2) % 24]], [ringB[i], ringC[2 * i]]);
+}
+// A handful of edges carry animated signals
+const signalCls = ['stroke-lapis', 'stroke-ruby', 'stroke-gold', 'stroke-emerald'];
+const signals = [0, 7, 13, 22, 31, 40, 46, 55].map((n, k) => ({
+  e: edges[n % edges.length],
+  cls: signalCls[k % signalCls.length],
+  delay: `${(k * 0.85).toFixed(2)}s`,
+}));
+---
+
+<div class="relative mx-auto aspect-square w-full max-w-[19rem] sm:max-w-[26rem] lg:max-w-[30rem]">
+  <svg viewBox="-250 -250 500 500" class="absolute inset-0 size-full overflow-visible" aria-hidden="true">
+    <defs>
+      <radialGradient id="halo">
+        <stop offset="0.3" stop-color="var(--gold)" stop-opacity="0.22"></stop>
+        <stop offset="1" stop-color="var(--gold)" stop-opacity="0"></stop>
+      </radialGradient>
+    </defs>
+
+    <circle r="250" fill="url(#halo)"></circle>
+
+    <!-- Outer frame -->
+    <circle r="240" class="fill-none stroke-line-strong" stroke-width="1"></circle>
+    <circle r="234" class="fill-surface stroke-gold/50" stroke-width="1.2"></circle>
+
+    <g class="rose-spin">
+      <!-- Glass -->
+      {
+        lancets.map((l) => (
+          <g>
+            <path d={l.d} class:list={[l.cls, 'stroke-line-strong']} style="fill-opacity: var(--glass-opacity)" stroke-width="1.6" />
+            <circle cx={l.ox} cy={l.oy} r="8" class="fill-none stroke-gold/60" stroke-width="1" />
+          </g>
+        ))
+      }
+      {roundels.map(([x, y]) => <circle cx={x} cy={y} r="13" class="fill-gold stroke-gold/70" style="fill-opacity: calc(var(--glass-opacity) * 0.8)" stroke-width="1" />)}
+
+      <!-- Synapses -->
+      <g class="stroke-gold" stroke-opacity="0.45" stroke-width="0.8">
+        {edges.map(([a, b]) => <line x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} />)}
+      </g>
+      <g stroke-width="2.4" stroke-linecap="round" fill="none">
+        {
+          signals.map((s) => (
+            <path
+              d={`M ${s.e[0][0]} ${s.e[0][1]} L ${s.e[1][0]} ${s.e[1][1]}`}
+              class:list={['signal', s.cls]}
+              style={`animation-delay: ${s.delay}`}
+            />
+          ))
+        }
+      </g>
+
+      <!-- Neurons -->
+      {ringB.map(([x, y]) => <circle cx={x} cy={y} r="4.2" class="fill-elev stroke-gold" stroke-width="1.4" />)}
+      {ringC.map(([x, y]) => <circle cx={x} cy={y} r="2.6" class="fill-gold" />)}
+    </g>
+
+    <!-- Counter-rotating inner tracery -->
+    <g class="rose-spin-rev">
+      <circle r="102" class="fill-none stroke-gold/70" stroke-width="1.2" stroke-dasharray="2 6"></circle>
+      {ringA.map(([x, y]) => <circle cx={x} cy={y} r="4.6" class="fill-lapis stroke-elev" stroke-width="1.4" />)}
+    </g>
+    <circle r="88" class="fill-elev stroke-gold" stroke-width="2.2"></circle>
+  </svg>
+
+  <Avatar
+    class="absolute top-1/2 left-1/2 w-[33%] -translate-x-1/2 -translate-y-1/2 rounded-full"
+    style={`aspect-ratio:1;`}
+  />
+</div>

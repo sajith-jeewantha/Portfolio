@@ -1,0 +1,90 @@
+---
+/** ML / agent pipeline diagram: data → model → evaluate → agent → integrate. */
+import Icon from './Icon.astro';
+import { profile } from '../lib/content';
+
+const steps = profile.pipeline;
+const tones = ['text-emerald', 'text-lapis', 'text-gold', 'text-amethyst', 'text-ruby'];
+---
+
+<div class="pane relative overflow-hidden p-6 md:p-8" data-reveal>
+  <p class="font-mono text-xs text-muted">
+    <span class="text-gold">#</span> how I build intelligent systems
+  </p>
+
+  <ol class="pipeline relative mt-6 grid gap-4 md:grid-cols-5 md:gap-3">
+    {
+      steps.map((s, i) => (
+        <li class="relative flex gap-4 md:flex-col md:items-center md:gap-3 md:text-center" style={`--i:${i}`}>
+          {i < steps.length - 1 && <span class="flow" aria-hidden="true" />}
+          <span class:list={['node relative z-10 grid size-14 shrink-0 place-items-center rounded-2xl border border-line-strong bg-elev', tones[i % tones.length]]}>
+            <Icon name={s.icon} size="24" />
+          </span>
+          <div>
+            <p class="font-mono text-[11px] text-gold">{s.fn}</p>
+            <p class="mt-0.5 text-sm font-semibold text-ink">{s.label}</p>
+            <p class="mt-1 text-xs leading-relaxed text-muted">{s.text}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<style>
+  /* Connector between steps: vertical on mobile, horizontal on desktop */
+  .flow {
+    position: absolute;
+    left: 1.75rem;
+    top: 3.5rem;
+    height: calc(100% - 2.5rem);
+    width: 2px;
+    background-image: linear-gradient(to bottom, var(--line-strong) 50%, transparent 50%);
+    background-size: 2px 8px;
+  }
+  .flow::after {
+    content: '';
+    position: absolute;
+    left: -2px;
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--gold);
+    box-shadow: 0 0 10px var(--gold);
+    animation: flow-y 2.4s linear infinite;
+    animation-delay: calc(var(--i) * 0.48s);
+  }
+  @media (min-width: 768px) {
+    .flow {
+      left: calc(50% + 2.25rem);
+      top: 1.75rem;
+      width: calc(100% - 4.5rem + 0.75rem);
+      height: 2px;
+      background-image: linear-gradient(to right, var(--line-strong) 50%, transparent 50%);
+      background-size: 8px 2px;
+    }
+    .flow::after {
+      top: -2px;
+      left: 0;
+      animation-name: flow-x;
+    }
+  }
+  @keyframes flow-y {
+    from { top: 0; opacity: 0; }
+    15% { opacity: 1; }
+    85% { opacity: 1; }
+    to { top: 100%; opacity: 0; }
+  }
+  @keyframes flow-x {
+    from { left: 0; opacity: 0; }
+    15% { opacity: 1; }
+    85% { opacity: 1; }
+    to { left: 100%; opacity: 0; }
+  }
+  .node {
+    box-shadow: inset 0 0 0 3px color-mix(in oklab, var(--bg-elev) 85%, currentColor);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .flow::after { animation: none; display: none; }
+  }
+</style>

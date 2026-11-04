@@ -1,0 +1,77 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/sections/Hero.astro';
+import About from '../components/sections/About.astro';
+import Experience from '../components/sections/Experience.astro';
+import Education from '../components/sections/Education.astro';
+import Projects from '../components/sections/Projects.astro';
+import Stack from '../components/sections/Stack.astro';
+import LatestPosts from '../components/sections/LatestPosts.astro';
+import Scripture from '../components/sections/Scripture.astro';
+import Contact from '../components/sections/Contact.astro';
+import VerseDivider from '../components/VerseDivider.astro';
+import { getImage } from 'astro:assets';
+import { getCertifications, getEducation, getPosts, getProjects, getStack, profile, site } from '../lib/content';
+import { avatar } from '../lib/avatar';
+
+const [{ projects }, certifications, stack, posts, education] = await Promise.all([
+  getProjects(),
+  getCertifications(),
+  getStack(),
+  getPosts(),
+  getEducation(),
+]);
+const photo = await getImage({ src: avatar, width: 800, height: 800, fit: 'cover', format: 'jpg' });
+
+const stats = [
+  { value: projects.length, label: 'Projects', key: 'len(projects)' },
+  { value: certifications.filter((c) => c.data.status === 'earned').length, label: 'Certifications', key: 'certs.earned' },
+  { value: stack.reduce((n, c) => n + c.items.length, 0), label: 'Technologies', key: 'stack.size' },
+  { value: posts.length, label: 'Articles', key: 'posts.count()' },
+];
+
+// Structured data (schema.org) — helps Google build a knowledge panel for you
+const personId = `${site.url}/#person`;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': personId,
+      name: profile.name,
+      url: site.url,
+      image: new URL(photo.src, site.url).href,
+      jobTitle: profile.current.role,
+      description: site.description,
+      worksFor: { '@type': 'Organization', name: profile.current.company, url: profile.current.url },
+      alumniOf: [...new Set(education.map((e) => e.data.school.split(' / ')[0]))].map((name) => ({ '@type': 'CollegeOrUniversity', name })),
+      knowsAbout: [...profile.focus.map((f) => f.label), ...stack.flatMap((c) => c.items.map((t) => t.data.name))],
+      address: { '@type': 'PostalAddress', addressLocality: 'Colombo', addressCountry: 'LK' },
+      sameAs: [...profile.socials.map((s) => s.url), ...profile.skillProfiles.map((s) => s.url)],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${site.url}/#website`,
+      url: site.url,
+      name: profile.name,
+      description: site.description,
+      inLanguage: 'en',
+      publisher: { '@id': personId },
+    },
+  ],
+};
+---
+
+<BaseLayout jsonLd={jsonLd}>
+  <Hero />
+  <div class="container-x"><VerseDivider id="phil-4-13" /></div>
+  <About stats={stats} />
+  <Experience />
+  <Education />
+  <div class="container-x py-6"><VerseDivider id="prov-27-17" /></div>
+  <Projects />
+  <Stack />
+  <LatestPosts posts={posts.slice(0, 3)} />
+  <Scripture />
+  <Contact />
+</BaseLayout>

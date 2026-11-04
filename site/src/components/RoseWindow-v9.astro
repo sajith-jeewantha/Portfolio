@@ -1,0 +1,100 @@
+---
+/**
+ * Hero art v9 — "Sunburst of Skills" (static, data-driven).
+ * A sunburst chart is a rose window: the inner ring is your technology
+ * categories, the outer ring every visible technology — sized and coloured
+ * from src/data/technologies.json. Edit the data and the window redraws.
+ */
+import RoseFrame from './RoseFrame.astro';
+import { arc, polar, pt, sector } from '../lib/geometry';
+import { getStack } from '../lib/content';
+
+const ID = 'rw9';
+const stack = await getStack();
+const total = stack.reduce((n, c) => n + c.items.length, 0);
+const per = 360 / total;
+const tones = ['lapis', 'ruby', 'gold', 'emerald', 'amethyst'];
+const fill: Record<string, string> = { lapis: 'fill-lapis', ruby: 'fill-ruby', gold: 'fill-gold', emerald: 'fill-emerald', amethyst: 'fill-amethyst' };
+
+const IN1 = 94;
+const IN2 = 136;
+const OUT1 = 140;
+const OUT2 = 222;
+
+let cursor = 0;
+const cats = stack.map((c, ci) => {
+  const tone = tones[ci % tones.length];
+  const a1 = cursor;
+  const a2 = cursor + c.items.length * per;
+  cursor = a2;
+  const items = c.items.map((t, ti) => {
+    const s1 = a1 + ti * per;
+    const s2 = s1 + per;
+    const mid = (s1 + s2) / 2;
+    const flip = mid > 180; // keep labels readable on the left half
+    const [lx, ly] = polar((OUT1 + OUT2) / 2 + 6, mid);
+    return { name: t.data.name, d: sector(OUT1, OUT2, s1, s2), k: 0.55 + (ti % 3) * 0.2, lx, ly, rot: flip ? mid + 90 : mid - 90 };
+  });
+  const mid = (a1 + a2) / 2;
+  // Category label along its arc (only if it fits)
+  const arcLen = ((a2 - a1) * Math.PI * ((IN1 + IN2) / 2)) / 180;
+  const short = c.data.label.split(/[ ,&]/)[0];
+  const label = arcLen > short.length * 6.6 + 6 ? short : '';
+  const bottom = mid > 90 && mid < 270;
+  // Top half: clockwise arc. Bottom half: counter-clockwise so the text stays upright.
+  const rTop = (IN1 + IN2) / 2 - 4;
+  const rBot = (IN1 + IN2) / 2 + 4;
+  const large = a2 - a1 > 180 ? 1 : 0;
+  const labelPath = bottom
+    ? `M ${pt(rBot, a2 - 1)} A ${rBot} ${rBot} 0 ${large} 0 ${pt(rBot, a1 + 1)}`
+    : arc(rTop, a1 + 1, a2 - 1);
+  return { id: c.id, tone, d: sector(IN1, IN2, a1, a2), items, label, labelPath, bottom, a1, a2 };
+});
+---
+
+<RoseFrame id={ID} portrait={80} caption={`${total} technologies · ${stack.length} categories <span class="mx-1.5 text-line-strong">|</span> from <span class="text-gold">technologies.json</span>`}>
+  <defs>
+    {cats.map((c) => <path id={`${ID}-cat-${c.id}`} d={c.labelPath} />)}
+  </defs>
+
+  <!-- Outer ring: technologies -->
+  {
+    cats.map((c) =>
+      c.items.map((t) => (
+        <path d={t.d} class:list={[fill[c.tone], 'stroke-line-strong']} style={`fill-opacity: calc(var(--glass-opacity) * ${t.k.toFixed(2)})`} stroke-width="1.2" />
+      )),
+    )
+  }
+  {
+    cats.map((c) =>
+      c.items.map((t) => (
+        <text transform={`translate(${t.lx} ${t.ly}) rotate(${t.rot.toFixed(2)})`} text-anchor="middle" dy="3" class="fill-ink font-mono" font-size="8.2" font-weight="500">
+          {t.name.length > 13 ? t.name.slice(0, 12) + '…' : t.name}
+        </text>
+      )),
+    )
+  }
+
+  <!-- Inner ring: categories -->
+  {cats.map((c) => <path d={c.d} class:list={[fill[c.tone], 'stroke-gold']} style="fill-opacity: calc(var(--glass-opacity) * 1.9)" stroke-width="1.6" />)}
+  {
+    cats.map((c) =>
+      c.label ? (
+        <text class="font-mono" font-size="10" font-weight="700" letter-spacing="0.5" dy={c.bottom ? 0 : 4}>
+          <textPath href={`#${ID}-cat-${c.id}`} startOffset="50%" text-anchor="middle" class="fill-ink">{c.label}</textPath>
+        </text>
+      ) : null,
+    )
+  }
+
+  <!-- Lead between categories -->
+  {
+    cats.map((c) => {
+      const [x1, y1] = polar(IN1, c.a1);
+      const [x2, y2] = polar(OUT2, c.a1);
+      return <line x1={x1} y1={y1} x2={x2} y2={y2} class="stroke-gold" stroke-width="2.2" />;
+    })
+  }
+  <circle r={IN2 + 2} class="fill-none stroke-gold" stroke-width="2"></circle>
+  <circle r={OUT2} class="fill-none stroke-gold" stroke-width="2"></circle>
+</RoseFrame>
