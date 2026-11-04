@@ -89,6 +89,8 @@ Run all commands from the `site/` folder.
 | `npm run check`     | Type-check `.astro` / `.ts` files and content schemas               |
 | `npm run sync`      | Regenerate content types after changing `content.config.ts`         |
 | `npm run icon -- pytorch` | Save a brand logo from Simple Icons into `src/assets/icons/`  |
+| `npm run cf:preview` | Build and serve exactly as Cloudflare will (`wrangler dev`) |
+| `npm run deploy` | Build and deploy to Cloudflare from your machine |
 | `npm run photo -- <file>` | Convert a photo (incl. iPhone HEIC) to a web-ready JPEG, metadata removed |
 | `npm run astro -- --help` | Any other Astro CLI command                                   |
 
@@ -475,30 +477,39 @@ What helps ranking most from here: **publish blog posts regularly**, link to the
 
 `npm run build` produces a plain static folder (`site/dist/`) that any static host can serve. The domain is already on Cloudflare, so **Cloudflare Pages** is the natural choice: free, global CDN, automatic HTTPS, and no servers or databases to run.
 
-### 1. Create the Pages project (one time)
+### 1. Create the Cloudflare project (one time)
 
-1. Cloudflare dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git** → authorise GitHub → choose `sajith-jeewantha/Portfolio`.
-2. Build settings:
+Cloudflare now creates new Git-connected projects as **Workers** (static assets). This repo includes `site/wrangler.jsonc`, so that works out of the box.
+
+1. Cloudflare dashboard → **Workers & Pages** → **Create** → **Import a repository** → authorise GitHub → choose `sajith-jeewantha/Portfolio`.
+2. Project / build settings (also under *Worker → Settings → Build*):
 
    | Setting | Value |
    | --- | --- |
+   | Project name | `portfolio` (must match `"name"` in `site/wrangler.jsonc`) |
    | Production branch | `master` |
-   | Framework preset | Astro |
+   | **Root directory** (Path) | **`site`** |
    | Build command | `npm run build` |
-   | Build output directory | `dist` |
-   | Root directory (advanced) | `site` |
+   | Deploy command | `npx wrangler deploy` |
+   | Non-production branch deploy command | `npx wrangler versions upload` |
 
-   The Node.js version comes from `site/.node-version` (24). If the build log shows an older Node, add the environment variable `NODE_VERSION` = `24`.
-3. **Save and Deploy.** You get a URL like `https://<project>.pages.dev`.
+   The Node.js version comes from `site/.node-version` (24). If the build log shows an older Node, add the build variable `NODE_VERSION` = `24`.
+3. Save and deploy. You get a URL like `https://portfolio.<your-subdomain>.workers.dev`.
+
+`site/wrangler.jsonc` tells Cloudflare to serve the static `dist/` folder, show `404.html` with a real 404 status, and add trailing slashes (`/blog` → `/blog/`). `public/_headers` is applied as usual.
+
+Test the production setup locally with `npm run cf:preview` (Astro build + `wrangler dev`). `npm run deploy` deploys from your machine (needs `npx wrangler login` once).
+
+> Prefer classic **Pages**? Create a *Pages* project instead with root directory `site`, build command `npm run build` and output directory `dist`. No deploy command is needed, and `wrangler.jsonc` is ignored.
 
 ### 2. Preview before switching the domain
 
-Every branch and pull request gets its own preview URL (e.g. `https://release-v1-0-0.<project>.pages.dev`), so you can test v1.0.0 while the old site keeps serving `sajithjeewantha.com`. Preview deployments are automatically hidden from search engines.
+Every branch and pull request gets its own preview URL (shown on the GitHub pull request), so you can test v1.0.0 while the old site keeps serving `sajithjeewantha.com`. Preview deployments are automatically hidden from search engines.
 
 ### 3. Go live
 
 1. Merge `release/v1.0.0` into `master`. Pages builds and deploys production automatically.
-2. Pages project → **Custom domains** → **Set up a custom domain** → `sajithjeewantha.com`, then again for `www.sajithjeewantha.com`.
+2. Worker `portfolio` → **Settings** → **Domains & Routes** → **Add** → **Custom domain** → `sajithjeewantha.com`, then again for `www.sajithjeewantha.com`.
    - The domain currently points to the old Cloud Run service. Cloudflare will ask to replace that DNS record; confirm it. The switch takes effect within minutes, and HTTPS is issued automatically.
 3. Redirect `www` to the main domain: Cloudflare dashboard → your domain → **Rules** → **Redirect Rules** → template *Redirect from WWW to root* (301).
 4. Recommended domain settings (Cloudflare dashboard → your domain):
@@ -515,7 +526,7 @@ Edit content → commit → push. Pull requests get a preview URL; merging to `m
 
 ### 5. Shut down v0 (after v1 is live)
 
-Nothing in Google Cloud is removed automatically. Once the domain points to Pages and everything works, delete the Cloud Run service `portfolioservice`, the Artifact Registry repository `docker-portfolio-repository`, the Terraform state bucket `sj-portfolio-tf-state` and the GitHub secrets the old workflow used. Then pause or delete the Supabase project.
+Nothing in Google Cloud is removed automatically. Once the domain points to Cloudflare and everything works, delete the Cloud Run service `portfolioservice`, the Artifact Registry repository `docker-portfolio-repository`, the Terraform state bucket `sj-portfolio-tf-state` and the GitHub secrets the old workflow used. Then pause or delete the Supabase project.
 
 ### Alternatives
 
@@ -551,6 +562,7 @@ Once v1 is live, the old Cloud Run service, Artifact Registry repository, Terraf
 | Types out of date in the editor | Run `npm run sync`. |
 | `Profile photo "x.heic" is in a format browsers and Astro can't use` | Run the `npm run photo -- …` command shown in the error, then rebuild. |
 | `Could not resolve '../assets/images/…'` | A file imports an image path directly. Use the `<Avatar />` component or `src/lib/avatar.ts` instead. |
+| Cloudflare "Workers Builds" fails | Check *Settings → Build*: root directory must be `site`, deploy command `npx wrangler deploy`, project name `portfolio`. |
 | `sharp` errors on install | Delete `node_modules` and `package-lock.json`, then run `npm install` again. |
 
 ---
