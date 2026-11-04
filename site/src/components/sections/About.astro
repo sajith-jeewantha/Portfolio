@@ -1,0 +1,54 @@
+---
+import CodeLab from '../CodeLab.astro';
+import Icon from '../Icon.astro';
+import SectionHeading from '../SectionHeading.astro';
+import { profile } from '../../lib/content';
+
+interface Props {
+  stats: { value: number; label: string; key: string }[];
+}
+const { stats } = Astro.props;
+const tones = ['text-lapis bg-lapis-soft', 'text-amethyst bg-amethyst-soft', 'text-emerald bg-emerald-soft', 'text-ruby bg-ruby-soft'];
+---
+
+<section id="about" class="container-x py-20" aria-labelledby="about-title">
+  <SectionHeading id="about-title" index="01" eyebrow="About" title="Engineering with" accent="purpose." />
+
+  <div class="grid gap-10 lg:grid-cols-[1fr_1.05fr] lg:items-start">
+    <div class="space-y-5 text-lg leading-relaxed" data-reveal>
+      {profile.about.map((p) => <p>{p}</p>)}
+
+      <dl class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {
+          stats.map((s) => (
+            <div class="pane p-4">
+              <dt class="font-mono text-[11px] text-muted">
+                <span class="sr-only">{s.label}</span>
+                <span aria-hidden="true">{s.key}</span>
+              </dt>
+              <dd class="mt-1 font-display text-4xl font-semibold text-ink">{s.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+
+    <CodeLab />
+  </div>
+
+  <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    {
+      profile.focus.map((f, i) => (
+        <li class="pane pane-hover flex flex-col gap-4 p-5" data-reveal style={`--delay:${i * 90}ms`}>
+          <span class:list={['arch grid size-12 shrink-0 place-items-center pt-1', tones[i % tones.length]]}>
+            <Icon name={f.icon} size="22" />
+          </span>
+          <div>
+            <h3 class="font-semibold">{f.label}</h3>
+            <p class="mt-1 text-sm leading-relaxed text-muted">{f.text}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</section>

@@ -1,0 +1,32 @@
+---
+import Icon from '../Icon.astro';
+import { profile } from '../../lib/content';
+---
+
+<section class="container-x py-20" aria-labelledby="contact-title">
+  <div class="pane relative overflow-hidden px-6 py-14 text-center sm:px-12" data-reveal>
+    <div
+      class="pointer-events-none absolute inset-0 opacity-60"
+      style="background: radial-gradient(30rem 16rem at 50% 0%, color-mix(in oklab, var(--lapis) 22%, transparent), transparent 70%), radial-gradient(22rem 12rem at 85% 100%, color-mix(in oklab, var(--gold) 20%, transparent), transparent 70%);"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="relative">
+      <p class="eyebrow">Let's connect</p>
+      <h2 id="contact-title" class="mx-auto mt-4 max-w-2xl font-display text-4xl leading-tight font-semibold sm:text-5xl">
+        Have an idea, a role or a question? <span class="glass-text italic">Let's talk.</span>
+      </h2>
+      <p class="mx-auto mt-4 max-w-xl text-muted">
+        I'm always happy to talk about software engineering, cloud, AI and machine learning — or something new we could build together.
+      </p>
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <a href={profile.contact.url} target="_blank" rel="noopener noreferrer" class="btn-primary">
+          <Icon name="ri:linkedin-fill" /> Message me on LinkedIn
+        </a>
+        <a href={profile.socials.find((s) => s.name === 'GitHub')?.url} target="_blank" rel="noopener noreferrer" class="btn-ghost">
+          <Icon name="ri:github-fill" /> Follow on GitHub
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

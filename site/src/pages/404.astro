@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import VerseDivider from '../components/VerseDivider.astro';
+---
+
+<BaseLayout title="Page not found" description="The page you are looking for could not be found." noindex>
+  <section class="container-x grid min-h-[60vh] place-items-center py-20 text-center">
+    <div>
+      <p class="font-mono text-sm text-gold">error 404 · route_not_found</p>
+      <h1 class="mt-4 font-display text-6xl font-semibold sm:text-7xl">
+        Lost in the <em class="glass-text">nave.</em>
+      </h1>
+      <p class="mx-auto mt-4 max-w-md text-muted">The page you're looking for has moved or never existed.</p>
+      <VerseDivider id="luke-15-6" class="mt-10" />
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <a href="/" class="btn-primary"><Icon name="arrow-left" /> Back home</a>
+        <a href="/blog/" class="btn-ghost">Read the blog</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

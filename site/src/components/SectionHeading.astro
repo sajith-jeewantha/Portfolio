@@ -1,0 +1,23 @@
+---
+interface Props {
+  index: string;
+  eyebrow: string;
+  title: string;
+  accent?: string;
+  description?: string;
+  id?: string;
+}
+const { index, eyebrow, title, accent, description, id } = Astro.props;
+---
+
+<div class="mb-12 max-w-2xl" data-reveal>
+  <p class="eyebrow flex items-center gap-3">
+    <span class="text-muted">{index}</span>
+    <span class="h-px w-8 bg-gold/60" aria-hidden="true"></span>
+    {eyebrow}
+  </p>
+  <h2 id={id} class="mt-4 font-display text-4xl leading-[1.05] font-semibold tracking-tight sm:text-5xl">
+    {title}{accent && ' '}{accent && <em class="glass-text pr-1 font-semibold">{accent}</em>}
+  </h2>
+  {description && <p class="mt-4 text-base leading-relaxed text-muted sm:text-lg">{description}</p>}
+</div>

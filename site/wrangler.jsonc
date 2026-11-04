@@ -1,0 +1,18 @@
+// Cloudflare Workers (static assets) config used by `npx wrangler deploy`.
+// Docs: https://developers.cloudflare.com/workers/static-assets/
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Must match the Worker's name in the Cloudflare dashboard (Workers & Pages → "portfolio")
+  "name": "portfolio",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    // Astro's static build output
+    "directory": "./dist",
+    // Serve dist/404.html with a real 404 status for unknown URLs
+    "not_found_handling": "404-page",
+    // /blog → /blog/ (matches the canonical URLs Astro generates)
+    "html_handling": "auto-trailing-slash"
+  },
+  // Static site only — no Worker script, nothing to observe at runtime
+  "observability": { "enabled": false }
+}

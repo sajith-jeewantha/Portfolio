@@ -1,0 +1,58 @@
+[
+  { "id": "java", "name": "Java", "category": "languages", "logo": "java", "visible": true },
+  { "id": "python", "name": "Python", "category": "languages", "logo": "python", "visible": true },
+  { "id": "csharp", "name": "C#", "category": "languages", "logo": "csharp", "visible": true },
+  { "id": "javascript", "name": "JavaScript", "category": "languages", "logo": "javascript", "visible": true },
+  { "id": "php", "name": "PHP", "category": "languages", "logo": "php", "visible": true },
+  { "id": "ballerina", "name": "Ballerina", "category": "languages", "logo": "ballerina", "visible": true },
+  { "id": "cpp", "name": "C++", "category": "languages", "logo": "cpp", "visible": true },
+
+  { "id": "pytorch", "name": "PyTorch", "category": "ai-ml", "logo": "pytorch", "visible": true },
+  { "id": "tensorflow", "name": "TensorFlow", "category": "ai-ml", "logo": "tensorflow", "visible": true },
+  { "id": "numpy", "name": "NumPy", "category": "ai-ml", "logo": "numpy", "visible": true },
+  { "id": "pandas", "name": "Pandas", "category": "ai-ml", "logo": "pandas", "visible": true },
+
+  { "id": "spring-boot", "name": "Spring Boot", "category": "frameworks", "logo": "spring-boot", "visible": true },
+  { "id": "django", "name": "Django", "category": "frameworks", "logo": "django", "visible": true },
+  { "id": "flask", "name": "Flask", "category": "frameworks", "logo": "flask", "visible": true },
+  { "id": "aspnet", "name": "ASP.NET", "category": "frameworks", "logo": "aspnet", "visible": true },
+  { "id": "laravel", "name": "Laravel", "category": "frameworks", "logo": "laravel", "visible": true },
+  { "id": "tailwindcss", "name": "Tailwind CSS", "category": "frameworks", "logo": "tailwindcss", "visible": true },
+  { "id": "bootstrap", "name": "Bootstrap", "category": "frameworks", "logo": "bootstrap", "visible": true },
+  { "id": "react", "name": "React", "category": "frameworks", "logo": "react", "visible": true },
+  { "id": "angular", "name": "Angular", "category": "frameworks", "logo": "angular", "visible": true },
+  { "id": "nodejs", "name": "Node.js", "category": "frameworks", "logo": "nodejs", "visible": true },
+  { "id": "wso2-integration", "name": "WSO2 Integration", "category": "frameworks", "logo": "wso2", "visible": true },
+
+  { "id": "aws", "name": "Amazon Web Services", "category": "cloud", "logo": "aws", "visible": true },
+  { "id": "google-cloud", "name": "Google Cloud", "category": "cloud", "logo": "google-cloud", "visible": true },
+  { "id": "oracle-cloud", "name": "Oracle Cloud", "category": "cloud", "logo": "oracle", "visible": true },
+  { "id": "firebase", "name": "Firebase", "category": "cloud", "logo": "firebase", "visible": true },
+
+  { "id": "mysql", "name": "MySQL", "category": "databases", "logo": "mysql", "visible": true },
+  { "id": "mongodb", "name": "MongoDB", "category": "databases", "logo": "mongodb", "visible": true },
+  { "id": "redis", "name": "Redis", "category": "databases", "logo": "redis", "visible": true },
+  { "id": "sqlite", "name": "SQLite", "category": "databases", "logo": "sqlite", "visible": true },
+
+  { "id": "docker", "name": "Docker", "category": "devops", "logo": "docker", "visible": true },
+  { "id": "terraform", "name": "Terraform", "category": "devops", "logo": "terraform", "visible": true },
+  { "id": "git", "name": "Git", "category": "devops", "logo": "git", "visible": true },
+  { "id": "github", "name": "GitHub", "category": "devops", "logo": "github", "visible": true },
+  { "id": "maven", "name": "Maven", "category": "devops", "logo": "maven", "visible": true },
+  { "id": "rabbitmq", "name": "RabbitMQ", "category": "devops", "logo": "rabbitmq", "visible": true },
+  { "id": "kafka", "name": "Kafka", "category": "devops", "logo": "kafka", "visible": false },
+  { "id": "glassfish", "name": "GlassFish", "category": "devops", "logo": "glassfish", "visible": true },
+  { "id": "payara", "name": "Payara", "category": "devops", "logo": "payara", "visible": true },
+  { "id": "github-actions", "name": "GitHub Actions", "category": "devops", "logo": "github-actions", "visible": true },
+
+  { "id": "android", "name": "Android", "category": "mobile-iot", "logo": "android", "visible": true },
+  { "id": "react-native", "name": "React Native", "category": "mobile-iot", "logo": "react-native", "visible": true },
+  { "id": "arduino", "name": "Arduino", "category": "mobile-iot", "logo": "arduino", "visible": true },
+
+  { "id": "intellij-idea", "name": "IntelliJ IDEA", "category": "tools", "logo": "intellij-idea", "visible": true },
+  { "id": "pycharm", "name": "PyCharm", "category": "tools", "logo": "pycharm", "visible": true },
+  { "id": "vscode", "name": "VS Code", "category": "tools", "logo": "vscode", "visible": true },
+  { "id": "visual-studio", "name": "Visual Studio", "category": "tools", "logo": "visual-studio", "visible": true },
+  { "id": "android-studio", "name": "Android Studio", "category": "tools", "logo": "android-studio", "visible": true },
+  { "id": "postman", "name": "Postman", "category": "tools", "logo": "postman", "visible": true }
+]

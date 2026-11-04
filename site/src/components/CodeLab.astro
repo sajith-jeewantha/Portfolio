@@ -1,0 +1,155 @@
+---
+/**
+ * IDE-style window with tabs: a PyTorch training loop, an MCP server and a
+ * Ballerina integration service — plus a terminal pane with a training log
+ * and a loss curve. Syntax highlighting happens at build time (Shiki).
+ */
+import { Code } from 'astro:components';
+import Icon from './Icon.astro';
+
+const files = [
+  {
+    name: 'train.py',
+    lang: 'python',
+    icon: 'brain',
+    code: `import torch
+from torch import nn
+
+model = nn.Sequential(
+    nn.Linear(768, 256), nn.GELU(), nn.Dropout(0.1),
+    nn.Linear(256, num_classes),
+)
+optim = torch.optim.AdamW(model.parameters(), lr=3e-4)
+
+for epoch in range(1, epochs + 1):
+    for x, y in loader:
+        loss = nn.functional.cross_entropy(model(x), y)
+        loss.backward()
+        optim.step(); optim.zero_grad()`,
+  },
+  {
+    name: 'mcp_server.py',
+    lang: 'python',
+    icon: 'bot',
+    code: `from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP("portfolio")
+
+@mcp.tool()
+def search_projects(query: str) -> list[str]:
+    """Let an AI agent search my projects."""
+    q = query.lower()
+    return [p.title for p in projects if q in p.text]
+
+if __name__ == "__main__":
+    mcp.run()`,
+  },
+  {
+    name: 'service.bal',
+    lang: 'ballerina',
+    icon: 'network',
+    code: `import ballerina/http;
+
+service /api on new http:Listener(9090) {
+
+    resource function get hello(string name)
+            returns string {
+        return string \`Hello, \${name}!\`;
+    }
+}`,
+  },
+];
+
+// Illustrative loss curve for the terminal pane
+const losses = [2.31, 1.62, 1.18, 0.86, 0.64, 0.49, 0.38, 0.31, 0.25, 0.21];
+const W = 220;
+const H = 56;
+const max = losses[0];
+const pts = losses.map((l, i) => `${((i / (losses.length - 1)) * W).toFixed(1)},${(H - (l / max) * (H - 6) - 2).toFixed(1)}`).join(' ');
+---
+
+<div class="pane overflow-hidden font-mono text-[13px]" data-reveal>
+  <!-- Title bar -->
+  <div class="flex items-center gap-3 border-b border-line bg-elev/70 px-4 py-2.5">
+    <span class="flex gap-1.5" aria-hidden="true">
+      <span class="size-3 rounded-full bg-ruby/70"></span>
+      <span class="size-3 rounded-full bg-gold/70"></span>
+      <span class="size-3 rounded-full bg-emerald/70"></span>
+    </span>
+    <span class="text-xs text-muted">~/lab</span>
+  </div>
+
+  <!-- Tabs -->
+  <div class="flex overflow-x-auto border-b border-line" role="tablist" aria-label="Code samples">
+    {
+      files.map((f, i) => (
+        <button
+          type="button"
+          role="tab"
+          id={`code-tab-${i}`}
+          aria-controls={`code-panel-${i}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          class="code-tab flex shrink-0 cursor-pointer items-center gap-2 border-r border-line px-4 py-2 text-xs text-muted transition-colors hover:text-ink aria-selected:bg-surface aria-selected:text-ink"
+        >
+          <Icon name={f.icon} class="text-gold" /> {f.name}
+        </button>
+      ))
+    }
+  </div>
+
+  {
+    files.map((f, i) => (
+      <div id={`code-panel-${i}`} role="tabpanel" aria-labelledby={`code-tab-${i}`} hidden={i !== 0} class="code-panel">
+        <Code code={f.code} lang={f.lang as 'python'} themes={{ light: 'github-light', dark: 'github-dark-dimmed' }} wrap={false} />
+      </div>
+    ))
+  }
+
+  <!-- Terminal -->
+  <div class="grid gap-4 border-t border-line bg-elev/70 p-4 sm:grid-cols-[1fr_auto] sm:items-end">
+    <pre class="overflow-x-auto text-xs leading-relaxed text-muted"><span class="text-emerald">$</span> <span class="text-ink">python train.py --epochs 10</span>
+epoch 01  loss <span class="text-ruby">2.310</span>  acc 0.11
+epoch 05  loss <span class="text-gold">0.640</span>  acc 0.82
+epoch 10  loss <span class="text-emerald">0.210</span>  acc 0.95 <span class="text-emerald">✓</span></pre>
+    <figure>
+      <svg viewBox={`-2 -2 ${W + 4} ${H + 4}`} class="h-14 w-56" role="img" aria-label="Training loss decreasing over 10 epochs">
+        <defs>
+          <linearGradient id="loss-fill" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0" stop-color="var(--lapis)" stop-opacity="0.35"></stop>
+            <stop offset="1" stop-color="var(--lapis)" stop-opacity="0"></stop>
+          </linearGradient>
+        </defs>
+        <polygon points={`0,${H} ${pts} ${W},${H}`} fill="url(#loss-fill)"></polygon>
+        <polyline points={pts} fill="none" class="stroke-lapis" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></polyline>
+      </svg>
+      <figcaption class="text-right text-[10px] tracking-wider text-muted uppercase">train/loss</figcaption>
+    </figure>
+  </div>
+</div>
+
+<script>
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>('.code-tab')];
+  tabs.forEach((tab) =>
+    tab.addEventListener('click', () => {
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        document.getElementById(t.getAttribute('aria-controls')!)!.hidden = !on;
+      });
+    }),
+  );
+</script>
+
+<style>
+  .code-panel :global(pre) {
+    margin: 0;
+    padding: 1.1rem 1.25rem;
+    font-size: 12.5px;
+    line-height: 1.7;
+    min-height: 18.5rem;
+    background: var(--surface-strong) !important;
+  }
+  :global([data-theme='dark']) .code-panel :global(pre) {
+    background: var(--surface-strong) !important;
+  }
+</style>

@@ -1,0 +1,118 @@
+---
+/**
+ * Hero art v4 — "Attention Rose" (AI · ML · deep learning).
+ *   • equation ring  — rotating ML formulas
+ *   • token ring     — 24 tokens; curved attention links between them form the rose
+ *   • heatmap glass  — stained-glass cells coloured like activations / a feature map
+ *   • loss landscape — contour rings and an optimizer path descending into the portrait
+ */
+import RoseFrame from './RoseFrame.astro';
+import { circlePath, glassFills, glassStrokes, polar, rand, sector } from '../lib/geometry';
+
+const ID = 'rw4';
+
+// --- Equation ring ---
+const EQ_R = 224;
+const eq = 'Attention(Q,K,V) = softmax(QKᵀ / √dₖ) V   ·   θ ← θ − η ∇θ L(θ)   ·   ŷ = σ(Wx + b)   ·   ';
+const eqLength = +(2 * Math.PI * EQ_R * 0.985).toFixed(1);
+
+// --- Tokens & attention ---
+const TOK_R = 202;
+const N = 24;
+const tokens = Array.from({ length: N }, (_, i) => ({ a: (i * 360) / N, ...{ p: polar(TOK_R, (i * 360) / N) } }));
+type Link = { d: string; w: number; head: number };
+const links: Link[] = [];
+for (let i = 0; i < N; i++) {
+  for (const step of [5, 8, 11]) {
+    const j = (i + step) % N;
+    const head = step === 5 ? 0 : step === 8 ? 1 : 2;
+    const [x1, y1] = polar(TOK_R - 8, tokens[i].a);
+    const [x2, y2] = polar(TOK_R - 8, tokens[j].a);
+    const mid = tokens[i].a + (step * 360) / N / 2;
+    const [cx, cy] = polar(step === 11 ? 20 : step === 8 ? 70 : 120, mid);
+    links.push({ d: `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`, w: 0.25 + rand(i * 7 + step) * 0.75, head });
+  }
+}
+const headStroke = ['stroke-lapis', 'stroke-ruby', 'stroke-gold'];
+const pulses = links.filter((_, k) => k % 9 === 0);
+
+// --- Activation heatmap (polar cells) ---
+const cells = [
+  { r1: 128, r2: 152 },
+  { r1: 152, r2: 172 },
+  { r1: 172, r2: 188 },
+].flatMap((band, b) =>
+  Array.from({ length: 36 }, (_, i) => {
+    // smooth-ish activation field: waves + noise
+    const v = 0.5 + 0.35 * Math.sin((i / 36) * Math.PI * 6 + b) + 0.15 * (rand(i + b * 100) - 0.5) * 2;
+    const act = Math.min(1, Math.max(0.08, v));
+    return {
+      d: sector(band.r1, band.r2, i * 10, (i + 1) * 10),
+      cls: glassFills[Math.min(glassFills.length - 1, Math.floor(act * glassFills.length))],
+      k: (0.25 + act * 0.95).toFixed(2),
+    };
+  }),
+);
+
+// --- Loss landscape + gradient descent ---
+const contour = (r: number, wob: number, phase: number) =>
+  Array.from({ length: 73 }, (_, i) => {
+    const a = i * 5;
+    const rr = r + wob * Math.sin(((a + phase) * Math.PI) / 60) + wob * 0.5 * Math.cos(((a * 2 + phase) * Math.PI) / 180);
+    const [x, y] = polar(rr, a);
+    return `${i ? 'L' : 'M'} ${x} ${y}`;
+  }).join(' ') + ' Z';
+const contours = [
+  contour(120, 4, 0),
+  contour(110, 3.5, 40),
+  contour(100, 3, 80),
+];
+const steps = Array.from({ length: 11 }, (_, k) => {
+  const t = k / 10;
+  return { p: polar(124 - t * 32, 200 + t * 300), r: 3.6 - t * 1.6 };
+});
+const descent = steps.map((s, k) => `${k ? 'L' : 'M'} ${s.p[0]} ${s.p[1]}`).join(' ');
+---
+
+<RoseFrame id={ID} caption={'attention(Q,K,V) <span class="mx-1.5 text-line-strong">|</span> <span class="text-gold">∇</span>L → min'}>
+  <!-- Rotating equation ring -->
+  <defs><path id={`${ID}-eq`} d={circlePath(EQ_R)}></path></defs>
+  <g class="rose-spin-rev">
+    <text class="fill-gold font-mono" font-size="11.5">
+      <textPath href={`#${ID}-eq`} textLength={eqLength} lengthAdjust="spacing">{eq}{eq}</textPath>
+    </text>
+  </g>
+  <circle r="214" class="fill-none stroke-line-strong" stroke-width="1"></circle>
+
+  <g class="rose-spin">
+    <!-- Activation heatmap glass -->
+    {cells.map((c) => <path d={c.d} class:list={[c.cls, 'stroke-line-strong']} style={`fill-opacity: calc(var(--glass-opacity) * ${c.k})`} stroke-width="1" />)}
+
+    <!-- Attention links (3 heads) -->
+    <g fill="none" stroke-linecap="round">
+      {links.map((l) => <path d={l.d} class={headStroke[l.head]} stroke-width={(0.5 + l.w * 1.3).toFixed(2)} stroke-opacity={(0.12 + l.w * 0.4).toFixed(2)} />)}
+      {pulses.map((l, k) => <path d={l.d} class:list={['signal', headStroke[l.head]]} stroke-width="2.6" style={`animation-delay:${(k * 0.45).toFixed(2)}s; animation-duration: 4s`} />)}
+    </g>
+
+    <!-- Tokens -->
+    {
+      tokens.map((t, i) => (
+        <rect
+          x="-6.5"
+          y="-6.5"
+          width="13"
+          height="13"
+          rx="3"
+          transform={`translate(${t.p[0]} ${t.p[1]}) rotate(${t.a})`}
+          class:list={['fill-elev', glassStrokes[i % glassStrokes.length]]}
+          stroke-width="1.8"
+        />
+      ))
+    }
+  </g>
+
+  <!-- Loss landscape -->
+  {contours.map((d, i) => <path d={d} class="fill-none stroke-gold" stroke-opacity={(0.35 + i * 0.15).toFixed(2)} stroke-width="1" stroke-dasharray={i === 0 ? '2 4' : undefined} />)}
+  <path d={descent} class="fill-none stroke-ruby" stroke-width="1.4" stroke-dasharray="3 3"></path>
+  {steps.map((s, k) => <circle cx={s.p[0]} cy={s.p[1]} r={s.r.toFixed(2)} class={k === steps.length - 1 ? 'fill-emerald' : 'fill-ruby'} />)}
+</RoseFrame>

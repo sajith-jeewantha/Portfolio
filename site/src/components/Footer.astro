@@ -1,0 +1,72 @@
+---
+import Icon from './Icon.astro';
+import Monogram from './Monogram.astro';
+import VerseDivider from './VerseDivider.astro';
+import { profile, site } from '../lib/content';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-24 border-t border-line bg-surface/60 backdrop-blur">
+  <div class="container-x py-14">
+    <VerseDivider id="1cor-16-14" class="mb-12" />
+    <div class="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+      <div>
+        <div class="flex items-center gap-3">
+          <Monogram class="size-11" />
+          <div>
+            <p class="font-display text-2xl font-semibold text-ink">{profile.name}</p>
+            <p class="text-sm text-muted">{profile.headline}</p>
+          </div>
+        </div>
+        <p class="mt-5 max-w-md text-sm leading-relaxed text-muted">{profile.about[0]}</p>
+      </div>
+
+      <div>
+        <p class="eyebrow mb-4">Explore</p>
+        <ul class="grid gap-2 text-sm">
+          {
+            site.nav.map((item) => (
+              <li>
+                <a href={item.href} class="text-text hover:text-lapis">
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+          <li><a href="/rss.xml" class="inline-flex items-center gap-1.5 text-text hover:text-lapis"><Icon name="rss" /> RSS feed</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="eyebrow mb-4">Connect</p>
+        <ul class="flex flex-wrap gap-2">
+          {
+            profile.socials.map((s) => (
+              <li>
+                <a
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.name}
+                  title={s.name}
+                  class="grid size-10 place-items-center rounded-xl border border-line bg-elev text-muted transition-colors hover:border-gold hover:text-ink"
+                >
+                  <Icon name={s.icon} size="18" />
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="mt-5 inline-flex items-center gap-1.5 text-sm text-muted">
+          <Icon name="map-pin" /> {profile.location}
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-12 flex flex-col gap-2 border-t border-line pt-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+      <p>&copy; {year} {profile.name}. All rights reserved.</p>
+      <p class="font-mono">v{site.version} · Built with Astro &amp; Tailwind CSS</p>
+    </div>
+  </div>
+</footer>

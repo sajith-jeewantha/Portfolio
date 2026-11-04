@@ -1,0 +1,128 @@
+---
+/**
+ * "Lectio" — verses on love, strength and relationship, in an illuminated-
+ * manuscript style. Tabs work without JS (first tab shown); JS enables switching.
+ */
+import Icon from '../Icon.astro';
+import SectionHeading from '../SectionHeading.astro';
+import { getVersesByTheme, VERSE_TRANSLATION } from '../../lib/content';
+
+const themes = (await getVersesByTheme()).filter((t) => t.verses.length > 0);
+const tones: Record<string, string> = {
+  love: 'text-ruby',
+  strength: 'text-lapis',
+  relationship: 'text-emerald',
+};
+---
+
+<section id="scripture" class="container-x py-20" aria-labelledby="scripture-title">
+  <SectionHeading
+    id="scripture-title"
+    index="07"
+    eyebrow="Lectio · Words I live by"
+    title="Faith that"
+    accent="guides the work."
+    description={`Verses on love, strength and relationship that shape how I learn, build and work with people. Quoted from the ${VERSE_TRANSLATION} Bible.`}
+  />
+
+  <div class="pane relative overflow-hidden p-6 sm:p-10" data-reveal>
+    <!-- faint rose-window watermark -->
+    <svg viewBox="0 0 200 200" class="pointer-events-none absolute -top-16 -right-16 size-72 text-gold opacity-[0.08]" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
+      <circle cx="100" cy="100" r="96"></circle><circle cx="100" cy="100" r="60"></circle><circle cx="100" cy="100" r="24"></circle>
+      {Array.from({ length: 12 }, (_, i) => <path d={`M100 100 L${100 + 96 * Math.sin((i * Math.PI) / 6)} ${100 - 96 * Math.cos((i * Math.PI) / 6)}`} />)}
+      {Array.from({ length: 12 }, (_, i) => <circle cx={100 + 78 * Math.sin(((i + 0.5) * Math.PI) / 6)} cy={100 - 78 * Math.cos(((i + 0.5) * Math.PI) / 6)} r="14" />)}
+    </svg>
+
+    <div class="relative mb-8 flex flex-wrap gap-2" role="tablist" aria-label="Verse themes">
+      {
+        themes.map((t, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`tab-${t.id}`}
+            aria-controls={`panel-${t.id}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+            class="verse-tab chip cursor-pointer px-4 py-2 text-sm"
+          >
+            <Icon name={t.icon} class={tones[t.id]} /> {t.label}
+            <span class="font-mono text-[10px] text-muted">{t.verses.length}</span>
+          </button>
+        ))
+      }
+    </div>
+
+    {
+      themes.map((t, i) => {
+        const [featured, ...rest] = [...t.verses].sort((a, b) => Number(b.data.featured) - Number(a.data.featured));
+        const first = featured.data.text.charAt(0);
+        return (
+          <div id={`panel-${t.id}`} role="tabpanel" aria-labelledby={`tab-${t.id}`} hidden={i !== 0} class="relative">
+            <figure class="grid gap-6 md:grid-cols-[auto_1fr] md:items-start">
+              <span
+                class="arch hidden size-24 place-items-center pt-3 font-display text-6xl font-bold md:grid"
+                style="background: linear-gradient(135deg, #3b3db3, #6a3cbc 55%, #b0264c); color: #f2cd6b;"
+                aria-hidden="true"
+              >
+                {first}
+              </span>
+              <div>
+                <blockquote class="font-display text-2xl leading-snug text-ink sm:text-3xl">
+                  <span class="md:hidden">&ldquo;</span>
+                  <span class="hidden md:inline">{featured.data.text.slice(1)}</span>
+                  <span class="md:hidden">{featured.data.text}</span>&rdquo;
+                </blockquote>
+                <figcaption class="mt-4 flex items-center gap-3 font-mono text-xs tracking-wide">
+                  <span class="h-px w-8 bg-gold/60" aria-hidden="true" />
+                  <span class={tones[t.id]}>{featured.data.reference}</span>
+                  <span class="text-muted">{VERSE_TRANSLATION}</span>
+                </figcaption>
+              </div>
+            </figure>
+
+            {rest.length > 0 && (
+              <ul class="mt-10 grid gap-4 border-t border-line pt-8 sm:grid-cols-2 lg:grid-cols-3">
+                {rest.map((v) => (
+                  <li class="rounded-xl border border-line bg-elev/60 p-5">
+                    <p class="font-display text-lg leading-snug text-ink italic">&ldquo;{v.data.text}&rdquo;</p>
+                    <p class:list={['mt-3 font-mono text-[11px] tracking-wide', tones[t.id]]}>{v.data.reference}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        );
+      })
+    }
+  </div>
+</section>
+
+<script>
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>('.verse-tab')];
+  const select = (tab: HTMLButtonElement) => {
+    tabs.forEach((t) => {
+      const on = t === tab;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')!)!.hidden = !on;
+    });
+  };
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => select(tab));
+    tab.addEventListener('keydown', (e) => {
+      const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!d) return;
+      const next = tabs[(i + d + tabs.length) % tabs.length];
+      select(next);
+      next.focus();
+    });
+  });
+</script>
+
+<style>
+  .verse-tab[aria-selected='true'] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bg);
+  }
+</style>

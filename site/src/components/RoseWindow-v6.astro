@@ -1,0 +1,89 @@
+---
+/**
+ * Hero art v6 — "Circuit Rose" (static).
+ * The rose window as a printed circuit board: your portrait is the chip,
+ * gold copper traces route outward through stained-glass sectors with
+ * 45° bends, ending in vias and pads. Silkscreen labels on the board.
+ */
+import RoseFrame from './RoseFrame.astro';
+import { glassFills, polar, rand, sector } from '../lib/geometry';
+
+const ID = 'rw6';
+
+// Stained-glass "board" sectors
+const panes = [
+  ...Array.from({ length: 16 }, (_, i) => ({ d: sector(100, 160, i * 22.5, (i + 1) * 22.5), cls: glassFills[i % 5], k: 0.5 + rand(i) * 0.6 })),
+  ...Array.from({ length: 16 }, (_, i) => ({ d: sector(160, 212, i * 22.5 + 11.25, (i + 1) * 22.5 + 11.25), cls: glassFills[(i + 2) % 5], k: 0.4 + rand(i + 50) * 0.6 })),
+];
+
+// Chip pins around the portrait
+const pins = Array.from({ length: 40 }, (_, i) => i * 9);
+
+// Copper traces: radial → 45° jog → radial, ending in a via or pad
+const traces = Array.from({ length: 20 }, (_, i) => {
+  const a = i * 18 + 4.5;
+  const r1 = 116 + rand(i * 3) * 34;
+  const jog = (rand(i * 5) > 0.5 ? 1 : -1) * (5 + rand(i * 7) * 4);
+  const r2 = r1 + 14;
+  const r3 = 178 + rand(i * 11) * 30;
+  const p0 = polar(97, a);
+  const p1 = polar(r1, a);
+  const p2 = polar(r2, a + jog);
+  const p3 = polar(r3, a + jog);
+  return { d: `M ${p0.join(' ')} L ${p1.join(' ')} L ${p2.join(' ')} L ${p3.join(' ')}`, end: p3, pad: i % 3 === 0, a: a + jog };
+});
+
+// Short secondary traces between the main ones
+const stubs = Array.from({ length: 20 }, (_, i) => {
+  const a = i * 18 + 13.5;
+  const r1 = 97;
+  const r2 = 128 + rand(i * 17) * 20;
+  return { d: `M ${polar(r1, a).join(' ')} L ${polar(r2, a).join(' ')}`, end: polar(r2, a) };
+});
+
+// Outer via ring
+const vias = Array.from({ length: 48 }, (_, i) => polar(222, i * 7.5));
+
+// Silkscreen labels
+const labels = [
+  { t: 'U1', p: polar(108, 315) },
+  { t: 'SJ-01', p: polar(196, 0) },
+  { t: 'AMDG', p: polar(196, 180) },
+  { t: 'rev 1.0', p: polar(196, 90) },
+  { t: 'C7', p: polar(196, 270) },
+];
+---
+
+<RoseFrame id={ID} caption={'pcb <span class="text-gold">rev 1.0</span> <span class="mx-1.5 text-line-strong">|</span> traces of grace'}>
+  <!-- Board glass -->
+  {panes.map((p) => <path d={p.d} class:list={[p.cls, 'stroke-line-strong']} style={`fill-opacity: calc(var(--glass-opacity) * ${p.k.toFixed(2)})`} stroke-width="1.4" />)}
+  <circle r="160" class="fill-none stroke-gold/40" stroke-width="1"></circle>
+  <circle r="212" class="fill-none stroke-line-strong" stroke-width="1.2"></circle>
+
+  <!-- Traces -->
+  <g class="fill-none stroke-gold" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round">
+    {traces.map((t) => <path d={t.d} />)}
+  </g>
+  <g class="fill-none stroke-gold/70" stroke-width="1.4" stroke-linecap="round">
+    {stubs.map((s) => <path d={s.d} />)}
+  </g>
+
+  <!-- Vias & pads -->
+  {
+    traces.map((t) =>
+      t.pad ? (
+        <rect x="-7" y="-4.5" width="14" height="9" rx="1.5" transform={`translate(${t.end[0]} ${t.end[1]}) rotate(${t.a})`} class="fill-gold stroke-elev" stroke-width="1" />
+      ) : (
+        <circle cx={t.end[0]} cy={t.end[1]} r="5" class="fill-elev stroke-gold" stroke-width="2.2" />
+      ),
+    )
+  }
+  {stubs.map((s) => <circle cx={s.end[0]} cy={s.end[1]} r="3" class="fill-gold" />)}
+  {vias.map(([x, y], i) => <circle cx={x} cy={y} r={i % 4 === 0 ? 3.4 : 2} class={i % 4 === 0 ? 'fill-elev stroke-gold' : 'fill-gold/60'} stroke-width="1.4" />)}
+
+  <!-- Chip pins -->
+  {pins.map((a) => <rect x="-2" y="-5" width="4" height="10" rx="1" transform={`translate(${polar(93, a).join(' ')}) rotate(${a})`} class="fill-gold" />)}
+
+  <!-- Silkscreen -->
+  {labels.map((l) => <text x={l.p[0]} y={l.p[1]} dy="3.5" text-anchor="middle" class="fill-ink font-mono" font-size="9.5" font-weight="600" opacity="0.75">{l.t}</text>)}
+</RoseFrame>

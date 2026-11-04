@@ -1,0 +1,22 @@
+[
+  {
+    "id": "wso2-software-engineer-intern",
+    "role": "Software Engineer Intern",
+    "company": "WSO2",
+    "companyUrl": "https://wso2.com",
+    "logo": "wso2",
+    "type": "Internship",
+    "location": "Colombo, Sri Lanka",
+    "start": "2026-07",
+    "end": null,
+    "description": "Working at WSO2 — an open-source technology company behind API management, integration and identity platforms — on AI and integration engineering.",
+    "highlights": [
+      "Building and experimenting with AI agents and the Model Context Protocol (MCP)",
+      "Deep learning and machine learning work, from data collection to models",
+      "Integration engineering with WSO2 Integration and Ballerina"
+    ],
+    "skills": ["Deep Learning", "Machine Learning", "MCP", "AI Agents", "Data Collection", "Integration", "Ballerina", "Python", "Java"],
+    "order": 1,
+    "visible": true
+  }
+]

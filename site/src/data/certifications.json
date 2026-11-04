@@ -1,0 +1,123 @@
+[
+  {
+    "id": "wso2-integration-practitioner-2026",
+    "title": "WSO2 Certified Integration Practitioner - 2026",
+    "issuer": "wso2",
+    "year": 2026,
+    "month": 10,
+    "expires": null,
+    "status": "earned",
+    "url": "https://certification.wso2.com/certificate/CID-05705505/a09VM00000L6PxJYAV",
+    "description": "Validates practical skills in designing, developing and deploying integration solutions with the WSO2 integration platform.",
+    "order": 1,
+    "visible": true
+  },
+  {
+    "id": "aws-educate-genai",
+    "title": "AWS Educate Introduction to Generative AI",
+    "issuer": "aws",
+    "year": 2026,
+    "expires": null,
+    "status": "earned",
+    "url": "https://www.credly.com/badges/848e9c35-6d30-4d5a-931c-a442ab2b8360/public_url",
+    "description": "Fundamental understanding of generative AI concepts — defining foundation models and discussing generative AI use cases. Training badge earned by passing the post-course assessment.",
+    "order": 2,
+    "visible": true
+  },
+  {
+    "id": "gl-ai-fundamentals",
+    "title": "Artificial Intelligence Fundamentals",
+    "issuer": "great-learning",
+    "year": 2026,
+    "expires": null,
+    "status": "earned",
+    "url": "https://www.mygreatlearning.com/certificate/DCYRUCCT?referrer_code=GLYAVIIA",
+    "description": "AI principles, use cases and practical applications — neural networks, computer vision and real-world systems such as face recognition and video recommendation engines.",
+    "order": 3,
+    "visible": true
+  },
+  {
+    "id": "gl-python-ml",
+    "title": "Python for Machine Learning",
+    "issuer": "great-learning",
+    "year": 2026,
+    "expires": null,
+    "status": "earned",
+    "url": "https://www.mygreatlearning.com/certificate/HPMEOSRA?referrer_code=GLYAVIIA",
+    "description": "Key Python libraries such as NumPy and Pandas, and how to apply them in machine learning tasks.",
+    "order": 4,
+    "visible": true
+  },
+  {
+    "id": "oci-ai-foundations",
+    "title": "OCI 2025 Certified AI Foundations Associate",
+    "issuer": "oracle",
+    "year": 2025,
+    "expires": 2027,
+    "status": "earned",
+    "url": "https://catalog-education.oracle.com/pls/certview/sharebadge?id=E1392A6F0C80B5B810286F86192BBC0A7473EAE9EC68CAAE05D976D2B0FD1968",
+    "description": "Core AI and machine learning concepts, with a focus on their practical use within Oracle Cloud Infrastructure.",
+    "order": 5,
+    "visible": true
+  },
+  {
+    "id": "oci-foundations",
+    "title": "OCI 2025 Certified Foundations Associate",
+    "issuer": "oracle",
+    "year": 2025,
+    "expires": 2027,
+    "status": "earned",
+    "url": "https://catalog-education.oracle.com/ords/certview/sharebadge?id=C134AE2672B5F6743E6AF0FEA73EB333A97F2014D93466AB17AA8F822206C2A2",
+    "description": "Foundational knowledge of Oracle Cloud Infrastructure services.",
+    "order": 6,
+    "visible": true
+  },
+  {
+    "id": "oracle-data-platform",
+    "title": "Oracle Data Platform 2025 Certified Foundations Associate",
+    "issuer": "oracle",
+    "year": 2025,
+    "expires": 2027,
+    "status": "earned",
+    "url": "https://catalog-education.oracle.com/ords/certview/sharebadge?id=DF62B04BB49A9C0CB2D62DD2CA62D355F44F3012998AC8CD201C0D1F89D8EB79",
+    "description": "Foundational knowledge of Oracle data management services.",
+    "order": 7,
+    "visible": true
+  },
+  {
+    "id": "aws-cloud-practitioner",
+    "title": "AWS Certified Cloud Practitioner",
+    "issuer": "aws",
+    "year": 2026,
+    "expires": null,
+    "status": "in-progress",
+    "url": null,
+    "description": "Core AWS services, cloud architecture, security, pricing models and best practices for building reliable, scalable and cost-effective cloud solutions.",
+    "order": 8,
+    "visible": true
+  },
+  {
+    "id": "gcp-cloud-digital-leader",
+    "title": "Cloud Digital Leader",
+    "issuer": "google-cloud",
+    "year": 2026,
+    "expires": null,
+    "status": "in-progress",
+    "url": null,
+    "description": "Cloud concepts, digital transformation and business value — cloud strategy, architecture basics and aligning technology with organizational goals.",
+    "order": 9,
+    "visible": false
+  },
+  {
+    "id": "gcp-genai-leader",
+    "title": "Generative AI Leader",
+    "issuer": "google-cloud",
+    "year": 2026,
+    "expires": null,
+    "status": "in-progress",
+    "url": null,
+    "description": "Applying generative AI to real-world solutions — prompt engineering, automation and innovation.",
+    "order": 10,
+    "visible": false
+  }
+]

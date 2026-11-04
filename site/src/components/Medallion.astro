@@ -1,0 +1,28 @@
+---
+/** A logo on a porcelain plate — legible in both light and dark themes. */
+import { Image } from 'astro:assets';
+import { logo } from '../lib/content';
+
+interface Props {
+  name: string;
+  alt: string;
+  class?: string;
+  /** rendered pixel size of the logo (CSS px) */
+  px?: number;
+}
+const { name, alt, class: className = 'size-16 p-3', px = 48 } = Astro.props;
+const src = logo(name);
+const width = Math.min(px * 2, src.width); // never upscale small source logos
+---
+
+<span class:list={['medallion', className]}>
+  <Image
+    src={src}
+    alt={alt}
+    width={width}
+    height={Math.round((width * src.height) / src.width)}
+    format={src.format === 'svg' ? 'svg' : 'webp'}
+    loading="lazy"
+    class="size-full min-h-0 min-w-0 object-contain"
+  />
+</span>

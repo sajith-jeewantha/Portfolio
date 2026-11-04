@@ -1,0 +1,29 @@
+---
+/**
+ * The profile photo, used by every hero design. Keeps the photo's own aspect
+ * ratio when resizing and lets CSS crop it (object-fit: cover) around the
+ * focus point from profile.json → "avatarPosition" (e.g. "42% 30%").
+ */
+import { Image } from 'astro:assets';
+import { avatar, avatarPosition } from '../lib/avatar';
+import { profile } from '../lib/content';
+
+interface Props {
+  class?: string;
+  style?: string;
+  /** rendered width in CSS px (image is generated at 2× for retina) */
+  size?: number;
+  eager?: boolean;
+}
+const { class: className = '', style = '', size = 240, eager = true } = Astro.props;
+---
+
+<Image
+  src={avatar}
+  alt={`Portrait of ${profile.name}`}
+  width={Math.min(size * 2, avatar.width)}
+  loading={eager ? 'eager' : 'lazy'}
+  fetchpriority={eager ? 'high' : undefined}
+  class:list={['object-cover', className]}
+  style={`height:auto; object-position: ${avatarPosition}; ${style}`}
+/>

@@ -1,0 +1,43 @@
+---
+import Icon from '../Icon.astro';
+import Medallion from '../Medallion.astro';
+import SectionHeading from '../SectionHeading.astro';
+import { getStack } from '../../lib/content';
+
+const stack = await getStack();
+---
+
+<section id="stack" class="container-x py-20" aria-labelledby="stack-title">
+  <SectionHeading
+    id="stack-title"
+    index="05"
+    eyebrow="Technology Stack"
+    title="Tools of the"
+    accent="craft."
+    description="Languages, frameworks, platforms and tools I use to design, build and ship software."
+  />
+
+  <div class="grid gap-5">
+    {
+      stack.map((cat) => (
+        <div class="pane grid gap-6 p-6 md:grid-cols-[14rem_1fr] md:p-8" data-reveal>
+          <h3 class="flex items-center gap-3 self-start font-semibold md:pt-3">
+            <span class="grid size-9 place-items-center rounded-lg bg-lapis-soft text-lapis">
+              <Icon name={cat.data.icon} size="18" />
+            </span>
+            {cat.data.label}
+            <span class="font-mono text-xs font-normal text-muted">{String(cat.items.length).padStart(2, '0')}</span>
+          </h3>
+          <ul class="grid grid-cols-3 gap-x-3 gap-y-5 sm:grid-cols-4 lg:grid-cols-6">
+            {cat.items.map((t) => (
+              <li class="group flex flex-col items-center gap-2 text-center">
+                <Medallion name={t.data.logo} alt="" class="size-16 p-3 transition-transform duration-300 group-hover:-translate-y-1 sm:size-[4.5rem]" />
+                <span class="text-xs leading-tight font-medium text-text">{t.data.name}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</section>

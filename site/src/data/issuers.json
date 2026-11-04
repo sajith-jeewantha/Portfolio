@@ -1,0 +1,27 @@
+[
+  {
+    "id": "wso2",
+    "name": "WSO2",
+    "logo": "wso2"
+  },
+  {
+    "id": "oracle",
+    "name": "Oracle Cloud Infrastructure",
+    "logo": "oracle"
+  },
+  {
+    "id": "great-learning",
+    "name": "Great Learning",
+    "logo": "great-learning"
+  },
+  {
+    "id": "google-cloud",
+    "name": "Google Cloud",
+    "logo": "google-cloud"
+  },
+  {
+    "id": "aws",
+    "name": "Amazon Web Services",
+    "logo": "aws"
+  }
+]

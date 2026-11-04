@@ -1,0 +1,231 @@
+---
+/**
+ * Hero art v2 — "Lancet of Learning".
+ * A gothic lancet window whose stained glass is a feed-forward neural network.
+ * Input layer at the sill, hidden layers rising through the glass, and the
+ * output converging on the oculus (your portrait) at the top of the arch.
+ * Panes are a triangulation of the network, so the lead lines are synapses.
+ * Signals travel upward layer by layer — a forward pass — while light rays
+ * shimmer through the glass. Everything is generated at build time.
+ */
+import Avatar from './Avatar.astro';
+
+type P = [number, number];
+const W = 400;
+const H = 540;
+const L = 44; // inner wall x (left)
+const R = 356; // inner wall x (right)
+const C: P = [200, 160]; // oculus centre
+const OCULUS = 66; // portrait radius
+const RING = 116; // outer tracery ring
+
+const f = (n: number) => +n.toFixed(2);
+const polar = (r: number, deg: number): P => [f(C[0] + r * Math.sin((deg * Math.PI) / 180)), f(C[1] - r * Math.cos((deg * Math.PI) / 180))];
+const layer = (n: number, y: number, pad = 74): P[] =>
+  Array.from({ length: n }, (_, i) => [f(pad + ((R - L - 2 * (pad - L)) * i) / (n - 1)), y]);
+
+// --- Arch outlines ---
+const outerArch = `M30 ${H} V230 C30 112 112 40 200 12 C288 40 370 112 370 230 V${H} Z`;
+const innerArch = `M${L} ${H} V232 C${L} 124 120 56 200 30 C280 56 ${R} 124 ${R} 232 V${H} Z`;
+
+// --- Network: input (bottom) → hidden → hidden → hidden (top) → oculus ---
+const layers: P[][] = [layer(5, 505, 92), layer(7, 440), layer(7, 372), layer(5, 304, 96)];
+const ringBottom: P[] = Array.from({ length: 9 }, (_, i) => polar(RING, 270 - i * 22.5)); // left → right
+
+// Triangulate the band between two polylines (top & bottom, both sorted by x)
+function band(A: P[], B: P[]): P[][] {
+  const tris: P[][] = [];
+  let i = 0;
+  let j = 0;
+  while (i < A.length - 1 || j < B.length - 1) {
+    if (i === A.length - 1 || (j < B.length - 1 && B[j + 1][0] < A[i + 1][0])) {
+      tris.push([A[i], B[j], B[j + 1]]);
+      j++;
+    } else {
+      tris.push([A[i], A[i + 1], B[j]]);
+      i++;
+    }
+  }
+  return tris;
+}
+const withWalls = (pts: P[], y: number, yTop = y): P[] => [[L, yTop], ...pts, [R, yTop]];
+
+const rows: P[][] = [
+  withWalls(ringBottom, C[1]),
+  withWalls(layers[3], 304),
+  withWalls(layers[2], 372),
+  withWalls(layers[1], 440),
+  withWalls(layers[0], 505),
+  [[L, H], [R, H]],
+];
+const glassTone = ['fill-lapis', 'fill-ruby', 'fill-gold', 'fill-emerald', 'fill-amethyst'];
+const panes = rows.slice(0, -1).flatMap((top, r) =>
+  band(top, rows[r + 1]).map((t, k) => ({
+    points: t.map((p) => p.join(',')).join(' '),
+    cls: glassTone[(k * 3 + r * 2) % glassTone.length],
+    strength: [1, 0.55, 0.8, 0.4, 0.95][(k + r) % 5],
+  })),
+);
+
+// Synapses (full connections between consecutive layers), bottom → top
+type Edge = { a: P; b: P; layer: number };
+const edges: Edge[] = [];
+for (let l = 0; l < layers.length - 1; l++)
+  for (const a of layers[l]) for (const b of layers[l + 1]) edges.push({ a, b, layer: l });
+// Output layer → oculus
+for (const a of layers[3]) {
+  const target = ringBottom.reduce((best, p) => (Math.abs(p[0] - a[0]) < Math.abs(best[0] - a[0]) ? p : best));
+  edges.push({ a, b: polar(OCULUS + 8, (270 - ringBottom.indexOf(target) * 22.5 + 360) % 360), layer: 3 });
+}
+
+// Forward-pass signals: a few edges per layer, staggered so the wave rises
+const signalTone = ['stroke-emerald', 'stroke-lapis', 'stroke-amethyst', 'stroke-gold'];
+const signals = edges
+  .filter((_, i) => i % 7 === 0)
+  .map((e, k) => ({ ...e, cls: signalTone[e.layer], delay: `${(e.layer * 0.7 + (k % 3) * 0.15).toFixed(2)}s` }));
+
+// Tracery around the oculus
+const spokes = Array.from({ length: 16 }, (_, i) => [polar(OCULUS + 8, i * 22.5), polar(RING, i * 22.5)]);
+const foils = Array.from({ length: 8 }, (_, i) => polar(96, i * 45 + 22.5));
+
+// Light rays from above
+const rays = [
+  { x1: 150, x2: 60, w: 26, d: '0s' },
+  { x1: 190, x2: 170, w: 34, d: '1.6s' },
+  { x1: 225, x2: 290, w: 22, d: '3.1s' },
+  { x1: 255, x2: 360, w: 30, d: '0.8s' },
+];
+---
+
+<figure class="mx-auto w-full max-w-[17rem] sm:max-w-[21rem] lg:max-w-[24rem]">
+  <div class="relative aspect-[400/554] w-full">
+    <svg viewBox={`0 -14 ${W} ${H + 14}`} class="absolute inset-0 size-full overflow-visible" aria-hidden="true">
+      <defs>
+        <clipPath id="lancet-glass"><path d={innerArch}></path></clipPath>
+        <linearGradient id="lancet-ray" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="var(--gold)" stop-opacity="0.38"></stop>
+          <stop offset="1" stop-color="var(--gold)" stop-opacity="0"></stop>
+        </linearGradient>
+        <radialGradient id="lancet-halo" cx="0.5" cy="0.32" r="0.6">
+          <stop offset="0" stop-color="var(--gold)" stop-opacity="0.28"></stop>
+          <stop offset="1" stop-color="var(--gold)" stop-opacity="0"></stop>
+        </radialGradient>
+      </defs>
+
+      <!-- Halo behind the window -->
+      <ellipse cx="200" cy="260" rx="250" ry="300" fill="url(#lancet-halo)"></ellipse>
+
+      <!-- Finial cross on the apex -->
+      <g class="stroke-gold" stroke-width="3" stroke-linecap="round">
+        <path d="M200 -12 V8 M191 -4 H209"></path>
+      </g>
+
+      <!-- Stone frame -->
+      <path d={outerArch} class="fill-elev stroke-line-strong" stroke-width="1.5"></path>
+      <path d={outerArch} fill="none" class="stroke-gold/40" stroke-width="1" transform="translate(200 270) scale(0.985) translate(-200 -270)"></path>
+
+      <g clip-path="url(#lancet-glass)">
+        <!-- Base glass -->
+        <rect x="0" y="0" width={W} height={H} class="fill-lapis" style="fill-opacity: calc(var(--glass-opacity) * 0.5)"></rect>
+
+        <!-- Panes (triangulated network) -->
+        {
+          panes.map((p) => (
+            <polygon
+              points={p.points}
+              class:list={[p.cls, 'stroke-line-strong']}
+              style={`fill-opacity: calc(var(--glass-opacity) * ${p.strength})`}
+              stroke-width="1.6"
+              stroke-linejoin="round"
+            />
+          ))
+        }
+
+        <!-- Synapses -->
+        <g class="stroke-gold" stroke-opacity="0.22" stroke-width="0.7">
+          {edges.map((e) => <line x1={e.a[0]} y1={e.a[1]} x2={e.b[0]} y2={e.b[1]} />)}
+        </g>
+
+        <!-- Forward-pass signals -->
+        <g stroke-width="2.6" stroke-linecap="round" fill="none">
+          {signals.map((s) => <path d={`M${s.a[0]} ${s.a[1]} L${s.b[0]} ${s.b[1]}`} class:list={['signal lancet-signal', s.cls]} style={`animation-delay:${s.delay}`} />)}
+        </g>
+
+        <!-- Rose tracery around the oculus -->
+        <circle cx={C[0]} cy={C[1]} r={RING} class="fill-gold stroke-line-strong" style="fill-opacity: calc(var(--glass-opacity) * 0.45)" stroke-width="1.6"></circle>
+        <g class="stroke-line-strong" stroke-width="1.2">
+          {spokes.map(([a, b]) => <line x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} />)}
+        </g>
+        {foils.map(([x, y]) => <circle cx={x} cy={y} r="11" class="fill-elev stroke-gold/70" stroke-width="1.2" />)}
+
+        <!-- Light rays -->
+        <g class="lancet-rays">
+          {rays.map((r) => <polygon points={`${r.x1},20 ${r.x1 + r.w * 0.4},20 ${r.x2 + r.w},${H} ${r.x2},${H}`} fill="url(#lancet-ray)" style={`animation-delay:${r.d}`} />)}
+        </g>
+      </g>
+
+      <!-- Neurons -->
+      {
+        layers.map((ly, li) =>
+          ly.map(([x, y]) => (
+            <circle
+              cx={x}
+              cy={y}
+              r={li === 0 ? 5.5 : 4.6}
+              class:list={['lancet-node', li === 0 ? 'fill-emerald stroke-elev' : 'fill-elev stroke-gold']}
+              stroke-width="1.6"
+              style={`animation-delay:${(li * 0.7).toFixed(1)}s`}
+            />
+          )),
+        )
+      }
+
+      <!-- Oculus frame -->
+      <circle cx={C[0]} cy={C[1]} r={OCULUS + 8} class="fill-elev stroke-gold" stroke-width="2.4"></circle>
+      <circle cx={C[0]} cy={C[1]} r={RING} fill="none" class="stroke-gold/70" stroke-width="1.4"></circle>
+
+      <!-- Inner arch moulding + sill -->
+      <path d={innerArch} fill="none" class="stroke-gold/60" stroke-width="1.4"></path>
+      <rect x="22" y={H - 8} width="356" height="10" rx="3" class="fill-elev stroke-line-strong" stroke-width="1.2"></rect>
+    </svg>
+
+    <Avatar
+      class="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+      style={`left:50%; top:${(((C[1] + 14) / (H + 14)) * 100).toFixed(2)}%; width:${((OCULUS * 2) / W) * 100}%; aspect-ratio:1;`}
+    />
+  </div>
+  <figcaption class="mt-4 text-center font-mono text-[11px] tracking-wide text-muted">
+    <span class="text-emerald">x</span> → h₁ → h₂ → h₃ → <span class="text-gold">ŷ</span>
+    <span class="mx-1.5 text-line-strong">|</span> forward_pass(data)
+  </figcaption>
+</figure>
+
+<style>
+  .lancet-signal {
+    animation-duration: 2.8s;
+  }
+  .lancet-node {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: node-pulse 2.8s ease-in-out infinite;
+  }
+  @keyframes node-pulse {
+    0%, 70%, 100% { transform: scale(1); }
+    80% { transform: scale(1.45); }
+  }
+  .lancet-rays polygon {
+    mix-blend-mode: screen;
+    animation: ray-shimmer 6s ease-in-out infinite;
+  }
+  :global([data-theme='light']) .lancet-rays polygon {
+    mix-blend-mode: normal;
+    opacity: 0.6;
+  }
+  @keyframes ray-shimmer {
+    0%, 100% { opacity: 0.25; }
+    50% { opacity: 0.85; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lancet-node, .lancet-rays polygon { animation: none; }
+  }
+</style>
