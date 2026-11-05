@@ -18,7 +18,7 @@ function blogLastmod() {
   for (const name of readdirSync(BLOG_DIR)) {
     if (!/\.mdx?$/.test(name)) continue;
     const fm = readFileSync(new URL(name, BLOG_DIR), 'utf8').match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? '';
-    const field = (key) => fm.match(new RegExp(`^${key}:\\s*['"]?([^'"\\r\\n]+)`, 'm'))?.[1].trim();
+    const field = (/** @type {string} */ key) => fm.match(new RegExp(`^${key}:\\s*['"]?([^'"\\r\\n]+)`, 'm'))?.[1].trim();
     if (field('draft') === 'true') continue;
     const date = new Date(field('updatedDate') ?? field('pubDate') ?? '');
     if (!Number.isNaN(date.getTime())) dates.set(`${SITE}/blog/${name.replace(/\.mdx?$/, '')}/`, date.toISOString());
