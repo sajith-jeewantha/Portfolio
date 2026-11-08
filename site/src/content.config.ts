@@ -151,7 +151,77 @@ const verses = defineCollection({
   }),
 });
 
+
+/* ------------------------------------------------------------------ */
+/* Roadmaps — one Markdown file per track in src/content/roadmaps.      */
+/* Structured parts (stages, references) live in frontmatter so they   */
+/* can drive checklists, progress and time estimates; long-form prose   */
+/* (field guide, math, diagrams) lives in the Markdown body.            */
+/* ------------------------------------------------------------------ */
+const trackId = z.enum([
+  'foundations',
+  'software-engineering',
+  'software-architecture',
+  'cloud-engineering',
+  'data-engineering',
+  'ml-engineering',
+  'deep-learning',
+  'inference-gpu',
+  'ai-engineering',
+  'harness-engineering',
+  'context-engineering',
+  'ai-security-safety',
+]);
+
+const reference = z.object({
+  title: z.string(),
+  by: z.string().optional(), // authors, lab or publisher
+  year: z.number().int().min(1940).max(2100).optional(),
+  url: z.url(),
+  note: z.string(), // one line: why read it
+});
+
+const roadmaps = defineCollection({
+  loader: glob({ base: './src/content/roadmaps', pattern: '*.md' }),
+  schema: z.object({
+    title: z.string(),
+    short: z.string(), // label for cards and diagrams
+    order: z.number(),
+    icon: z.string(), // lucide icon name
+    tier: z.enum(['foundation', 'core', 'specialisation']),
+    summary: z.string(), // one sentence for cards and meta description
+    updated: z.coerce.date(),
+    overview: z.string(),
+    why2027: z.string(),
+    demand: z
+      .array(z.object({ claim: z.string(), source: z.string(), url: z.url() }))
+      .default([]),
+    prerequisites: z.array(z.string()).default([]),
+    diagram: z.string(), // Mermaid source for the learning path
+    stages: z
+      .array(
+        z.object({
+          level: z.enum(['Beginner', 'Intermediate', 'Advanced', 'Expert']),
+          hours: z.number().int().positive(), // focused study + build hours
+          focus: z.string(),
+          concepts: z.array(z.string()).min(1),
+          projects: z.array(z.object({ title: z.string(), detail: z.string() })).min(1),
+          signals: z.array(z.string()).min(1),
+        }),
+      )
+      .length(4),
+    connections: z.array(z.object({ track: trackId, text: z.string() })).default([]),
+    references: z.object({
+      papers: z.array(reference).default([]),
+      courses: z.array(reference).default([]),
+      books: z.array(reference).default([]),
+      articles: z.array(reference).default([]),
+    }),
+  }),
+});
+
 export const collections = {
+  roadmaps,
   verses,
   experience,
   education,

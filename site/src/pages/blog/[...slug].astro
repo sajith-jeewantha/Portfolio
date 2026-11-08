@@ -5,6 +5,7 @@ import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
 import Ornament from '../../components/Ornament.astro';
+import TocSpy from '../../components/TocSpy.astro';
 import { formatDate, getPosts, profile, readingTime, site } from '../../lib/content';
 
 export const getStaticPaths = (async () => {
@@ -72,13 +73,13 @@ const jsonLd = {
       </div>
       {
         toc.length > 1 && (
-          <nav aria-label="On this page" class="hidden lg:block">
+          <nav aria-label="On this page" class="hidden lg:block" data-toc-nav>
             <div class="sticky top-24">
               <p class="eyebrow mb-3">On this page</p>
               <ul class="grid gap-2 border-l border-line text-sm">
                 {toc.map((h) => (
                   <li>
-                    <a href={`#${h.slug}`} class="-ml-px block border-l border-transparent pl-4 text-muted hover:border-gold hover:text-ink">
+                    <a href={`#${h.slug}`} class="toc-link -ml-px block border-l-2 border-transparent pl-4 text-muted hover:border-gold hover:text-ink">
                       {h.text}
                     </a>
                   </li>
@@ -109,4 +110,5 @@ const jsonLd = {
       }
     </nav>
   </article>
+  <TocSpy />
 </BaseLayout>

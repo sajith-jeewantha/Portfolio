@@ -1,0 +1,33 @@
+---
+/**
+ * One "Connect" icon: a square tile that shows the network's name in a tooltip
+ * and takes the brand colour on hover / keyboard focus.
+ *
+ * `color.light` / `color.dark` come from profile.json — brand colours tuned to
+ * stay ≥ 3:1 against the tile in each theme (e.g. GitHub's black turns
+ * near-white on dark, Hugging Face's yellow is deepened on light).
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+  name: string;
+  url: string;
+  icon: string;
+  color?: { light: string; dark: string };
+  class?: string;
+}
+
+const { name, url, icon, color, class: className = '' } = Astro.props;
+---
+
+<a
+  href={url}
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label={name}
+  data-tip={name}
+  class:list={['social-link tip grid size-10 place-items-center rounded-xl border border-line text-muted', className]}
+  style={color && `--brand-light: ${color.light}; --brand-dark: ${color.dark}`}
+>
+  <Icon name={icon} size="18" />
+</a>

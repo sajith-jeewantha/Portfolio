@@ -22,7 +22,7 @@
   { "id": "react", "name": "React", "category": "frameworks", "logo": "react", "visible": true },
   { "id": "angular", "name": "Angular", "category": "frameworks", "logo": "angular", "visible": true },
   { "id": "nodejs", "name": "Node.js", "category": "frameworks", "logo": "nodejs", "visible": true },
-  { "id": "wso2-integration", "name": "WSO2 Integration", "category": "frameworks", "logo": "wso2", "visible": true },
+  { "id": "wso2-integration", "name": "WSO2 Integration", "category": "tools", "logo": "wso2", "visible": true },
 
   { "id": "aws", "name": "Amazon Web Services", "category": "cloud", "logo": "aws", "visible": true },
   { "id": "google-cloud", "name": "Google Cloud", "category": "cloud", "logo": "google-cloud", "visible": true },

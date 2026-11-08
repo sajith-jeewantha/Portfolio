@@ -1,0 +1,47 @@
+---
+import Icon from '../Icon.astro';
+import { inline, type Roadmap } from '../../lib/roadmaps';
+
+interface Props {
+  refs: Roadmap['data']['references'];
+}
+
+const { refs } = Astro.props;
+const groups = [
+  { key: 'papers', label: 'Foundational & seminal papers', icon: 'file-text' },
+  { key: 'courses', label: 'Courses & videos', icon: 'graduation-cap' },
+  { key: 'books', label: 'Books', icon: 'book-open' },
+  { key: 'articles', label: 'Articles, blogs & official docs', icon: 'newspaper' },
+] as const;
+const host = (url: string) => new URL(url).hostname.replace(/^www\./, '');
+---
+
+<div class="grid gap-10">
+  {
+    groups
+      .filter((g) => refs[g.key].length > 0)
+      .map((g) => (
+        <section aria-labelledby={`ref-${g.key}`}>
+          <h3 id={`ref-${g.key}`} class="mb-4 flex items-center gap-2 text-base font-semibold text-ink">
+            <Icon name={g.icon} class="accent-text" />
+            {g.label}
+            <span class="font-mono text-xs font-normal text-muted">({refs[g.key].length})</span>
+          </h3>
+          <ol class="grid gap-3">
+            {(g.key === 'papers' ? [...refs.papers].sort((a, b) => (a.year ?? 0) - (b.year ?? 0)) : refs[g.key]).map((r) => (
+              <li class="rounded-xl border border-line bg-surface p-4 transition-colors hover:border-[var(--accent-line)]">
+                <a href={r.url} rel="noopener" class="group inline font-medium text-ink decoration-[var(--accent)] underline-offset-4 hover:underline">
+                  {r.title}
+                  <Icon name="arrow-up-right" class="ml-0.5 align-[-2px] text-muted group-hover:text-[var(--accent)]" size="14" />
+                </a>
+                <p class="mt-1 font-mono text-[11px] text-muted">
+                  {[r.by, r.year, host(r.url)].filter(Boolean).join(' · ')}
+                </p>
+                <p class="mt-1.5 text-sm leading-relaxed text-text" set:html={inline(r.note)} />
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))
+  }
+</div>
