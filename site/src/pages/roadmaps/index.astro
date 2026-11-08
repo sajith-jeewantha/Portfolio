@@ -1,0 +1,291 @@
+---
+import 'katex/dist/katex.min.css';
+import '../../styles/roadmaps.css';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import RoadmapScripts from '../../components/roadmaps/RoadmapScripts.astro';
+import { formatDate, profile, site } from '../../lib/content';
+import research from '../../data/roadmap-research.json';
+import {
+  DEFAULT_WEEKLY_HOURS,
+  WEEKLY_HOUR_OPTIONS,
+  accentVar,
+  checkKey,
+  getRoadmaps,
+  inline,
+  overviewEdges,
+  overviewLayers,
+  stageItems,
+  tierLabel,
+  totalHours,
+  weeks,
+} from '../../lib/roadmaps';
+
+const all = await getRoadmaps();
+const byId = new Map(all.map((r) => [r.id, r]));
+const updated = new Date(Math.max(0, ...all.map((r) => r.data.updated.getTime())));
+
+/* ---------- Overview diagram geometry (inline SVG, laid out at build time) ---------- */
+const COL_W = 212;
+const NODE_W = 172;
+const NODE_H = 48;
+const ROW_H = 76;
+const PAD = 24;
+const tallest = Math.max(...overviewLayers.map((l) => l.length));
+const height = PAD * 2 + 22 + tallest * ROW_H - (ROW_H - NODE_H);
+const width = PAD * 2 + (overviewLayers.length - 1) * COL_W + NODE_W;
+const pos = new Map<string, { x: number; y: number }>();
+overviewLayers.forEach((layer, c) => {
+  const blockH = layer.length * ROW_H - (ROW_H - NODE_H);
+  const top = PAD + 22 + ((tallest * ROW_H - (ROW_H - NODE_H)) - blockH) / 2;
+  layer.forEach((id, r) => pos.set(id, { x: PAD + c * COL_W, y: top + r * ROW_H }));
+});
+const layerTitles = ['Foundations', 'Core engineering', 'Models & products', 'Depth', 'Frontier'];
+const edges = overviewEdges.map(([from, to]) => {
+  const a = pos.get(from)!;
+  const b = pos.get(to)!;
+  const x1 = a.x + NODE_W;
+  const y1 = a.y + NODE_H / 2;
+  const x2 = b.x;
+  const y2 = b.y + NODE_H / 2;
+  const dx = (x2 - x1) * 0.5;
+  return { from, to, d: `M${x1},${y1} C${x1 + dx},${y1} ${x2 - dx},${y2} ${x2},${y2}` };
+});
+
+const tiers = (['foundation', 'core', 'specialisation'] as const).map((t) => ({
+  tier: t,
+  tracks: all.filter((r) => r.data.tier === t),
+}));
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Engineering roadmaps for 2027',
+  description: research.description,
+  dateModified: updated.toISOString(),
+  author: { '@type': 'Person', name: profile.name, url: site.url },
+  url: new URL('/roadmaps/', site.url).href,
+};
+---
+
+<BaseLayout title="Roadmaps" description={research.description} jsonLd={jsonLd} defaultTheme="dark" section="roadmaps">
+  <div class="read-progress" aria-hidden="true"></div>
+
+  <section class="container-x pt-14">
+    <!-- Hero -------------------------------------------------------------------->
+    <header class="max-w-3xl" data-reveal>
+      <p class="eyebrow">Living reference · updated {formatDate(updated)}</p>
+      <h1 class="mt-4 text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">
+        Engineering roadmaps for <span class="glass-text">2027</span>
+      </h1>
+      <p class="mt-5 text-lg leading-relaxed text-text">{research.intro}</p>
+      <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
+        <label class="flex items-center gap-2 text-muted">
+          I can study
+          <select data-hours-select class="rounded-lg border border-line bg-elev px-2 py-1 font-medium text-ink">
+            {WEEKLY_HOUR_OPTIONS.map((h) => <option value={h} selected={h === DEFAULT_WEEKLY_HOURS}>{h} hours / week</option>)}
+          </select>
+        </label>
+        <span class="text-muted">{all.length} tracks · four stages each · progress saved in your browser</span>
+      </div>
+    </header>
+
+    <!-- Overview diagram ---------------------------------------------------------->
+    <section class="mt-14" aria-labelledby="map-title" data-reveal>
+      <h2 id="map-title" class="text-2xl font-semibold">The map</h2>
+      <p class="mt-2 max-w-[70ch] text-muted">
+        Each arrow means “this track makes the next one much easier”. Start with the foundations, then pick a lane.
+      </p>
+
+      <!-- Desktop / tablet: SVG map -->
+      <figure class="mt-6 hidden overflow-x-auto rounded-2xl border border-line bg-elev p-4 md:block">
+        <svg viewBox={`0 0 ${width} ${height}`} class="mx-auto h-auto w-full min-w-[760px]" role="img" aria-labelledby="map-svg-title">
+          <title id="map-svg-title">Overview of all roadmap tracks and how they depend on each other</title>
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--line-strong)"></path>
+            </marker>
+          </defs>
+          {
+            overviewLayers.map((_, c) => (
+              <text x={PAD + c * COL_W + NODE_W / 2} y={PAD + 4} text-anchor="middle" class="font-mono" font-size="10.5" letter-spacing="1.5" fill="var(--muted)">
+                {layerTitles[c].toUpperCase()}
+              </text>
+            ))
+          }
+          <g fill="none" stroke="var(--line-strong)" stroke-width="1.4">
+            {edges.map((e) => <path d={e.d} marker-end="url(#arrow)" data-edge={`${e.from} ${e.to}`} class="map-edge" />)}
+          </g>
+          {
+            [...pos.entries()].map(([id, p]) => {
+              const r = byId.get(id);
+              return (
+                <a href={`/roadmaps/${id}/`} class="map-node" data-node={id}>
+                  <rect x={p.x} y={p.y} width={NODE_W} height={NODE_H} rx="12" fill="var(--bg)" stroke={accentVar(id)} stroke-width="1.6" />
+                  <rect x={p.x} y={p.y + 10} width="4" height={NODE_H - 20} rx="2" fill={accentVar(id)} />
+                  <text x={p.x + 16} y={p.y + NODE_H / 2 + 5} font-size="14" font-weight="600" fill="var(--ink)">
+                    {r?.data.short ?? id}
+                  </text>
+                </a>
+              );
+            })
+          }
+        </svg>
+        <figcaption class="mt-3 text-center text-xs text-muted">Hover a track to highlight its links. Click to open it.</figcaption>
+      </figure>
+
+      <!-- Mobile: the same map as a stacked list -->
+      <ol class="mt-6 grid gap-3 md:hidden">
+        {
+          overviewLayers.map((layer, c) => (
+            <li class="rounded-2xl border border-line bg-elev p-4">
+              <p class="font-mono text-[11px] tracking-[0.15em] text-muted uppercase">
+                {c + 1}. {layerTitles[c]}
+              </p>
+              <ul class="mt-2 grid gap-2">
+                {layer.map((id) => (
+                  <li>
+                    <a href={`/roadmaps/${id}/`} class="track flex items-center gap-2 rounded-lg border-l-4 bg-bg/60 px-3 py-2 text-sm font-semibold text-ink" style={`--accent: ${accentVar(id)}; border-color: var(--accent)`}>
+                      {byId.get(id)?.data.short}
+                      <span class="ml-auto font-mono text-[11px] font-normal text-muted">
+                        {overviewEdges.some(([, t]) => t === id) ? 'after ' : ''}{overviewEdges.filter(([, t]) => t === id).map(([f]) => byId.get(f)?.data.short).join(', ') || 'start here'}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- Tracks -------------------------------------------------------------------->
+    {
+      tiers.map(({ tier, tracks }) => (
+        <section class="mt-16" aria-labelledby={`tier-${tier}`}>
+          <h2 id={`tier-${tier}`} class="text-2xl font-semibold">{tierLabel[tier]} tracks</h2>
+          <ul class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {tracks.map((r, i) => {
+              const keys = r.data.stages.flatMap((s) => stageItems(s).map((it) => checkKey(r.id, s.level, it.kind, it.text)));
+              const h = totalHours(r);
+              return (
+                <li data-reveal style={`--delay: ${i * 60}ms`}>
+                  <a
+                    href={`/roadmaps/${r.id}/`}
+                    class="track pane pane-hover flex h-full flex-col p-5"
+                    style={`--accent: ${accentVar(r.id)}`}
+                    data-track-summary={r.id}
+                    data-keys={JSON.stringify(keys)}
+                  >
+                    <span class="flex items-center gap-3">
+                      <span class="grid size-10 flex-none place-items-center rounded-xl" style="background: var(--accent-soft); color: var(--accent)">
+                        <Icon name={r.data.icon} size="20" />
+                      </span>
+                      <span>
+                        <span class="block font-mono text-[11px] text-muted">Track {String(r.data.order).padStart(2, '0')}</span>
+                        <span class="block font-semibold text-ink">{r.data.title}</span>
+                      </span>
+                    </span>
+                    <span class="mt-3 flex-1 text-sm leading-relaxed text-text">{r.data.summary}</span>
+                    <span class="mt-4 font-mono text-[11px] text-muted">
+                      {h} h · <span data-hours={h}>≈ {weeks(h)} weeks</span>
+                    </span>
+                    <span class="mt-2 flex items-center gap-3" data-meter-wrap>
+                      <span class="meter flex-1" data-meter role="progressbar" aria-label={`${r.data.short} progress`} aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></span>
+                      <span class="font-mono text-[11px] text-muted" data-meter-label></span>
+                    </span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))
+    }
+
+    <!-- Research summary --------------------------------------------------------->
+    <section class="mt-20 grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem]" aria-labelledby="signals-title">
+      <div>
+        <h2 id="signals-title" class="text-2xl font-semibold">What the 2025–2026 data says</h2>
+        <p class="mt-2 max-w-[70ch] text-muted">{research.signalsIntro}</p>
+        <ol class="mt-6 grid gap-3">
+          {
+            research.skills.map((s, i) => (
+              <li class="pane p-4" data-reveal>
+                <p class="flex gap-3">
+                  <span class="font-mono text-sm text-gold">{String(i + 1).padStart(2, '0')}</span>
+                  <span>
+                    <span class="font-semibold text-ink">{s.skill}</span>
+                    <span class="mt-1 block text-sm leading-relaxed text-text" set:html={inline(s.evidence)} />
+                    <span class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs">
+                      {s.sources.map((src) => (
+                        <a href={src.url} rel="noopener" class="text-muted underline-offset-4 hover:text-ink hover:underline">
+                          {src.label} <Icon name="arrow-up-right" size="11" />
+                        </a>
+                      ))}
+                    </span>
+                  </span>
+                </p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+      <aside class="lg:pt-12">
+        <div class="pane sticky top-24 p-5">
+          <p class="eyebrow">How to use these</p>
+          <ul class="mt-3 grid gap-3 text-sm leading-relaxed text-text">
+            {research.howTo.map((t) => (
+              <li class="flex gap-2"><Icon name="check" class="mt-1 flex-none text-gold" /><span set:html={inline(t)} /></li>
+            ))}
+          </ul>
+        </div>
+      </aside>
+    </section>
+  </section>
+
+  <RoadmapScripts />
+</BaseLayout>
+
+<style>
+  .map-node rect:first-child {
+    transition: fill 0.2s ease;
+  }
+  .map-node:hover rect:first-child,
+  .map-node:focus-visible rect:first-child {
+    fill: var(--bg-elev);
+  }
+  .map-edge {
+    transition:
+      stroke 0.2s ease,
+      opacity 0.2s ease;
+  }
+  svg:has(.map-node:hover) .map-edge {
+    opacity: 0.25;
+  }
+  svg .map-edge.hot {
+    opacity: 1;
+    stroke: var(--ink);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .map-node rect:first-child,
+    .map-edge {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // Highlight a node's incoming and outgoing edges on hover/focus.
+  document.querySelectorAll<SVGAElement>('.map-node').forEach((node) => {
+    const id = node.dataset.node!;
+    const edges = [...document.querySelectorAll<SVGPathElement>('.map-edge')].filter((e) => e.dataset.edge!.split(' ').includes(id));
+    const on = () => edges.forEach((e) => e.classList.add('hot'));
+    const off = () => edges.forEach((e) => e.classList.remove('hot'));
+    node.addEventListener('mouseenter', on);
+    node.addEventListener('mouseleave', off);
+    node.addEventListener('focus', on);
+    node.addEventListener('blur', off);
+  });
+</script>

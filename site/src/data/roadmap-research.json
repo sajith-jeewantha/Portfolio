@@ -1,0 +1,81 @@
+{
+  "description": "Twelve career roadmaps for the engineering skills in demand heading into 2027 — from math foundations and cloud IAM to training LLMs from scratch, agents and harness engineering — with staged projects, time estimates and verified references.",
+  "intro": "My personal, research-backed study plan for the next few years — published as a living reference. Each track goes Beginner → Intermediate → Advanced → Expert with concepts, projects to build, honest time estimates and readiness signals, and every reference points to an original source.",
+  "signalsIntro": "Ranked from hiring and survey data published in 2025–2026 (checked November 2026). Links go to the primary report or the publisher's own summary.",
+  "skills": [
+    {
+      "skill": "AI / LLM application engineering",
+      "evidence": "AI engineer is LinkedIn's #1 fastest-growing US role for 2026, with LangChain, RAG and PyTorch as the listed skills. Lightcast (for the 2026 AI Index) finds AI skills in 2.5% of all US postings, up 55% in a year.",
+      "sources": [
+        { "label": "Dice on LinkedIn Jobs on the Rise 2026", "url": "https://www.dice.com/career-advice/ai-related-jobs-top-linkedins-fastest-growing-roles-list-for-2026" },
+        { "label": "Lightcast · Stanford AI Index 2026", "url": "https://lightcast.io/resources/research/stanford-ai-index-2026" }
+      ]
+    },
+    {
+      "skill": "Agentic AI, context and harness engineering",
+      "evidence": "The \"Agentic AI\" skill cluster grew from 0.06% to 0.23% of US postings between 2024 and 2025 (≈280%), while plain chatbot skills declined. The vocabulary moved too: *context engineering* (mid-2025) and *harness engineering* (early 2026) are now used by Anthropic and OpenAI.",
+      "sources": [
+        { "label": "Lightcast · AI Index 2026", "url": "https://lightcast.io/resources/research/stanford-ai-index-2026" },
+        { "label": "Anthropic · context engineering", "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" },
+        { "label": "Hashimoto · harness engineering", "url": "https://mitchellh.com/writing/my-ai-adoption-journey" }
+      ]
+    },
+    {
+      "skill": "Working effectively with AI coding agents",
+      "evidence": "In the 2026 Stack Overflow survey, 66% of AI users use coding agents and most of those use them daily; 79% want to learn more AI skills. GitHub counted over a million agent-authored pull requests in four months of 2025.",
+      "sources": [
+        { "label": "Stack Overflow Developer Survey 2026", "url": "https://stackoverflow.blog/2026/10/06/the-results-of-the-2026-developer-survey-are-here/" },
+        { "label": "GitHub Octoverse 2025", "url": "https://github.blog/news-insights/octoverse/octoverse-a-new-developer-joins-github-every-second-as-ai-leads-typescript-to-1/" }
+      ]
+    },
+    {
+      "skill": "Strong fundamentals: Python, TypeScript, SQL",
+      "evidence": "Python is the top specialised skill in AI postings (≈259k, up ~30%). TypeScript became GitHub's #1 language in August 2025, and 1.1M+ public repos now use an LLM SDK. SQL rose to #2 in the 2026 Stack Overflow survey.",
+      "sources": [
+        { "label": "Lightcast · AI Index 2026", "url": "https://lightcast.io/resources/research/stanford-ai-index-2026" },
+        { "label": "GitHub Octoverse 2025", "url": "https://github.blog/news-insights/octoverse/octoverse-a-new-developer-joins-github-every-second-as-ai-leads-typescript-to-1/" },
+        { "label": "Stack Overflow 2026", "url": "https://stackoverflow.blog/2026/10/06/the-results-of-the-2026-developer-survey-are-here/" }
+      ]
+    },
+    {
+      "skill": "Cloud security and identity (IAM)",
+      "evidence": "ISC2's 2025 workforce study ranks AI skills (41%) and cloud security (36%) as the top two skill gaps, and 95% of teams report at least one gap. Identity and least-privilege are the core of cloud security work.",
+      "sources": [{ "label": "ISC2 Cybersecurity Workforce Study 2025", "url": "https://www.isc2.org/insights/2025/12/isc2-publishes-2025-cybersecurity-workforce-study" }]
+    },
+    {
+      "skill": "LLM and agent security",
+      "evidence": "OWASP released a 2026 Top 10 for LLM Applications plus an Agent Control Standard, describing GenAI security as now an operational priority. *Excessive Agency* moved up to #3.",
+      "sources": [{ "label": "OWASP GenAI Security Project, Sep 2026", "url": "https://genai.owasp.org/2026/09/01/owasp-genai-security-project-unveils-2026-top-10-for-llm-applications-new-agent-control-standard-and-sponsors-as-community-tops-30000-members/" }]
+    },
+    {
+      "skill": "Cloud-native platforms for AI (Kubernetes, model serving)",
+      "evidence": "82% of container users run Kubernetes in production, and 66% of organisations hosting generative-AI models use it for inference.",
+      "sources": [{ "label": "CNCF Annual Cloud Native Survey", "url": "https://www.cncf.io/announcements/2026/01/20/kubernetes-established-as-the-de-facto-operating-system-for-ai-as-production-use-hits-82-in-2025-cncf-annual-cloud-native-survey/" }]
+    },
+    {
+      "skill": "Data engineering",
+      "evidence": "The WEF Future of Jobs 2025 names AI and big data as the fastest-growing skills. 45% of data and analytics postings on Indeed now mention AI, against a 4.2% average across all postings.",
+      "sources": [
+        { "label": "WEF Future of Jobs 2025 (EU summary)", "url": "https://digital-skills-jobs.europa.eu/en/latest/news/great-skills-reset-wefs-future-jobs-report-2025-catch-22-future-work" },
+        { "label": "Indeed Hiring Lab, Jan 2026", "url": "https://hiringlab.indeed.com/2026/01/22/january-labor-market-update-jobs-mentioning-ai-are-growing-amid-broader-hiring-weakness/" }
+      ]
+    },
+    {
+      "skill": "Forward-deployed / customer-facing AI engineering",
+      "evidence": "Forward-deployed engineer postings in India grew nearly 19× in a year (Indeed data). The role combines building agents with integrating them into a customer's real systems — close to WSO2-style integration work.",
+      "sources": [{ "label": "Analytics India Magazine, Oct 2026", "url": "https://analyticsindiamag.com/ai-news/forward-deployed-engineer-job-postings-in-india-grew-nearly-19x-in-a-year-report" }]
+    },
+    {
+      "skill": "Verifying AI output: evals, attribution, cost control",
+      "evidence": "93% of developers say source attribution is needed to trust AI output, and 38% of organisations cap AI usage. Being able to measure and verify an AI system is becoming its own skill.",
+      "sources": [{ "label": "Stack Overflow 2026", "url": "https://stackoverflow.blog/2026/10/06/the-results-of-the-2026-developer-survey-are-here/" }]
+    }
+  ],
+  "howTo": [
+    "**Pick one lane, keep one foundation.** Run one main track plus Foundations or Software Engineering in parallel. Don't run five at once.",
+    "**Build in public.** Every stage ends in a project. Write it up as a [blog post](/blog/) that links back here.",
+    "**Junior caveat:** the 2026 AI Index reports employment of developers aged 22–25 fell ~20% since 2024. Depth plus shipped projects beats breadth. [Source](https://hai.stanford.edu/news/inside-the-ai-index-12-takeaways-from-the-2026-report)",
+    "**Times are focused hours** (reading plus building). Set your weekly hours at the top and every estimate updates.",
+    "**Tick items as you go.** Progress is saved in this browser only, and nothing is sent anywhere."
+  ]
+}

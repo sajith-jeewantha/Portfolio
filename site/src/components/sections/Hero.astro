@@ -1,5 +1,6 @@
 ---
 import Icon from '../Icon.astro';
+import SocialLink from '../SocialLink.astro';
 import Medallion from '../Medallion.astro';
 import { getHeroArt } from '../hero-art';
 import { profile, site } from '../../lib/content';
@@ -48,16 +49,7 @@ const HeroArt = getHeroArt(site.heroArt).Art;
           {
             profile.socials.map((s) => (
               <li>
-                <a
-                  href={s.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={s.name}
-                  title={s.name}
-                  class="grid size-10 place-items-center rounded-xl border border-line bg-surface text-muted backdrop-blur transition-colors hover:border-gold hover:text-ink"
-                >
-                  <Icon name={s.icon} size="18" />
-                </a>
+                <SocialLink {...s} class="backdrop-blur" />
               </li>
             ))
           }
@@ -69,7 +61,7 @@ const HeroArt = getHeroArt(site.heroArt).Art;
           {
             profile.skillProfiles.map((s) => (
               <li>
-                <a href={s.url} target="_blank" rel="noopener noreferrer" aria-label={s.name} title={s.name} class="block transition-transform hover:-translate-y-0.5">
+                <a href={s.url} target="_blank" rel="noopener noreferrer" aria-label={s.name} data-tip={s.name} class="tip block transition-transform hover:-translate-y-0.5">
                   <Medallion name={s.logo} alt={s.name} class="size-10 rounded-xl p-1.5" px={28} />
                 </a>
               </li>

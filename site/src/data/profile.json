@@ -36,11 +36,12 @@
     "url": "https://www.linkedin.com/in/sajith-jeewantha/"
   },
   "socials": [
-    { "name": "LinkedIn", "url": "https://www.linkedin.com/in/sajith-jeewantha/", "icon": "ri:linkedin-fill" },
-    { "name": "GitHub", "url": "https://github.com/sajith-jeewantha", "icon": "ri:github-fill" },
-    { "name": "Facebook", "url": "https://www.facebook.com/sajith.jeewantha.165", "icon": "ri:facebook-fill" },
-    { "name": "Instagram", "url": "https://www.instagram.com/sajith.jeewantha_", "icon": "ri:instagram-line" },
-    { "name": "YouTube", "url": "https://www.youtube.com/@sajith_jeewantha", "icon": "ri:youtube-fill" }
+    { "name": "LinkedIn", "url": "https://www.linkedin.com/in/sajith-jeewantha/", "icon": "ri:linkedin-fill", "color": { "light": "#0A66C2", "dark": "#4C9AE8" } },
+    { "name": "GitHub", "url": "https://github.com/sajith-jeewantha", "icon": "ri:github-fill", "color": { "light": "#181717", "dark": "#F0F6FC" } },
+    { "name": "Hugging Face", "url": "https://huggingface.co/sajith-jeewantha", "icon": "si:huggingface", "color": { "light": "#9A7400", "dark": "#FFD21E" } },
+    { "name": "Facebook", "url": "https://www.facebook.com/sajith.jeewantha.165", "icon": "ri:facebook-fill", "color": { "light": "#0866FF", "dark": "#4D8EFF" } },
+    { "name": "Instagram", "url": "https://www.instagram.com/sajith.jeewantha_", "icon": "ri:instagram-line", "color": { "light": "#E4405F", "dark": "#FF6584" } },
+    { "name": "YouTube", "url": "https://www.youtube.com/@sajith_jeewantha", "icon": "ri:youtube-fill", "color": { "light": "#FF0000", "dark": "#FF4E45" } }
   ],
   "skillProfiles": [
     { "name": "Google Skills", "url": "https://www.skills.google/public_profiles/2dc19f93-6ef8-4b79-a351-bdaa03152d54", "logo": "google-cloud" },

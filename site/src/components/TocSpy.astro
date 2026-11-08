@@ -1,0 +1,51 @@
+---
+/**
+ * Scroll-spy for an "On this page" list: marks the link of the section being
+ * read with aria-current="location" (styled in global.css).
+ *
+ * Markup contract:
+ *   <nav data-toc-nav> … <a href="#id" class="toc-link"> … </nav>
+ *   - data-toc-sub on a link marks a sub-section;
+ *   - data-toc-parent on a link keeps it lit while one of its sub-sections is active.
+ */
+---
+
+<script>
+  const nav = document.querySelector<HTMLElement>('[data-toc-nav]');
+  if (nav) {
+    const links = [...nav.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')];
+    const targets = links
+      .map((a) => ({ a, el: document.getElementById(decodeURIComponent(a.hash.slice(1))) }))
+      .filter((t): t is { a: HTMLAnchorElement; el: HTMLElement } => !!t.el);
+    const parent = links.find((a) => a.dataset.tocParent !== undefined);
+    const subs = new Set(links.filter((a) => a.dataset.tocSub !== undefined));
+    let current: HTMLAnchorElement | undefined;
+    let queued = false;
+
+    // Active = the last section whose heading has passed a line just under the
+    // sticky header. Recomputed on scroll and resize (rAF-throttled), because
+    // diagrams, images and accordions change the page height after load.
+    const spy = () => {
+      queued = false;
+      const line = 120;
+      let active = targets[0]?.a;
+      for (const t of targets) if (t.el.getBoundingClientRect().top - line <= 0) active = t.a;
+      // At the very bottom the last section wins, even if its heading is low on screen.
+      if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) active = targets.at(-1)?.a ?? active;
+      if (active === current) return;
+      current?.removeAttribute('aria-current');
+      active?.setAttribute('aria-current', 'location');
+      parent?.classList.toggle('toc-parent-active', !!active && subs.has(active));
+      current = active;
+    };
+    const queue = () => {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(spy);
+      }
+    };
+    addEventListener('scroll', queue, { passive: true });
+    addEventListener('resize', queue);
+    spy();
+  }
+</script>

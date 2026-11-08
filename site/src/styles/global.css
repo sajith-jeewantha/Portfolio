@@ -227,6 +227,91 @@
   }
 }
 
+/* ----------------------------- Tooltip ---------------------------------- */
+/* <a class="tip" data-tip="Label">: a small label above the element on hover
+   and keyboard focus. The element keeps its own aria-label, so screen readers
+   don't hear the label twice. */
+.tip {
+  position: relative;
+}
+.tip::before,
+.tip::after {
+  position: absolute;
+  left: 50%;
+  z-index: 30;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+.tip::after {
+  content: attr(data-tip);
+  bottom: calc(100% + 9px);
+  transform: translate(-50%, 4px);
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.5rem;
+  background: var(--ink);
+  color: var(--bg);
+  font: 500 0.75rem/1 var(--font-sans);
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+}
+.tip::before {
+  content: '';
+  bottom: calc(100% + 4px);
+  transform: translate(-50%, 4px);
+  border: 5px solid transparent;
+  border-bottom-width: 0;
+  border-top-color: var(--ink);
+}
+.tip:hover::before,
+.tip:hover::after,
+.tip:focus-visible::before,
+.tip:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ----------------------------- Social links ----------------------------- */
+/* Brand colour on hover / focus (see components/SocialLink.astro). */
+.social-link {
+  --brand: var(--brand-light, var(--ink));
+  background-color: var(--surface);
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+[data-theme='dark'] .social-link {
+  --brand: var(--brand-dark, var(--ink));
+}
+.social-link:hover,
+.social-link:focus-visible {
+  color: var(--brand);
+  border-color: color-mix(in oklab, var(--brand) 55%, var(--line));
+  background-color: color-mix(in oklab, var(--brand) 10%, var(--bg-elev));
+  transform: translateY(-2px);
+}
+
+/* ----------------------------- On this page ----------------------------- */
+/* Scroll-spy state set by components/TocSpy.astro. Pages may set --accent
+   (roadmap tracks do); otherwise the gilded accent is used. */
+.toc-link {
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+.toc-link[aria-current='location'] {
+  border-color: var(--accent, var(--gold));
+  color: var(--ink);
+  font-weight: 600;
+}
+.toc-link.toc-parent-active {
+  color: var(--ink);
+}
+
 /* ----------------------------- Reveal on scroll ------------------------- */
 .js [data-reveal] {
   opacity: 0;
@@ -281,6 +366,16 @@
     opacity: 1;
     transform: none;
     transition: none;
+  }
+  .toc-link,
+  .tip::before,
+  .tip::after,
+  .social-link {
+    transition: none;
+  }
+  .social-link:hover,
+  .social-link:focus-visible {
+    transform: none;
   }
   .pane-hover:hover,
   .btn-primary:hover {

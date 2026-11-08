@@ -1,9 +1,9 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "heroArt": "v4",
   "url": "https://sajithjeewantha.com",
   "title": "Sajith Jeewantha | Software Engineer",
-  "description": "Sajith Jeewantha — Software Engineer Intern at WSO2, Sri Lanka. Projects, certifications and writing on AI agents, MCP, machine learning and integration.",
+  "description": "Sajith Jeewantha — Software Engineer Intern at WSO2, Sri Lanka. Projects, roadmaps and writing on AI agents, MCP, LLM training, cloud IAM and integration.",
   "googleSiteVerification": "",
   "keywords": [
     "Sajith Jeewantha",
@@ -15,14 +15,19 @@
     "Python",
     "Django",
     "Cloud",
+    "Cloud IAM",
     "AI",
     "Machine Learning",
     "Deep Learning",
+    "LLM Training",
+    "AI Engineering",
     "AI Agents",
     "MCP",
     "WSO2",
     "Integration",
     "Ballerina",
+    "Hugging Face",
+    "Career Roadmaps",
     "Sri Lanka"
   ],
   "nav": [
@@ -31,6 +36,7 @@
     { "label": "Education", "href": "/#education" },
     { "label": "Projects", "href": "/#projects" },
     { "label": "Stack", "href": "/#stack" },
+    { "label": "Roadmaps", "href": "/roadmaps/" },
     { "label": "Blog", "href": "/blog/" }
   ]
 }

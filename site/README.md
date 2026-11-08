@@ -1,8 +1,8 @@
-# Sajith Jeewantha — Portfolio v1.0.0
+# Sajith Jeewantha — Portfolio v1.1.0
 
-Personal portfolio and blog of **Sajith Jeewantha**, Software Engineer — live at [sajithjeewantha.com](https://sajithjeewantha.com).
+Personal portfolio, blog and career roadmaps of **Sajith Jeewantha**, Software Engineer — live at [sajithjeewantha.com](https://sajithjeewantha.com).
 
-A fast, fully static site built with **Astro 7** and **Tailwind CSS 4**. All content — bio, education, certifications, projects, technology stack and blog posts — lives in this repository as **JSON** and **Markdown**. There is no database, no server and no admin login: edit a file, commit, deploy.
+A fast, fully static site built with **Astro 7** and **Tailwind CSS 4**. All content — bio, education, certifications, projects, technology stack, blog posts and roadmaps — lives in this repository as **JSON** and **Markdown**. There is no database, no server and no admin login: edit a file, commit, deploy.
 
 ---
 
@@ -21,6 +21,7 @@ A fast, fully static site built with **Astro 7** and **Tailwind CSS 4**. All con
   - [Projects](#projects)
   - [Technology stack](#technology-stack)
   - [Blog posts](#blog-posts)
+  - [Roadmaps](#roadmaps)
   - [Bible verses](#bible-verses)
   - [Code lab & pipeline](#code-lab--pipeline)
   - [Changing your profile photo](#changing-your-profile-photo)
@@ -40,13 +41,15 @@ A fast, fully static site built with **Astro 7** and **Tailwind CSS 4**. All con
 - **Sections**: Bio / About (with a code "lab" window) · Experience (with an ML pipeline diagram) · Education & Certifications · Projects (with category filter) · Technology Stack · Blog · Scripture
 - **Ten hero art designs** to choose from (v1–v5 animated, v6–v10 static), all previewed side by side at `/design/`
 - **Scripture**: Catholic Bible verses on love, strength and relationship (Douay–Rheims, public domain)
-- **Blog** in Markdown with syntax highlighting, table of contents, reading time, tags, RSS feed and drafts
+- **Blog** in Markdown with syntax highlighting, math (KaTeX), an "On this page" list that highlights the section you're reading, reading time, tags, RSS feed and drafts
+- **Roadmaps** (`/roadmaps/`): 12 career tracks for 2027 (Foundations → Deep Learning, Cloud & IAM, AI / Harness / Context Engineering and more), each with four stages, saved checklists, time estimates from your weekly hours, Mermaid diagrams, KaTeX math and verified references
+- **Connect links** with a name tooltip and the network's brand colour on hover, tuned for contrast in both themes
 - **Light / Dark / System** theme switch, remembered per visitor, with no flash on load
 - **Content as data**: JSON files validated by schemas — a typo fails the build, never the live site
 - **Optimised images**: logos and photos are resized and converted to WebP at build time (a 112 KB PNG becomes about 3 KB)
-- **Zero icon fonts and almost no JavaScript**: icons are inline SVG rendered at build time
+- **Zero icon fonts and very little JavaScript**: icons are inline SVG rendered at build time; Mermaid loads only on pages with diagrams, when a diagram scrolls into view
 - **Accessible**: semantic HTML, skip link, keyboard focus styles, `prefers-reduced-motion` respected
-- **SEO**: meta and Open Graph tags, JSON-LD (`Person`, `BlogPosting`), `sitemap-index.xml`, `robots.txt`, RSS
+- **SEO**: meta and Open Graph tags, JSON-LD (`Person`, `BlogPosting`, `CollectionPage`, `LearningResource`), `sitemap-index.xml` with `<lastmod>`, `robots.txt`, RSS
 
 ## Tech stack
 
@@ -57,7 +60,9 @@ A fast, fully static site built with **Astro 7** and **Tailwind CSS 4**. All con
 | Content        | Astro Content Collections (JSON via `file()`, Markdown via `glob()`)   |
 | Validation     | Zod schemas in `src/content.config.ts`                                 |
 | Images         | `astro:assets` + `sharp` (WebP, responsive sizes)                      |
-| UI icons       | [Lucide](https://lucide.dev) and [Remix Icon](https://remixicon.com) via Iconify, inlined at build |
+| UI icons       | [Lucide](https://lucide.dev) and [Remix Icon](https://remixicon.com) via Iconify, plus [Simple Icons](https://simpleicons.org), inlined at build |
+| Markdown       | `unified()` processor with `remark-math` + `rehype-katex` ([KaTeX](https://katex.org) math rendered at build time) |
+| Diagrams       | [Mermaid](https://mermaid.js.org), drawn in the browser and themed from the site's colour tokens |
 | Fonts          | Self-hosted with Fontsource: Inter, JetBrains Mono, Cormorant Garamond |
 | Feeds / SEO    | `@astrojs/rss`, `@astrojs/sitemap`                                     |
 
@@ -67,9 +72,7 @@ A fast, fully static site built with **Astro 7** and **Tailwind CSS 4**. All con
 
 ```sh
 git clone https://github.com/sajith-jeewantha/Portfolio.git
-cd Portfolio
-git switch release/v1.0.0
-cd site
+cd Portfolio/site
 npm install
 npm run dev
 ```
@@ -104,7 +107,7 @@ npm run check && npm run build && npm run preview
 
 ```
 site/
-├── astro.config.mjs          # Site URL, integrations, Tailwind, code-highlight themes
+├── astro.config.mjs          # Site URL, integrations, Tailwind, Markdown (math) processor, sitemap dates
 ├── package.json
 ├── public/                   # Copied as-is: favicon.svg, robots.txt
 └── src/
@@ -113,10 +116,13 @@ site/
     │   └── images/           # Profile photo and other images
     ├── components/
     │   ├── sections/         # Hero, About, Experience, Education, Projects, Stack, LatestPosts, Scripture, Contact
+    │   ├── roadmaps/         # StageCard, References, RoadmapScripts (checklists, hours, Mermaid)
     │   ├── Header.astro      # Sticky nav, mobile menu, theme switch
     │   ├── Footer.astro
     │   ├── Icon.astro        # Build-time inline SVG icons
     │   ├── Medallion.astro   # Logo on a "porcelain" plate (legible in both themes)
+    │   ├── SocialLink.astro  # "Connect" icon with tooltip + brand colour on hover
+    │   ├── TocSpy.astro      # Highlights the current section in "On this page" (blog + roadmaps)
     │   ├── hero-art.ts       # Registry of hero art versions (used by Hero + /design)
     │   ├── RoseFrame.astro   # Shared frame + portrait for circular windows (v3–v5)
     │   ├── RoseWindow-v1.astro … RoseWindow-v10.astro # Hero art versions
@@ -125,7 +131,8 @@ site/
     │   ├── VerseDivider.astro # Ornament + verse between sections
     │   └── ...
     ├── content/
-    │   └── blog/             # Blog posts (.md / .mdx)
+    │   ├── blog/             # Blog posts (.md / .mdx)
+    │   └── roadmaps/         # One Markdown file per roadmap track
     ├── content.config.ts     # Schemas for every collection
     ├── data/                 # ← All portfolio content lives here (JSON)
     │   ├── site.json             # Site title, description, keywords, nav
@@ -138,17 +145,23 @@ site/
     │   ├── projects.json
     │   ├── project-categories.json
     │   ├── technologies.json
-    │   └── tech-categories.json
+    │   ├── tech-categories.json
+    │   └── roadmap-research.json # Roadmaps hub: intro, cited demand signals, tips
     ├── layouts/BaseLayout.astro  # <head>, SEO tags, theme script
     ├── lib/content.ts        # Data helpers (sorting, lookups, logo resolver)
+    ├── lib/roadmaps.ts       # Roadmap helpers, hub-map layout (+ roadmap-constants.ts for browser code)
     ├── pages/
     │   ├── index.astro       # Home page
     │   ├── blog/index.astro  # /blog
     │   ├── blog/[...slug].astro  # /blog/<post>
+    │   ├── roadmaps/index.astro   # /roadmaps — hub with the overview map
+    │   ├── roadmaps/[slug].astro  # /roadmaps/<track>
     │   ├── rss.xml.ts        # /rss.xml
     │   ├── design.astro      # /design — compare hero art versions (noindex)
     │   └── 404.astro
-    └── styles/global.css     # Design tokens (colours, fonts) + components
+    └── styles/
+        ├── global.css        # Design tokens (colours, fonts) + components, tooltip, social links
+        └── roadmaps.css      # Roadmaps: slate reading theme, track colours, stages, checklists
 ```
 
 ## Managing content
@@ -173,13 +186,16 @@ Run `npm run dev` while editing. If something is wrong, the terminal shows exact
   "mission": "I strive to make this world a better place ...",
   "about": ["Paragraph 1", "Paragraph 2"],
   "focus": [{ "label": "Cloud & DevOps", "icon": "cloud", "text": "..." }],
-  "socials": [{ "name": "GitHub", "url": "https://github.com/...", "icon": "ri:github-fill" }],
+  "socials": [
+    { "name": "GitHub", "url": "https://github.com/...", "icon": "ri:github-fill", "color": { "light": "#181717", "dark": "#F0F6FC" } }
+  ],
   "skillProfiles": [{ "name": "Credly", "url": "https://...", "logo": "credly" }]
 }
 ```
 
-- `icon` values are icon names: plain names are [Lucide](https://lucide.dev/icons) (e.g. `cloud`, `brain`); `ri:` names are [Remix Icon](https://remixicon.com) (used for brand logos).
+- `icon` values are icon names: plain names are [Lucide](https://lucide.dev/icons) (e.g. `cloud`, `brain`); `ri:` names are [Remix Icon](https://remixicon.com) (used for brand logos); `si:` names are [Simple Icons](https://simpleicons.org) slugs, for brands Remix doesn't have (e.g. `si:huggingface`).
 - `logo` values are file names from `src/assets/icons/` (without extension).
+- `socials[].color` (optional) is the brand colour shown on hover: `light` for the light theme, `dark` for the dark one. Use the official colour where it's readable and adjust it where it isn't (GitHub's black becomes near-white on dark; Hugging Face's yellow is deepened on light). Aim for at least 3:1 contrast against the tile. Without `color`, the icon turns the normal ink colour. The `name` is shown as the hover tooltip.
 
 `src/data/site.json` holds the page title, SEO description, keywords, navigation links and the site **version**.
 
@@ -329,6 +345,25 @@ Normal **Markdown**: lists, tables, links, images and code blocks.
 - `## headings` automatically build the "On this page" table of contents.
 - Images: put them next to the post (e.g. `src/content/blog/images/`) and reference them with a relative path. They are optimised at build time.
 - Set `draft: false` to publish.
+- Math works in posts too: `$inline$` and `$$display$$` are rendered by KaTeX at build time.
+
+### Roadmaps
+
+`/roadmaps/` is a living set of career roadmaps: one Markdown file per track in `src/content/roadmaps/`, plus a hub page that links them all with an overview map. The hub's "what the data says" list and intro live in `src/data/roadmap-research.json`.
+
+Each track file has two parts:
+
+- **Frontmatter** (validated in `src/content.config.ts`): `title`, `short`, `order`, `icon` (Lucide), `tier`, `summary`, `updated`, `overview`, `why2027`, `demand` (cited claims), `prerequisites`, `diagram` (Mermaid source for the learning path), four `stages` (`Beginner` → `Expert`, each with `hours`, `focus`, `concepts`, `projects`, `signals`), `connections` to other tracks and `references` (`papers`, `courses`, `books`, `articles`). Frontmatter strings support inline Markdown only: links, `code`, **bold** and *em*.
+- **Body**: the "Field guide" — normal Markdown with `## headings`, KaTeX math and Mermaid diagrams (code fences tagged `mermaid`).
+
+Notes:
+
+- Stage items become checkboxes. Progress is saved in the visitor's browser (localStorage), keyed by a hash of the item's text, so rewording an item resets just that item.
+- Time estimates are `hours` per stage. The page turns them into weeks using the reader's chosen hours per week (default 10).
+- Track colours are the `--t-<id>` tokens in `src/styles/roadmaps.css`, checked for WCAG AA in both themes. A new track id must be added to the `trackId` enum in `src/content.config.ts`, given a colour, and placed on the hub map in `src/lib/roadmaps.ts`.
+- Roadmap pages default to the dark theme, with a softer slate canvas. A visitor's own theme choice still wins.
+- Mermaid is loaded only on pages that have diagrams, and each diagram is drawn when it scrolls near the viewport.
+- When you update a track, change its `updated` date. The sitemap uses it as `<lastmod>`.
 
 ### Bible verses
 
@@ -445,6 +480,8 @@ The switch in the header has three states:
 
 The choice is saved in `localStorage`. A small inline script in `BaseLayout.astro` applies the theme before the page paints, so there is no flash.
 
+Roadmap pages start in **dark** (a softer slate canvas meant for long reading) when the visitor hasn't picked a theme; a saved choice always wins. Pages opt in with `<BaseLayout defaultTheme="dark" section="roadmaps">`.
+
 ## SEO
 
 What's built in:
@@ -454,10 +491,10 @@ What's built in:
 | Titles & descriptions | Unique `<title>` and meta description per page (home description kept under 160 characters) |
 | Canonical URLs | `<link rel="canonical">` on every page, so `*.pages.dev` copies don't compete with your domain |
 | Indexing control | `/design` and the 404 page are `noindex`; `/design` is also left out of the sitemap |
-| Sitemap & robots | `/sitemap-index.xml` (auto-generated from your pages) and `/robots.txt` pointing to it |
-| Structured data | JSON-LD `Person` (photo, job, employer, university, skills, social profiles) + `WebSite` on the home page; `BlogPosting` on posts |
+| Sitemap & robots | `/sitemap-index.xml` (auto-generated from your pages, with `<lastmod>` for blog posts and roadmaps) and `/robots.txt` pointing to it |
+| Structured data | JSON-LD `Person` (photo, job, employer, university, skills, social profiles) + `WebSite` on the home page; `BlogPosting` on posts; `CollectionPage` on `/roadmaps/` and `LearningResource` on each track |
 | Social previews | Open Graph + Twitter cards with a 1200×630 image, so links look good on LinkedIn, WhatsApp, X and Facebook |
-| Performance | Static HTML on a CDN, ~2 KB of JavaScript, self-hosted fonts, WebP images, lazy loading, immutable caching |
+| Performance | Static HTML on a CDN, a few KB of JavaScript (Mermaid loads only on roadmap pages, when a diagram scrolls into view), self-hosted fonts, WebP images, lazy loading, immutable caching |
 | Accessibility | One `<h1>` per page, `lang="en"`, alt text, skip link, keyboard focus, reduced motion |
 | Feeds | `/rss.xml` for the blog |
 
@@ -471,7 +508,7 @@ The domain is set in `astro.config.mjs` (`site`) and `src/data/site.json` (`url`
 4. **Bing Webmaster Tools** (<https://www.bing.com/webmasters>) → *Import from Google Search Console* (also covers DuckDuckGo and Yahoo).
 5. Check the results: [Rich Results Test](https://search.google.com/test/rich-results) for the structured data, [PageSpeed Insights](https://pagespeed.web.dev/) for performance, and the [LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/) for the share preview.
 
-What helps ranking most from here: **publish blog posts regularly**, link to the site from your LinkedIn, GitHub profile README, Credly and email signature, and keep `site.json` → `description` accurate.
+What helps ranking most from here: **publish blog posts regularly** (and link them to the matching roadmap track), keep each track's `updated` date current, link to the site from your LinkedIn, GitHub and Hugging Face profiles, Credly and email signature, and keep `site.json` → `description` accurate.
 
 ## Deployment
 
@@ -486,7 +523,7 @@ Cloudflare now creates new Git-connected projects as **Workers** (static assets)
 
    | Setting | Value |
    | --- | --- |
-   | Project name | `portfolio` (must match `"name"` in `site/wrangler.jsonc`) |
+   | Project name | `my-portfolio` (must match `"name"` in `site/wrangler.jsonc`) |
    | Production branch | `master` |
    | **Root directory** (Path) | **`site`** |
    | Build command | `npm run build` |
@@ -494,7 +531,7 @@ Cloudflare now creates new Git-connected projects as **Workers** (static assets)
    | Non-production branch deploy command | `npx wrangler versions upload` |
 
    The Node.js version comes from `site/.node-version` (24). If the build log shows an older Node, add the build variable `NODE_VERSION` = `24`.
-3. Save and deploy. You get a URL like `https://portfolio.<your-subdomain>.workers.dev`.
+3. Save and deploy. You get a URL like `https://my-portfolio.<your-subdomain>.workers.dev`.
 
 `site/wrangler.jsonc` tells Cloudflare to serve the static `dist/` folder, show `404.html` with a real 404 status, and add trailing slashes (`/blog` → `/blog/`). `public/_headers` is applied as usual.
 
@@ -509,7 +546,7 @@ Every branch and pull request gets its own preview URL (shown on the GitHub pull
 ### 3. Go live
 
 1. Merge `release/v1.0.0` into `master`. Pages builds and deploys production automatically.
-2. Worker `portfolio` → **Settings** → **Domains & Routes** → **Add** → **Custom domain** → `sajithjeewantha.com`, then again for `www.sajithjeewantha.com`.
+2. Worker `my-portfolio` → **Settings** → **Domains & Routes** → **Add** → **Custom domain** → `sajithjeewantha.com`, then again for `www.sajithjeewantha.com`.
    - The domain currently points to the old Cloud Run service. Cloudflare will ask to replace that DNS record; confirm it. The switch takes effect within minutes, and HTTPS is issued automatically.
 3. Redirect `www` to the main domain: Cloudflare dashboard → your domain → **Rules** → **Redirect Rules** → template *Redirect from WWW to root* (301).
 4. Recommended domain settings (Cloudflare dashboard → your domain):
@@ -562,9 +599,13 @@ Once v1 is live, the old Cloud Run service, Artifact Registry repository, Terraf
 | Types out of date in the editor | Run `npm run sync`. |
 | `Profile photo "x.heic" is in a format browsers and Astro can't use` | Run the `npm run photo -- …` command shown in the error, then rebuild. |
 | `Could not resolve '../assets/images/…'` | A file imports an image path directly. Use the `<Avatar />` component or `src/lib/avatar.ts` instead. |
-| Cloudflare "Workers Builds" fails | Check *Settings → Build*: root directory must be `site`, deploy command `npx wrangler deploy`, project name `portfolio`. |
+| Cloudflare "Workers Builds" fails | Check *Settings → Build*: root directory must be `site`, deploy command `npx wrangler deploy`, project name `my-portfolio`. |
+| `Icon "si:x" not found` | The Simple Icons slug is wrong. Find the slug on [simpleicons.org](https://simpleicons.org) (e.g. `huggingface`). |
+| A roadmap diagram shows as code | The Mermaid source has a syntax error; the browser console says where. Paste it into [mermaid.live](https://mermaid.live) to fix it. |
+| Red text in a roadmap's math | KaTeX couldn't parse the formula. Keep LaTeX in the Markdown body only (never in frontmatter) and check braces. |
+| A `$` amount shows as math | In Markdown bodies, `$…$` is math. Write the price as `\$100` or `100 USD`. |
 | `sharp` errors on install | Delete `node_modules` and `package-lock.json`, then run `npm install` again. |
 
 ---
 
-© Sajith Jeewantha · v1.0.0
+© Sajith Jeewantha · v1.1.0

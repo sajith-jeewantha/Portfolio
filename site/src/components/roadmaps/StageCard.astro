@@ -1,0 +1,91 @@
+---
+import Icon from '../Icon.astro';
+import { checkKey, inline, weeks, type Stage } from '../../lib/roadmaps';
+
+interface Props {
+  track: string;
+  stage: Stage;
+  index: number;
+  open?: boolean;
+}
+
+const { track, stage, index, open = false } = Astro.props;
+const key = (kind: string, text: string) => checkKey(track, stage.level, kind, text);
+const id = `stage-${stage.level.toLowerCase()}`;
+---
+
+<details class="stage pane track" id={id} data-stage open={open} data-reveal>
+  <summary class="flex items-start gap-4 p-5 sm:p-6">
+    <span
+      class="grid size-10 flex-none place-items-center rounded-xl font-mono text-sm font-semibold"
+      style="background: var(--accent-soft); color: var(--accent)">{String(index + 1).padStart(2, '0')}</span
+    >
+    <span class="min-w-0 flex-1">
+      <span class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <span class="text-lg font-semibold text-ink">{stage.level}</span>
+        <span class="font-mono text-xs text-muted">
+          {stage.hours} h · <span data-hours={stage.hours}>≈ {weeks(stage.hours)} weeks</span>
+        </span>
+      </span>
+      <span class="mt-1 block text-sm leading-relaxed text-muted" set:html={inline(stage.focus)} />
+      <span class="mt-3 flex items-center gap-3" data-meter-wrap>
+        <span class="meter flex-1" data-meter role="progressbar" aria-label={`${stage.level} progress`} aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></span>
+        <span class="w-20 text-right font-mono text-[11px] text-muted" data-meter-label></span>
+      </span>
+    </span>
+    <Icon name="chevron-right" class="chev mt-2 text-muted" size="20" />
+  </summary>
+
+  <div class="stage-body grid gap-6 border-t border-line px-5 pt-5 pb-6 sm:px-6 md:grid-cols-2">
+    <section aria-label={`${stage.level} key concepts`}>
+      <h4 class="eyebrow mb-3 !text-[var(--accent)]">Key concepts</h4>
+      <ul class="grid gap-2.5 text-[0.94rem] leading-relaxed">
+        {
+          stage.concepts.map((c) => (
+            <li>
+              <label class="flex gap-2.5">
+                <input type="checkbox" class="check" data-check={key('concept', c)} />
+                <span set:html={inline(c)} />
+              </label>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section aria-label={`${stage.level} projects`}>
+      <h4 class="eyebrow mb-3 !text-[var(--accent)]">Build these</h4>
+      <ul class="grid gap-3 text-[0.94rem] leading-relaxed">
+        {
+          stage.projects.map((p) => (
+            <li class="rounded-xl border border-line bg-bg/40 p-3">
+              <label class="flex gap-2.5">
+                <input type="checkbox" class="check" data-check={key('project', p.title)} />
+                <span>
+                  <span class="font-medium text-ink" set:html={inline(p.title)} />
+                  <span class="mt-1 block text-sm text-muted" set:html={inline(p.detail)} />
+                </span>
+              </label>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section aria-label={`Ready to move on from ${stage.level}`} class="md:col-span-2 rounded-xl p-4" style="background: var(--accent-soft)">
+      <h4 class="eyebrow mb-3 !text-[var(--accent)]">Ready for the next stage when…</h4>
+      <ul class="grid gap-2.5 text-[0.94rem] leading-relaxed sm:grid-cols-2">
+        {
+          stage.signals.map((s) => (
+            <li>
+              <label class="flex gap-2.5">
+                <input type="checkbox" class="check" data-check={key('signal', s)} />
+                <span set:html={inline(s)} />
+              </label>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </div>
+</details>

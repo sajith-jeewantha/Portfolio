@@ -1,0 +1,211 @@
+---
+/**
+ * Client behaviour shared by the Roadmaps hub and track pages:
+ *  - weekly-hours picker → recomputes every "≈ N weeks" estimate
+ *  - stage checklists saved in localStorage, with per-stage / per-track meters
+ *  - Mermaid diagrams, drawn on demand and redrawn when the theme changes
+ *  - reading-progress bar
+ * (The "On this page" highlight lives in components/TocSpy.astro.)
+ * Everything degrades gracefully: without JS the page still reads top to bottom.
+ */
+---
+
+<script>
+  import { DEFAULT_WEEKLY_HOURS } from '../../lib/roadmap-constants';
+
+  const HOURS_KEY = 'roadmaps:weekly-hours';
+  const progressKey = (track: string) => `roadmaps:progress:${track}`;
+
+  const store = {
+    get<T>(key: string, fallback: T): T {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? (JSON.parse(raw) as T) : fallback;
+      } catch {
+        return fallback;
+      }
+    },
+    set(key: string, value: unknown) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch {
+        /* private mode / blocked storage: progress just isn't remembered */
+      }
+    },
+  };
+
+  /* ---------------- Weekly hours → time estimates ---------------- */
+  const applyHours = (perWeek: number) => {
+    document.querySelectorAll<HTMLElement>('[data-hours]').forEach((el) => {
+      const w = Math.max(1, Math.round(Number(el.dataset.hours) / perWeek));
+      el.textContent = w < 9 ? `≈ ${w} week${w === 1 ? '' : 's'}` : `≈ ${(w / 4.33).toFixed(w < 26 ? 1 : 0)} months`;
+    });
+    document.querySelectorAll<HTMLSelectElement>('[data-hours-select]').forEach((s) => (s.value = String(perWeek)));
+  };
+  const hours = store.get<number>(HOURS_KEY, DEFAULT_WEEKLY_HOURS);
+  applyHours(hours);
+  document.querySelectorAll<HTMLSelectElement>('[data-hours-select]').forEach((sel) =>
+    sel.addEventListener('change', () => {
+      const v = Number(sel.value);
+      store.set(HOURS_KEY, v);
+      applyHours(v);
+    }),
+  );
+
+  /* ---------------- Checklists & progress ---------------- */
+  const setMeter = (el: Element | null, done: number, total: number) => {
+    if (!el) return;
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    (el as HTMLElement).style.setProperty('--pct', `${pct}%`);
+    el.setAttribute('aria-valuenow', String(pct));
+    const label = el.closest('[data-meter-wrap]')?.querySelector('[data-meter-label]');
+    if (label) label.textContent = `${done}/${total} · ${pct}%`;
+  };
+
+  // Track page: checkboxes
+  document.querySelectorAll<HTMLElement>('[data-track]').forEach((trackEl) => {
+    const track = trackEl.dataset.track!;
+    const saved = store.get<Record<string, true>>(progressKey(track), {});
+    const boxes = [...trackEl.querySelectorAll<HTMLInputElement>('input[data-check]')];
+    const refresh = () => {
+      trackEl.querySelectorAll<HTMLElement>('[data-stage]').forEach((stage) => {
+        const b = [...stage.querySelectorAll<HTMLInputElement>('input[data-check]')];
+        setMeter(stage.querySelector('[data-meter]'), b.filter((x) => x.checked).length, b.length);
+      });
+      setMeter(trackEl.querySelector('[data-track-meter]'), boxes.filter((x) => x.checked).length, boxes.length);
+    };
+    boxes.forEach((box) => {
+      box.checked = !!saved[box.dataset.check!];
+      box.addEventListener('change', () => {
+        if (box.checked) saved[box.dataset.check!] = true;
+        else delete saved[box.dataset.check!];
+        store.set(progressKey(track), saved);
+        refresh();
+      });
+    });
+    refresh();
+    trackEl.querySelector('[data-reset]')?.addEventListener('click', () => {
+      if (!confirm('Clear your saved progress for this track?')) return;
+      Object.keys(saved).forEach((k) => delete saved[k]);
+      store.set(progressKey(track), saved);
+      boxes.forEach((b) => (b.checked = false));
+      refresh();
+    });
+  });
+
+  // Hub: per-track meters from saved progress
+  document.querySelectorAll<HTMLElement>('[data-track-summary]').forEach((card) => {
+    const keys: string[] = JSON.parse(card.dataset.keys ?? '[]');
+    const saved = store.get<Record<string, true>>(progressKey(card.dataset.trackSummary!), {});
+    setMeter(card.querySelector('[data-meter]'), keys.filter((k) => saved[k]).length, keys.length);
+  });
+
+  /* ---------------- Reading progress ---------------- */
+  const bar = document.querySelector<HTMLElement>('.read-progress');
+  if (bar) {
+    let ticking = false;
+    const update = () => {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      bar.style.setProperty('--read', String(max > 0 ? Math.min(1, scrollY / max) : 0));
+      ticking = false;
+    };
+    addEventListener('scroll', () => !ticking && (ticking = requestAnimationFrame(update) > 0), { passive: true });
+    update();
+  }
+
+  /* ---------------- Mermaid ---------------- */
+  // Markdown ```mermaid fences arrive as <pre class="mermaid"> or <pre><code class="language-mermaid">.
+  document.querySelectorAll<HTMLElement>('pre.mermaid, pre:has(> code.language-mermaid)').forEach((pre) => {
+    const fig = document.createElement('figure');
+    fig.className = 'mermaid-figure not-prose';
+    fig.dataset.src = pre.textContent ?? '';
+    const out = document.createElement('div');
+    out.className = 'mermaid-out';
+    pre.classList.add('mermaid-src');
+    pre.replaceWith(fig);
+    fig.append(out, pre);
+  });
+
+  const figures = [...document.querySelectorAll<HTMLElement>('.mermaid-figure')];
+  if (figures.length) {
+    let seq = 0;
+    let mermaidMod: typeof import('mermaid').default | undefined;
+    const draw = async (targets: HTMLElement[]) => {
+      mermaidMod ??= (await import('mermaid')).default;
+      const css = getComputedStyle(document.documentElement);
+      const v = (name: string) => css.getPropertyValue(name).trim();
+      const dark = document.documentElement.dataset.theme === 'dark';
+      for (const fig of targets) {
+        const accent = getComputedStyle(fig).getPropertyValue('--accent').trim() || v('--lapis');
+        mermaidMod.initialize({
+          startOnLoad: false,
+          securityLevel: 'strict',
+          theme: 'base',
+          darkMode: dark,
+          fontFamily: "'Inter Variable', ui-sans-serif, system-ui, sans-serif",
+          fontSize: 14,
+          flowchart: { curve: 'basis', padding: 12, htmlLabels: true, useMaxWidth: true },
+          themeVariables: {
+            background: v('--bg-elev'),
+            mainBkg: v('--bg'),
+            primaryColor: v('--bg'),
+            primaryTextColor: v('--ink'),
+            primaryBorderColor: accent,
+            secondaryBorderColor: accent,
+            useGradient: false,
+            gradientStart: accent,
+            gradientStop: accent,
+            secondaryColor: v('--bg-elev'),
+            tertiaryColor: v('--bg-elev'),
+            lineColor: v('--muted'),
+            textColor: v('--text'),
+            clusterBkg: v('--bg-elev'),
+            clusterBorder: v('--line-strong'),
+            titleColor: v('--ink'),
+            edgeLabelBackground: v('--bg-elev'),
+            nodeTextColor: v('--ink'),
+            noteBkgColor: v('--bg'),
+            noteTextColor: v('--text'),
+            noteBorderColor: v('--line-strong'),
+            actorBkg: v('--bg'),
+            actorBorder: accent,
+            actorTextColor: v('--ink'),
+            signalColor: v('--muted'),
+            signalTextColor: v('--text'),
+          },
+        });
+        try {
+          const { svg } = await mermaidMod.render(`mmd-${++seq}`, fig.dataset.src ?? '');
+          const out = fig.querySelector('.mermaid-out')!;
+          out.innerHTML = svg;
+          // Never shrink a diagram below 70% of its natural size; wide ones scroll sideways instead.
+          const el = out.querySelector('svg');
+          const natural = Number(el?.getAttribute('viewBox')?.split(/\s+/)[2]);
+          if (el && natural) el.style.minWidth = `${Math.round(natural * 0.7)}px`;
+          fig.dataset.rendered = '';
+        } catch (err) {
+          console.error('Mermaid diagram failed to render', err);
+        }
+      }
+    };
+
+    // Draw each diagram when it nears the viewport; redraw drawn ones on theme change.
+    const drawn = new Set<HTMLElement>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        const due = entries.filter((e) => e.isIntersecting).map((e) => e.target as HTMLElement);
+        due.forEach((el) => {
+          io.unobserve(el);
+          drawn.add(el);
+        });
+        if (due.length) draw(due);
+      },
+      { rootMargin: '400px 0px' },
+    );
+    figures.forEach((f) => io.observe(f));
+    new MutationObserver(() => drawn.size && draw([...drawn])).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+  }
+</script>

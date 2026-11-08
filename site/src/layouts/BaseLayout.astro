@@ -14,6 +14,10 @@ interface Props {
   publishedTime?: Date;
   jsonLd?: Record<string, unknown>;
   noindex?: boolean;
+  /** Theme used when the visitor has not picked one (roadmaps default to dark for long reading). */
+  defaultTheme?: 'light' | 'dark' | 'system';
+  /** Sets <html data-section> so a section can scope its own tokens (e.g. the slate reading theme). */
+  section?: string;
 }
 
 const {
@@ -24,6 +28,8 @@ const {
   publishedTime,
   jsonLd,
   noindex = false,
+  defaultTheme = 'system',
+  section,
 } = Astro.props;
 
 const fullTitle = title ? `${title} · ${profile.name}` : site.title;
@@ -34,7 +40,7 @@ const ogUrl = new URL(og.src, Astro.site);
 ---
 
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" data-default-theme={defaultTheme} data-section={section}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -67,8 +73,9 @@ const ogUrl = new URL(og.src, Astro.site);
     <meta name="twitter:image" content={ogUrl} />
 
     <meta name="theme-color" content="#f7f5f0" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#070816" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content={section === 'roadmaps' ? '#171c26' : '#070816'} media="(prefers-color-scheme: dark)" />
 
+    <slot name="head" />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 
     <!-- Theme: runs before paint so there is no flash. Pref = light | dark | system -->
@@ -78,9 +85,9 @@ const ogUrl = new URL(og.src, Astro.site);
         const mq = window.matchMedia('(prefers-color-scheme: dark)');
         const read = () => {
           try {
-            return localStorage.getItem('theme') || 'system';
+            return localStorage.getItem('theme') || root.dataset.defaultTheme || 'system';
           } catch {
-            return 'system';
+            return root.dataset.defaultTheme || 'system';
           }
         };
         const apply = (pref) => {
