@@ -8,7 +8,12 @@ const posts = await getPosts();
 const tags = [...new Set(posts.flatMap((p) => p.data.tags))].sort();
 ---
 
-<BaseLayout title="Blog" description="Notes and articles by Sajith Jeewantha on software engineering, cloud, AI and machine learning.">
+<BaseLayout
+  title="Blog"
+  description="Notes and articles by Sajith Jeewantha on software engineering, cloud, AI and machine learning."
+  ogImage="/og/blog.png"
+  ogImageAlt="Blog by Sajith Jeewantha — notes and articles on software engineering, cloud, AI and machine learning"
+>
   <section class="container-x pt-16 pb-10">
     <p class="eyebrow">Blog</p>
     <h1 class="mt-4 font-display text-5xl font-semibold tracking-tight sm:text-6xl">

@@ -60,7 +60,16 @@ const jsonLd = {
 };
 ---
 
-<BaseLayout title={`${d.title} roadmap`} description={d.summary} type="article" jsonLd={jsonLd} defaultTheme="dark" section="roadmaps">
+<BaseLayout
+  title={`${d.title} roadmap`}
+  description={d.summary}
+  type="article"
+  ogImage={`/og/roadmaps/${id}.png`}
+  ogImageAlt={`${d.title} roadmap — four stages from Beginner to Expert`}
+  jsonLd={jsonLd}
+  defaultTheme="dark"
+  section="roadmaps"
+>
   <div class="read-progress" style={`--accent: ${accentVar(id)}`} aria-hidden="true"></div>
 
   <article class="track container-x pt-10" style={`--accent: ${accentVar(id)}`} data-track={id}>

@@ -1,6 +1,6 @@
 # Portfolio — Sajith Jeewantha
 
-Source for [sajithjeewantha.com](https://sajithjeewantha.com): a static portfolio, blog and [career roadmaps](https://sajithjeewantha.com/roadmaps/) built with **Astro** and **Tailwind CSS** (current version: **v1.1.0**).
+Source for [sajithjeewantha.com](https://sajithjeewantha.com): a static portfolio, blog and [career roadmaps](https://sajithjeewantha.com/roadmaps/) built with **Astro** and **Tailwind CSS** (current version: **v1.2.0**).
 
 The app lives in [`site/`](site/).
 
