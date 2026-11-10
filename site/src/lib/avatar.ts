@@ -60,5 +60,13 @@ function resolveAvatar(): ImageMetadata {
 
 export const avatar = resolveAvatar();
 
+/** Absolute path of the photo on disk — for build-time tools (e.g. social cards) that read the file directly. */
+export const avatarFile: string = join(
+  process.cwd(),
+  'src/assets/images',
+  allFiles.find((p) => p === profile.avatar) ??
+    allFiles.find((p) => stem(p) === stem(profile.avatar) && SUPPORTED.test(p))!,
+);
+
 /** CSS object-position style focus point used when the photo is cropped (e.g. to a circle). */
 export const avatarPosition: string = (profile as { avatarPosition?: string }).avatarPosition ?? 'center';

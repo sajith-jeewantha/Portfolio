@@ -1,4 +1,4 @@
-# Sajith Jeewantha — Portfolio v1.1.0
+# Sajith Jeewantha — Portfolio v1.2.0
 
 Personal portfolio, blog and career roadmaps of **Sajith Jeewantha**, Software Engineer — live at [sajithjeewantha.com](https://sajithjeewantha.com).
 
@@ -60,6 +60,7 @@ A fast, fully static site built with **Astro 7** and **Tailwind CSS 4**. All con
 | Content        | Astro Content Collections (JSON via `file()`, Markdown via `glob()`)   |
 | Validation     | Zod schemas in `src/content.config.ts`                                 |
 | Images         | `astro:assets` + `sharp` (WebP, responsive sizes)                      |
+| Social cards   | [satori](https://github.com/vercel/satori) + `sharp`, rendered at build time (`src/lib/og.ts`) |
 | UI icons       | [Lucide](https://lucide.dev) and [Remix Icon](https://remixicon.com) via Iconify, plus [Simple Icons](https://simpleicons.org), inlined at build |
 | Markdown       | `unified()` processor with `remark-math` + `rehype-katex` ([KaTeX](https://katex.org) math rendered at build time) |
 | Diagrams       | [Mermaid](https://mermaid.js.org), drawn in the browser and themed from the site's colour tokens |
@@ -150,12 +151,14 @@ site/
     ├── layouts/BaseLayout.astro  # <head>, SEO tags, theme script
     ├── lib/content.ts        # Data helpers (sorting, lookups, logo resolver)
     ├── lib/roadmaps.ts       # Roadmap helpers, hub-map layout (+ roadmap-constants.ts for browser code)
+    ├── lib/og.ts             # Social card (og:image) designs, rendered to PNG at build time
     ├── pages/
     │   ├── index.astro       # Home page
     │   ├── blog/index.astro  # /blog
     │   ├── blog/[...slug].astro  # /blog/<post>
     │   ├── roadmaps/index.astro   # /roadmaps — hub with the overview map
     │   ├── roadmaps/[slug].astro  # /roadmaps/<track>
+    │   ├── og/               # /og/*.png — social cards for the blog and roadmaps
     │   ├── rss.xml.ts        # /rss.xml
     │   ├── design.astro      # /design — compare hero art versions (noindex)
     │   └── 404.astro
@@ -493,12 +496,25 @@ What's built in:
 | Indexing control | `/design` and the 404 page are `noindex`; `/design` is also left out of the sitemap |
 | Sitemap & robots | `/sitemap-index.xml` (auto-generated from your pages, with `<lastmod>` for blog posts and roadmaps) and `/robots.txt` pointing to it |
 | Structured data | JSON-LD `Person` (photo, job, employer, university, skills, social profiles) + `WebSite` on the home page; `BlogPosting` on posts; `CollectionPage` on `/roadmaps/` and `LearningResource` on each track |
-| Social previews | Open Graph + Twitter cards with a 1200×630 image, so links look good on LinkedIn, WhatsApp, X and Facebook |
+| Social previews | Open Graph + Twitter cards with a 1200×630 image, so links look good on LinkedIn, WhatsApp, X and Facebook. The home page uses the profile photo; the blog, every post, the roadmaps hub and every track get a generated card (see below) |
 | Performance | Static HTML on a CDN, a few KB of JavaScript (Mermaid loads only on roadmap pages, when a diagram scrolls into view), self-hosted fonts, WebP images, lazy loading, immutable caching |
 | Accessibility | One `<h1>` per page, `lang="en"`, alt text, skip link, keyboard focus, reduced motion |
 | Feeds | `/rss.xml` for the blog |
 
 The domain is set in `astro.config.mjs` (`site`) and `src/data/site.json` (`url`).
+
+### Social cards (og:image)
+
+Blog and roadmap pages get a branded 1200×630 PNG card, generated at build time by `src/lib/og.ts` and served from `/og/…`:
+
+| Page | Card | Shows |
+| --- | --- | --- |
+| `/blog/` | `/og/blog.png` | Title, intro and the three latest posts |
+| `/blog/<post>/` | `/og/blog/<post>.png` | Post title, description, date, reading time, tags |
+| `/roadmaps/` | `/og/roadmaps.png` | All tracks in their accent colours |
+| `/roadmaps/<track>/` | `/og/roadmaps/<track>.png` | Track title, icon, tier, summary, the four stages with hours |
+
+Cards update automatically from the content — nothing to edit by hand. [satori](https://github.com/vercel/satori) lays them out with the site's fonts embedded (Cormorant Garamond, Inter, JetBrains Mono from Fontsource), and `sharp` rasterises them, so they look identical on any machine. A blog post with a `cover` image uses the cover instead. To check a card, run `npm run dev` and open e.g. `http://localhost:4321/og/roadmaps/deep-learning.png`; after deploying, paste the page URL into [opengraph.xyz](https://www.opengraph.xyz) or LinkedIn's [Post Inspector](https://www.linkedin.com/post-inspector/) (it also refreshes LinkedIn's cache).
 
 ### After going live
 
@@ -608,4 +624,4 @@ Once v1 is live, the old Cloud Run service, Artifact Registry repository, Terraf
 
 ---
 
-© Sajith Jeewantha · v1.1.0
+© Sajith Jeewantha · v1.2.0
