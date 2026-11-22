@@ -1,4 +1,4 @@
-# Sajith Jeewantha — Portfolio v1.2.1
+# Sajith Jeewantha — Portfolio v1.3.0
 
 Personal portfolio, blog and career roadmaps of **Sajith Jeewantha**, Software Engineer — live at [sajithjeewantha.com](https://sajithjeewantha.com).
 
@@ -28,6 +28,7 @@ A fast, fully static site built with **Astro 7** and **Tailwind CSS 4**. All con
   - [Icons & images](#icons--images)
 - [Design system](#design-system)
   - [Hero art: v1 – v10](#hero-art-v1--v10)
+  - [Starry-sky background](#starry-sky-background)
 - [Themes: light, dark, system](#themes-light-dark-system)
 - [SEO](#seo)
 - [Deployment](#deployment)
@@ -44,7 +45,8 @@ A fast, fully static site built with **Astro 7** and **Tailwind CSS 4**. All con
 - **Blog** in Markdown with syntax highlighting, math (KaTeX), an "On this page" list that highlights the section you're reading, reading time, tags, RSS feed and drafts
 - **Roadmaps** (`/roadmaps/`): 12 career tracks for 2027 (Foundations → Deep Learning, Cloud & IAM, AI / Harness / Context Engineering and more), each with four stages, saved checklists, time estimates from your weekly hours, Mermaid diagrams, KaTeX math and verified references
 - **Connect links** with a name tooltip and the network's brand colour on hover, tuned for contrast in both themes
-- **Light / Dark / System** theme switch, remembered per visitor, with no flash on load
+- **Starry-sky background**: twinkling stars with faint constellation lines, small gold Latin crosses, a Star of Bethlehem and the occasional shooting star; they move away from the cursor (or a finger) and drift back
+- **Light / Dark / System** theme switch (dark by default), remembered per visitor, with no flash on load
 - **Content as data**: JSON files validated by schemas — a typo fails the build, never the live site
 - **Optimised images**: logos and photos are resized and converted to WebP at build time (a 112 KB PNG becomes about 3 KB)
 - **Zero icon fonts and very little JavaScript**: icons are inline SVG rendered at build time; Mermaid loads only on pages with diagrams, when a diagram scrolls into view
@@ -124,6 +126,7 @@ site/
     │   ├── Medallion.astro   # Logo on a "porcelain" plate (legible in both themes)
     │   ├── SocialLink.astro  # "Connect" icon with tooltip + brand colour on hover
     │   ├── TocSpy.astro      # Highlights the current section in "On this page" (blog + roadmaps)
+    │   ├── StarrySky.astro   # Animated background: stars, crosses, shooting stars, cursor push
     │   ├── hero-art.ts       # Registry of hero art versions (used by Hero + /design)
     │   ├── RoseFrame.astro   # Shared frame + portrait for circular windows (v3–v5)
     │   ├── RoseWindow-v1.astro … RoseWindow-v10.astro # Hero art versions
@@ -447,7 +450,20 @@ Logo tips:
 
 All colours are CSS variables in `src/styles/global.css` (`:root` for light, `[data-theme='dark']` for dark) and are exposed to Tailwind as `bg-lapis`, `text-gold`, `border-line` and so on. To change the palette, edit those variables; every component follows.
 
-Motion (rotation, signals, reveal-on-scroll) is turned off for visitors who prefer reduced motion.
+### Starry-sky background
+
+`src/components/StarrySky.astro` draws an animated night sky on a `<canvas>` behind every page (it's included once, in `BaseLayout.astro`, on top of the soft stained-glass glows of `.backdrop`):
+
+- twinkling stars and four-point sparkles at different depths, joined by faint constellation lines;
+- a few small gold **Latin crosses** and one or two **Stars of Bethlehem**;
+- a gold **shooting star** every 8–15 seconds;
+- stars and crosses **move away from the cursor** (or a finger on touch screens) and drift back.
+
+On long-reading pages (roadmap tracks and blog posts) the sky is dimmed with `<BaseLayout sky="dim">`, so crosses and sparkles don't compete with the text.
+
+Tuning lives in the `SETTINGS` object at the top of the script: `density` (stars, `1` = normal), `radius` (cursor reach in px, `80`), `symbols` (crosses + Star of Bethlehem), `shooting`, `lines` and `halo` (soft gold light around the cursor). Colours come from the theme tokens, so it follows the light/dark switch automatically. The canvas is decorative (`aria-hidden`, no pointer events), pauses in hidden tabs, and caps its resolution at 2× for performance.
+
+Motion (rotation, signals, reveal-on-scroll, the starry sky) is turned off for visitors who prefer reduced motion; they see a still sky.
 
 ### Hero art: v1 – v10
 
@@ -478,12 +494,12 @@ The switch in the header has three states:
 | Option | Behaviour                                                      |
 | ------ | -------------------------------------------------------------- |
 | ☀ Light  | Always light                                                 |
-| ☾ Dark   | Always dark                                                  |
-| 🖥 System | Follows the OS setting and updates live when it changes (default) |
+| ☾ Dark   | Always dark (default for new visitors)                       |
+| 🖥 System | Follows the OS setting and updates live when it changes      |
 
 The choice is saved in `localStorage`. A small inline script in `BaseLayout.astro` applies the theme before the page paints, so there is no flash.
 
-Roadmap pages start in **dark** (a softer slate canvas meant for long reading) when the visitor hasn't picked a theme; a saved choice always wins. Pages opt in with `<BaseLayout defaultTheme="dark" section="roadmaps">`.
+New visitors get **dark**, which the starry sky is designed for; a saved choice always wins. A page can choose a different starting theme with `<BaseLayout defaultTheme="light">` (or `"system"`). The browser's address-bar colour (`theme-color`) follows the active theme. Roadmap pages use a softer slate canvas for long reading (`<BaseLayout section="roadmaps">`).
 
 ## SEO
 
@@ -497,7 +513,7 @@ What's built in:
 | Sitemap & robots | `/sitemap-index.xml` (auto-generated from your pages, with `<lastmod>` for blog posts and roadmaps) and `/robots.txt` pointing to it |
 | Structured data | JSON-LD `Person` (photo, job, employer, university, skills, social profiles) + `WebSite` on the home page; `BlogPosting` on posts; `CollectionPage` on `/roadmaps/` and `LearningResource` on each track |
 | Social previews | Open Graph + Twitter cards with a 1200×630 image, so links look good on LinkedIn, WhatsApp, X and Facebook. The home page uses the profile photo; the blog, every post, the roadmaps hub and every track get a generated card (see below) |
-| Performance | Static HTML on a CDN, a few KB of JavaScript (Mermaid loads only on roadmap pages, when a diagram scrolls into view), self-hosted fonts, WebP images, lazy loading, immutable caching |
+| Performance | Static HTML on a CDN, a few KB of JavaScript (the starry sky is one small canvas script; Mermaid loads only on roadmap pages, when a diagram scrolls into view), self-hosted fonts, WebP images, lazy loading, immutable caching |
 | Accessibility | One `<h1>` per page, `lang="en"`, alt text, skip link, keyboard focus, reduced motion |
 | Feeds | `/rss.xml` for the blog |
 
@@ -624,4 +640,4 @@ Once v1 is live, the old Cloud Run service, Artifact Registry repository, Terraf
 
 ---
 
-© Sajith Jeewantha · v1.2.1
+© Sajith Jeewantha · v1.3.0
