@@ -6,16 +6,16 @@
     "status": "completed",
     "icon": "network",
     "categories": ["web", "backend", "full-stack", "api"],
-    "description": "A real-world API management system built with Spring Boot and WSO2 API Manager, showing how an API gateway secures, publishes and manages backend REST APIs in a microservices-style architecture.",
+    "description": "A real-world API management system built with Spring Boot and Choreo API Manager (formerly WSO2 API Manager), showing how an API gateway secures, publishes and manages backend REST APIs in a microservices-style architecture.",
     "features": [
       "RESTful API built with Spring Boot",
-      "API exposure via WSO2 API Gateway",
+      "API exposure via Choreo API Gateway",
       "API subscription and key generation",
       "Throttling and security policies",
       "Dockerized environment",
       "Clean separation of backend and gateway"
     ],
-    "tech": ["Spring Boot", "WSO2 API Manager", "REST APIs", "JSON", "Docker", "Java 17", "Postman"],
+    "tech": ["Spring Boot", "Choreo API Manager", "REST APIs", "JSON", "Docker", "Java 17", "Postman"],
     "links": [
       { "type": "github", "label": "Source", "url": "https://github.com/sajith-jeewantha/api-shield-platform" },
       { "type": "post", "label": "Write-up", "url": "https://www.linkedin.com/posts/sajith-jeewantha_wso2-apigateway-springboot-ugcPost-7461151865762746369-CrNB" }

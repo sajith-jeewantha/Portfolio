@@ -1,4 +1,4 @@
-# Sajith Jeewantha — Portfolio v1.2.0
+# Sajith Jeewantha — Portfolio v1.2.1
 
 Personal portfolio, blog and career roadmaps of **Sajith Jeewantha**, Software Engineer — live at [sajithjeewantha.com](https://sajithjeewantha.com).
 
@@ -208,11 +208,11 @@ Run `npm run dev` while editing. If something is wrong, the terminal shows exact
 
 ```json
 {
-  "id": "wso2-software-engineer-intern",
+  "id": "choreo-labs-software-engineer-intern",
   "role": "Software Engineer Intern",
-  "company": "WSO2",
-  "companyUrl": "https://wso2.com",
-  "logo": "wso2",
+  "company": "Choreo Labs",
+  "companyUrl": "https://choreolabs.com/",
+  "logo": "choreo-labs",
   "type": "Internship",
   "location": "Colombo, Sri Lanka",
   "start": "2026-07",
@@ -624,4 +624,4 @@ Once v1 is live, the old Cloud Run service, Artifact Registry repository, Terraf
 
 ---
 
-© Sajith Jeewantha · v1.2.0
+© Sajith Jeewantha · v1.2.1
