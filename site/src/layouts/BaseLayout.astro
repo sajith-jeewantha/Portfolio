@@ -3,6 +3,7 @@ import '../styles/global.css';
 import { getImage } from 'astro:assets';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import StarrySky from '../components/StarrySky.astro';
 import { profile, site } from '../lib/content';
 import { avatar } from '../lib/avatar';
 
@@ -19,8 +20,10 @@ interface Props {
   publishedTime?: Date;
   jsonLd?: Record<string, unknown>;
   noindex?: boolean;
-  /** Theme used when the visitor has not picked one (roadmaps default to dark for long reading). */
+  /** Theme used when the visitor has not picked one. Dark by default (the starry sky is designed for it). */
   defaultTheme?: 'light' | 'dark' | 'system';
+  /** Starry-sky strength: 'full' (default) or 'dim' for long-reading pages, so symbols don't sit behind text. */
+  sky?: 'full' | 'dim';
   /** Sets <html data-section> so a section can scope its own tokens (e.g. the slate reading theme). */
   section?: string;
 }
@@ -35,7 +38,8 @@ const {
   publishedTime,
   jsonLd,
   noindex = false,
-  defaultTheme = 'system',
+  defaultTheme = 'dark',
+  sky = 'full',
   section,
 } = Astro.props;
 
@@ -50,7 +54,7 @@ const ogAlt = ogImageAlt ?? (!ogImage && image === avatar ? `Portrait of ${profi
 ---
 
 <!doctype html>
-<html lang="en" data-theme="light" data-default-theme={defaultTheme} data-section={section}>
+<html lang="en" data-theme={defaultTheme === 'light' ? 'light' : 'dark'} data-default-theme={defaultTheme} data-section={section} data-sky={sky}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -84,8 +88,13 @@ const ogAlt = ogImageAlt ?? (!ogImage && image === avatar ? `Portrait of ${profi
     <meta name="twitter:image" content={ogUrl} />
     <meta name="twitter:image:alt" content={ogAlt} />
 
-    <meta name="theme-color" content="#f7f5f0" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content={section === 'roadmaps' ? '#171c26' : '#070816'} media="(prefers-color-scheme: dark)" />
+    <!-- Browser bar colour; the theme script below keeps it in step with the site's theme -->
+    <meta
+      name="theme-color"
+      content={defaultTheme === 'light' ? '#f7f5f0' : section === 'roadmaps' ? '#171c26' : '#070816'}
+      data-light="#f7f5f0"
+      data-dark={section === 'roadmaps' ? '#171c26' : '#070816'}
+    />
 
     <slot name="head" />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
@@ -106,6 +115,8 @@ const ogAlt = ogImageAlt ?? (!ogImage && image === avatar ? `Portrait of ${profi
           const dark = pref === 'dark' || (pref === 'system' && mq.matches);
           root.dataset.theme = dark ? 'dark' : 'light';
           root.dataset.themePref = pref;
+          const bar = document.querySelector('meta[name="theme-color"]');
+          if (bar) bar.content = dark ? bar.dataset.dark : bar.dataset.light;
         };
         window.__setTheme = (pref) => {
           try {
@@ -121,6 +132,7 @@ const ogAlt = ogImageAlt ?? (!ogImage && image === avatar ? `Portrait of ${profi
   </head>
   <body class="min-h-dvh">
     <div class="backdrop" aria-hidden="true"></div>
+    <StarrySky />
     <a
       href="#main"
       class="sr-only z-[100] rounded-lg bg-lapis px-4 py-2 text-on-lapis focus:not-sr-only focus:fixed focus:top-3 focus:left-3"

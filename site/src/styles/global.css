@@ -144,7 +144,8 @@
 }
 
 /* ----------------------------- Backdrop --------------------------------- */
-/* Faint circuit dot-grid + stained-glass light pooling from the top. */
+/* Stained-glass light pooling from the edges. The animated starry sky
+   (components/StarrySky.astro) is drawn on top of this, behind all content. */
 .backdrop {
   position: fixed;
   inset: 0;
@@ -154,14 +155,6 @@
     radial-gradient(60rem 30rem at 12% -6%, color-mix(in oklab, var(--lapis) calc(var(--glow-opacity) * 45%), transparent), transparent 70%),
     radial-gradient(40rem 26rem at 92% 4%, color-mix(in oklab, var(--ruby) calc(var(--glow-opacity) * 30%), transparent), transparent 70%),
     radial-gradient(36rem 24rem at 60% 110%, color-mix(in oklab, var(--gold) calc(var(--glow-opacity) * 28%), transparent), transparent 70%);
-}
-.backdrop::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(color-mix(in oklab, var(--ink) 14%, transparent) 1px, transparent 1px);
-  background-size: 26px 26px;
-  mask-image: linear-gradient(to bottom, black, transparent 70%);
 }
 
 /* ----------------------------- Components ------------------------------- */
