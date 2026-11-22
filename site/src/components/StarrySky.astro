@@ -1,0 +1,319 @@
+---
+/**
+ * Animated night-sky background behind every page: twinkling stars with faint
+ * constellation lines, small gold Latin crosses, a Star of Bethlehem and the
+ * occasional shooting star. Stars and crosses move away from the cursor (or a
+ * finger on touch screens) and drift back.
+ *
+ * - Colours come from the theme tokens and update live when the theme changes.
+ * - "Reduce motion" visitors get a still sky; the loop pauses in hidden tabs.
+ * - Decorative only: aria-hidden, no pointer events, drawn behind content.
+ */
+---
+
+<canvas class="starry-sky" aria-hidden="true"></canvas>
+
+<style>
+  .starry-sky {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  /* Long-reading pages (roadmap tracks, blog posts): keep the sky, but quiet. */
+  :global([data-sky='dim']) .starry-sky {
+    opacity: 0.35;
+  }
+</style>
+
+<script>
+  // Tuned in the background demo (stars 1×, cursor reach 80 px, lines on).
+  const SETTINGS = { density: 1, radius: 80, symbols: true, shooting: true, lines: true, halo: true };
+
+  type Kind = 'star' | 'sparkle' | 'cross' | 'bethlehem';
+  interface Particle {
+    kind: Kind;
+    z: number;
+    hx: number; hy: number; // home position (drifts slowly)
+    ox: number; oy: number; vx: number; vy: number; // push-away offset + velocity
+    dx: number; dy: number; // drift speed, px/s
+    r: number;
+    tw: number; ph: number; // twinkle speed + phase
+    c: string;
+    rot: number;
+  }
+
+  const canvas = document.querySelector<HTMLCanvasElement>('canvas.starry-sky');
+  const ctx = canvas?.getContext('2d');
+
+  if (canvas && ctx) {
+    const root = document.documentElement;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+    const mouse = { x: -9999, y: -9999, active: false };
+    let W = 0, H = 0, parts: Particle[] = [];
+    let palette = { dark: true, star: [] as string[], gold: '#e8bb52', line: 'rgba(200,205,255,' };
+
+    const rand = (a: number, b: number) => a + Math.random() * (b - a);
+    const pick = <T,>(arr: T[]) => arr[(Math.random() * arr.length) | 0];
+    const css = (n: string) => getComputedStyle(root).getPropertyValue(n).trim();
+    const hexA = (hex: string, a: number) => {
+      const h = hex.replace('#', '');
+      const n = parseInt(h.length === 3 ? h.split('').map((c) => c + c).join('') : h.slice(0, 6), 16);
+      return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+    };
+
+    const readPalette = () => {
+      const dark = root.dataset.theme === 'dark';
+      palette = {
+        dark,
+        star: dark ? ['#ffffff', '#dfe2ff', '#c9ccff', '#fff3d6'] : [css('--lapis'), css('--amethyst'), '#5b5e86'],
+        gold: css('--gold') || '#e8bb52',
+        line: dark ? 'rgba(200,205,255,' : 'rgba(59,61,179,',
+      };
+    };
+
+    /* ---------------- particles ---------------- */
+    const make = (kind: Kind): Particle => {
+      const z = rand(0.35, 1); // depth: far stars are smaller, slower, fainter
+      return {
+        kind, z,
+        hx: rand(0, W), hy: rand(0, H),
+        ox: 0, oy: 0, vx: 0, vy: 0,
+        dx: rand(-2.4, 2.4) * z, dy: rand(-1.5, 0.6) * z,
+        r: kind === 'star' ? rand(0.5, 1.6) * z : kind === 'sparkle' ? rand(2.5, 4.5) * z : kind === 'cross' ? rand(8, 12) * (0.7 + z * 0.3) : rand(12, 16),
+        tw: rand(0.35, 1.1), ph: rand(0, Math.PI * 2),
+        c: pick(palette.star),
+        rot: kind === 'sparkle' ? rand(0, Math.PI / 4) : 0,
+      };
+    };
+
+    const populate = () => {
+      const area = W * H;
+      parts = [];
+      const n = Math.round((area / 8500) * SETTINGS.density);
+      for (let i = 0; i < n; i++) parts.push(make(Math.random() < 0.08 ? 'sparkle' : 'star'));
+      const scale = Math.max(0.6, Math.min(1.4, area / 900000)) * Math.min(1, SETTINGS.density);
+      for (let i = 0, c = Math.max(3, Math.round(6 * scale)); i < c; i++) {
+        const p = make('cross');
+        p.z = rand(0.75, 1); p.dx *= 0.35; p.dy *= 0.35;
+        parts.push(p);
+      }
+      for (let i = 0, c = W > 700 ? 2 : 1; i < c; i++) {
+        const p = make('bethlehem');
+        p.hy = rand(H * 0.08, H * 0.45); p.dx *= 0.3; p.dy = 0;
+        parts.push(p);
+      }
+    };
+
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = innerWidth; H = innerHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      populate();
+      if (reduce.matches) draw(0);
+    };
+
+    /* ---------------- shapes ---------------- */
+    const glow = (x: number, y: number, r: number, color: string, a: number) => {
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, hexA(color, a));
+      g.addColorStop(1, hexA(color, 0));
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    };
+
+    const sparkle = (x: number, y: number, r: number, rot: number, color: string, a: number) => {
+      ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+      ctx.fillStyle = hexA(color, a);
+      ctx.beginPath();
+      for (let i = 0; i < 4; i++) {
+        const ang = (i * Math.PI) / 2;
+        ctx.lineTo(Math.cos(ang) * r, Math.sin(ang) * r);
+        ctx.quadraticCurveTo(0, 0, Math.cos(ang + Math.PI / 2) * r, Math.sin(ang + Math.PI / 2) * r);
+      }
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
+    };
+
+    // Latin cross: the cross-beam sits about a third of the way down.
+    const cross = (x: number, y: number, h: number, color: string, a: number) => {
+      const w = Math.max(1.2, h * 0.16), arm = h * 0.62, beam = y - h / 2 + h * 0.3;
+      glow(x, y - h * 0.1, h * 1.3, color, a * (palette.dark ? 0.22 : 0.12));
+      ctx.fillStyle = hexA(color, a);
+      ctx.fillRect(x - w / 2, y - h / 2, w, h);
+      ctx.fillRect(x - arm / 2, beam - w / 2, arm, w);
+    };
+
+    // Star of Bethlehem: eight rays, the lowest one long, pointing down.
+    const bethlehem = (x: number, y: number, r: number, t: number, color: string) => {
+      const pulse = 0.85 + Math.sin(t * 0.9) * 0.15;
+      glow(x, y, r * 4.2 * pulse, color, palette.dark ? 0.32 : 0.18);
+      ctx.save(); ctx.translate(x, y);
+      ctx.fillStyle = hexA(color, palette.dark ? 0.95 : 0.85);
+      for (let i = 0; i < 8; i++) {
+        const ang = (i * Math.PI) / 4 - Math.PI / 2;
+        const len = i === 4 ? r * 3.4 * pulse : i % 2 === 0 ? r * 1.6 : r * 0.8;
+        const wid = i % 2 === 0 ? r * 0.2 : r * 0.13;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(ang - Math.PI / 2) * wid, Math.sin(ang - Math.PI / 2) * wid);
+        ctx.lineTo(Math.cos(ang) * len, Math.sin(ang) * len);
+        ctx.lineTo(Math.cos(ang + Math.PI / 2) * wid, Math.sin(ang + Math.PI / 2) * wid);
+        ctx.closePath(); ctx.fill();
+      }
+      ctx.beginPath(); ctx.arc(0, 0, r * 0.32, 0, Math.PI * 2);
+      ctx.fillStyle = palette.dark ? '#fffbe9' : hexA(color, 1);
+      ctx.fill();
+      ctx.restore();
+    };
+
+    /* ---------------- shooting stars ---------------- */
+    interface Meteor { x: number; y: number; vx: number; vy: number; life: number; max: number }
+    let meteors: Meteor[] = [];
+    let nextMeteor = rand(4, 8);
+    const spawnMeteor = () => {
+      const fromLeft = Math.random() < 0.5;
+      const ang = ((fromLeft ? rand(20, 35) : rand(145, 160)) * Math.PI) / 180;
+      const speed = rand(650, 900);
+      meteors.push({
+        x: fromLeft ? rand(-50, W * 0.5) : rand(W * 0.5, W + 50),
+        y: rand(-20, H * 0.35),
+        vx: Math.cos(ang) * speed, vy: Math.sin(ang) * speed,
+        life: 0, max: rand(0.9, 1.4),
+      });
+    };
+    const stepMeteors = (dt: number) => {
+      if (SETTINGS.shooting) {
+        nextMeteor -= dt;
+        if (nextMeteor <= 0) { spawnMeteor(); nextMeteor = rand(8, 15); }
+      }
+      for (const m of meteors) { m.x += m.vx * dt; m.y += m.vy * dt; m.life += dt; }
+      meteors = meteors.filter((m) => m.life < m.max);
+    };
+    const drawMeteors = () => {
+      for (const m of meteors) {
+        const fade = Math.sin(Math.PI * (m.life / m.max));
+        const len = 150, sp = Math.hypot(m.vx, m.vy);
+        const tx = m.x - (m.vx / sp) * len, ty = m.y - (m.vy / sp) * len;
+        const g = ctx.createLinearGradient(m.x, m.y, tx, ty);
+        g.addColorStop(0, palette.dark ? `rgba(255,248,225,${0.95 * fade})` : hexA(palette.gold, 0.9 * fade));
+        g.addColorStop(0.25, hexA(palette.gold, 0.55 * fade));
+        g.addColorStop(1, hexA(palette.gold, 0));
+        ctx.strokeStyle = g; ctx.lineWidth = 1.8; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(tx, ty); ctx.stroke();
+        glow(m.x, m.y, 7, palette.gold, 0.5 * fade);
+      }
+    };
+
+    /* ---------------- simulation ---------------- */
+    const step = (dt: number) => {
+      const R = SETTINGS.radius, R2 = R * R;
+      const damp = Math.pow(0.03, dt);
+      for (const p of parts) {
+        p.hx += p.dx * dt; p.hy += p.dy * dt;
+        if (p.hx < -20) p.hx += W + 40; else if (p.hx > W + 20) p.hx -= W + 40;
+        if (p.hy < -20) p.hy += H + 40; else if (p.hy > H + 20) p.hy -= H + 40;
+
+        if (mouse.active) {
+          const ddx = p.hx + p.ox - mouse.x, ddy = p.hy + p.oy - mouse.y, d2 = ddx * ddx + ddy * ddy;
+          if (d2 < R2 && d2 > 0.01) {
+            const d = Math.sqrt(d2), f = (1 - d / R) ** 1.6 * 5200 * (0.5 + p.z * 0.5);
+            p.vx += (ddx / d) * f * dt; p.vy += (ddy / d) * f * dt;
+          }
+        }
+        // spring back home, with damping
+        p.vx += -p.ox * 3.2 * dt; p.vy += -p.oy * 3.2 * dt;
+        p.vx *= damp; p.vy *= damp;
+        p.ox += p.vx * dt; p.oy += p.vy * dt;
+      }
+    };
+
+    function draw(t: number) {
+      ctx!.clearRect(0, 0, W, H);
+      const dark = palette.dark;
+
+      if (SETTINGS.halo && mouse.active && !reduce.matches) glow(mouse.x, mouse.y, SETTINGS.radius * 1.1, palette.gold, dark ? 0.07 : 0.06);
+
+      if (SETTINGS.lines) {
+        const near = parts.filter((p) => p.kind !== 'star' || p.z > 0.75);
+        ctx!.lineWidth = 0.6;
+        for (let i = 0; i < near.length; i++) {
+          const a = near[i], ax = a.hx + a.ox, ay = a.hy + a.oy;
+          for (let j = i + 1; j < near.length; j++) {
+            const b = near[j], bx = b.hx + b.ox, by = b.hy + b.oy;
+            const dx = ax - bx, dy = ay - by;
+            if (dx > 110 || dx < -110 || dy > 110 || dy < -110) continue;
+            const d = Math.hypot(dx, dy);
+            if (d < 110) {
+              ctx!.strokeStyle = palette.line + ((1 - d / 110) * (dark ? 0.16 : 0.12)).toFixed(3) + ')';
+              ctx!.beginPath(); ctx!.moveTo(ax, ay); ctx!.lineTo(bx, by); ctx!.stroke();
+            }
+          }
+        }
+      }
+
+      for (const p of parts) {
+        const x = p.hx + p.ox, y = p.hy + p.oy;
+        const tw = 0.55 + 0.45 * Math.sin(t * p.tw + p.ph);
+        if (p.kind === 'star') {
+          const a = (dark ? 0.35 + 0.65 * tw : 0.18 + 0.4 * tw) * (0.5 + p.z * 0.5);
+          if (p.r > 1.1 && dark) glow(x, y, p.r * 4, p.c, a * 0.25);
+          ctx!.fillStyle = hexA(p.c, a);
+          ctx!.beginPath(); ctx!.arc(x, y, p.r, 0, Math.PI * 2); ctx!.fill();
+        } else if (p.kind === 'sparkle') {
+          const a = (dark ? 0.5 + 0.5 * tw : 0.3 + 0.35 * tw) * p.z;
+          if (dark) glow(x, y, p.r * 3, p.c, a * 0.3);
+          sparkle(x, y, p.r * (0.8 + 0.25 * tw), p.rot, p.c, a);
+        } else if (p.kind === 'cross' && SETTINGS.symbols) {
+          cross(x, y, p.r * 2, palette.gold, (dark ? 0.6 + 0.3 * tw : 0.5 + 0.25 * tw) * (0.6 + p.z * 0.4));
+        } else if (p.kind === 'bethlehem' && SETTINGS.symbols) {
+          bethlehem(x, y, p.r * 0.55, t + p.ph, palette.gold);
+        }
+      }
+      drawMeteors();
+    }
+
+    /* ---------------- loop ---------------- */
+    let last = performance.now(), raf = 0;
+    const frame = (now: number) => {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      step(dt);
+      stepMeteors(dt);
+      draw(now / 1000);
+      raf = requestAnimationFrame(frame);
+    };
+    const start = () => {
+      cancelAnimationFrame(raf);
+      if (reduce.matches) { meteors = []; draw(0); return; } // still sky, no motion
+      last = performance.now();
+      raf = requestAnimationFrame(frame);
+    };
+
+    /* ---------------- input & lifecycle ---------------- */
+    const setMouse = (e: PointerEvent) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; };
+    addEventListener('pointermove', setMouse, { passive: true });
+    addEventListener('pointerdown', setMouse, { passive: true });
+    document.addEventListener('pointerleave', () => (mouse.active = false));
+    addEventListener('blur', () => (mouse.active = false));
+    document.addEventListener('visibilitychange', () => (document.hidden ? cancelAnimationFrame(raf) : start()));
+    reduce.addEventListener('change', start);
+    let resizeTimer = 0;
+    addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = window.setTimeout(resize, 150); });
+
+    // Recolour when the theme switch changes <html data-theme>.
+    new MutationObserver(() => {
+      readPalette();
+      for (const p of parts) p.c = pick(palette.star);
+      if (reduce.matches) draw(0);
+    }).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+
+    readPalette();
+    resize();
+    start();
+  }
+</script>

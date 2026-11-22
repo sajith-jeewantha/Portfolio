@@ -39,3 +39,4 @@ db_backup.json
 *.HEIC
 *.heif
 *.HEIF
+.claude/

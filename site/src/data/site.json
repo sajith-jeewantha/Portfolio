@@ -1,9 +1,9 @@
 {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "heroArt": "v4",
   "url": "https://sajithjeewantha.com",
   "title": "Sajith Jeewantha | Software Engineer",
-  "description": "Sajith Jeewantha — Software Engineer Intern at WSO2, Sri Lanka. Projects, roadmaps and writing on AI agents, MCP, LLM training, cloud IAM and integration.",
+  "description": "Sajith Jeewantha — Software Engineer Intern at Choreo Labs, Sri Lanka. Projects, roadmaps and posts on AI agents, MCP, LLM training, cloud IAM and integration.",
   "googleSiteVerification": "",
   "keywords": [
     "Sajith Jeewantha",
@@ -23,6 +23,7 @@
     "AI Engineering",
     "AI Agents",
     "MCP",
+    "Choreo Labs",
     "WSO2",
     "Integration",
     "Ballerina",

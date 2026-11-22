@@ -1,14 +1,14 @@
 [
   {
-    "id": "wso2-integration-practitioner-2026",
-    "title": "WSO2 Certified Integration Practitioner - 2026",
-    "issuer": "wso2",
+    "id": "choreo-integration-practitioner-2026",
+    "title": "Choreo Certified Integration Practitioner - 2026",
+    "issuer": "choreo-labs",
     "year": 2026,
     "month": 10,
     "expires": null,
     "status": "earned",
-    "url": "https://certification.wso2.com/certificate/CID-05705505/a09VM00000L6PxJYAV",
-    "description": "Validates practical skills in designing, developing and deploying integration solutions with the WSO2 integration platform.",
+    "url": "https://certification.choreolabs.com/certificate/CID-05705505/a09VM00000L6PxJYAV",
+    "description": "Validates practical skills in designing, developing and deploying integration solutions with the Choreo integration platform.",
     "order": 1,
     "visible": true
   },
